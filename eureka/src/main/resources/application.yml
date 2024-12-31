@@ -3,7 +3,7 @@ spring:
     name: eureka
 
 server:
-  port: 19090
+  port: 8761
 
 eureka:
   client:
