@@ -69,4 +69,12 @@ public class PostCategoryService {
 
     postCategoryRepository.save(savedPostCategory);
   }
+
+  @Transactional
+  public void deletePostCategory(Long categoryId) {
+    PostCategory savedPostCategory = postCategoryRepository.findByIdAndDeletedYNFalse(categoryId)
+        .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 카테고리 아이디입니다."));
+
+    savedPostCategory.markAsDeleted();
+  }
 }
