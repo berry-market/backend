@@ -3,6 +3,7 @@ package com.berry.post.presentation.controller;
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
 import com.berry.post.application.service.PostCategoryService;
+import com.berry.post.presentation.request.postCategory.PostCategoryCreateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ public class PostCategoryController {
 
   @PostMapping
   public ResponseEntity<ApiResponse<?>> createPostCategory(@Valid @RequestBody PostCategoryCreateRequest postCategoryCreateRequest) {
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED));
+    postCategoryService.createPostCategory(postCategoryCreateRequest);
+    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "게시글 카테고리가 생성되었습니다."));
   }
 
 }
