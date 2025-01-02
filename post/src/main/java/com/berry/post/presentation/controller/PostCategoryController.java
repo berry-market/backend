@@ -37,7 +37,7 @@ public class PostCategoryController {
   public ApiResponse<Page<PostCategoryResponse>> getPostCategories(
       @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword, Pageable pageable) {
     Page<PostCategoryResponse> postCategories = postCategoryService.getPostCategories(keyword, pageable);
-    return ApiResponse.OK(ResSuccessCode.READ, postCategories, "게시글 카테고리 전체 조회가 완료되었습니다.");
+    return ApiResponse.OK(ResSuccessCode.READ, postCategories, "게시글 카테고리가 전체 조회되었습니다.");
   }
 
 }
