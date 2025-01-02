@@ -1,5 +1,7 @@
 package com.berry.post.domain.model;
 
-public class ProductStatus {
+
+
+public enum ProductStatus {
 
 }
