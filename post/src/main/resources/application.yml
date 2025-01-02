@@ -1,6 +1,6 @@
 spring:
   application:
-    name: post
+    name: post-service
 
   datasource:
     url: ${DB_URL}
@@ -15,3 +15,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
+
+server:
+  port: 8082
