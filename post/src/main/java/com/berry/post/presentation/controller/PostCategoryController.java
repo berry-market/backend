@@ -4,6 +4,7 @@ import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
 import com.berry.post.application.service.PostCategoryService;
 import com.berry.post.presentation.request.postCategory.PostCategoryCreateRequest;
+import com.berry.post.presentation.request.postCategory.PostCategoryUpdateRequest;
 import com.berry.post.presentation.response.postCategory.PostCategoryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,5 +42,14 @@ public class PostCategoryController {
     Page<PostCategoryResponse> postCategories = postCategoryService.getPostCategories(keyword, pageable);
     return ApiResponse.OK(ResSuccessCode.READ, postCategories, "게시글 카테고리 전체 조회가 완료되었습니다.");
   }
+
+  @PatchMapping("/{categoryId}")
+  public ResponseEntity<ApiResponse<?>> updatePostCategory(
+      @PathVariable Long categoryId,
+      @Valid @RequestBody PostCategoryUpdateRequest postCategoryUpdateRequest) {
+    postCategoryService.updatePostCategory(categoryId, postCategoryUpdateRequest);
+    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "게시글 카테고리 수정이 완료되었습니다."));
+  }
+
 
 }
