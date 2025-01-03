@@ -27,7 +27,7 @@ public class PostCategoryController {
   // todo auth 되면 admin 권한 확인 추가
 
   @PostMapping
-  public ResponseEntity<ApiResponse<?>> createPostCategory(
+  public ResponseEntity<ApiResponse<Void>> createPostCategory(
       @Valid @RequestBody PostCategoryCreateRequest postCategoryCreateRequest) {
     postCategoryService.createPostCategory(postCategoryCreateRequest);
     return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "게시글 카테고리가 생성되었습니다."));
