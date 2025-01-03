@@ -1,7 +1,11 @@
 package com.berry.auth.presentation.controller;
 
+import com.berry.auth.application.dto.TokenValidResDto;
 import com.berry.auth.application.service.AuthService;
+import com.berry.common.response.ApiResponse;
+import com.berry.common.response.ResSuccessCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,5 +24,13 @@ public class InternalController {
       @RequestHeader("Refresh-Token") String refreshToken) {
     String newAccessToken = authService.refreshAccessToken(refreshToken);
     return ResponseEntity.ok(newAccessToken);
+  }
+
+  @PostMapping("/validate-token")
+  public ResponseEntity<ApiResponse<TokenValidResDto>> validateToken(
+      @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+    String accessToken = authorizationHeader.substring(7);
+    TokenValidResDto userInfo = authService.validateToken(accessToken);
+    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.SUCCESS, userInfo));
   }
 }

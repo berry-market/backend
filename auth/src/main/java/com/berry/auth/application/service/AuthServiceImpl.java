@@ -1,5 +1,6 @@
 package com.berry.auth.application.service;
 
+import com.berry.auth.application.dto.TokenValidResDto;
 import com.berry.auth.domain.model.Role;
 import com.berry.auth.infrastructure.client.UserClient;
 import com.berry.auth.infrastructure.security.dto.UserResDto;
@@ -47,5 +48,19 @@ public class AuthServiceImpl implements AuthService {
 
     return jwtTokenFactory.createAccessToken(userResDto.getId(), userResDto.getNickname(),
         userResDto.getRole());
+  }
+
+  @Override
+  @Transactional
+  public TokenValidResDto validateToken(String accessToken) {
+    // 액세스 토큰 유효성 검증
+    jwtTokenValidator.validateAccessToken(accessToken);
+
+    // 검증된 유저정보 반환
+    Long userId = jwtTokenParser.getUserId(accessToken);
+    String username = jwtTokenParser.getNickname(accessToken);
+    String role = jwtTokenParser.getRole(accessToken);
+
+    return new TokenValidResDto(userId, username, role);
   }
 }
