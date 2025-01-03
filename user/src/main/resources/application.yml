@@ -1,6 +1,6 @@
 spring:
   application:
-    name: delivery-service
+    name: user-service
 
   datasource:
     url: ${DB_URL}
@@ -17,7 +17,7 @@ spring:
         show_sql: true
 
 server:
-  port: ${PORT}
+  port: 8081
 
 eureka:
   client:

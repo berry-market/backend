@@ -15,4 +15,6 @@ public interface PostCategoryRepository extends JpaRepository<PostCategory, Long
   Page<PostCategory> findAllByDeletedYNFalse(Pageable pageable);
 
   Page<PostCategory> findAllByCategoryNameAndDeletedYNFalse(Pageable pageable, String categoryName);
+
+  Optional<PostCategory> findByIdAndDeletedYNFalse(Long categoryId);
 }
