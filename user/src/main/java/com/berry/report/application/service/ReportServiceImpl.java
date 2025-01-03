@@ -1,0 +1,48 @@
+package com.berry.report.application.service;
+
+import com.berry.common.exceptionhandler.CustomApiException;
+import com.berry.common.response.ResErrorCode;
+import com.berry.report.domain.model.Report;
+import com.berry.report.domain.repository.ReportJpaRepository;
+import com.berry.report.domain.service.ReportService;
+import com.berry.report.infrastructure.repository.ReportQueryRepository;
+import com.berry.report.presentation.dto.request.CreateReportRequest;
+import com.berry.user.domain.model.User;
+import com.berry.user.domain.repository.UserJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
+
+@Service
+@RequiredArgsConstructor
+public class ReportServiceImpl implements ReportService {
+
+    private final ReportJpaRepository reportJpaRepository;
+    private final ReportQueryRepository reportQueryRepository;
+    private final UserJpaRepository userJpaRepository;
+
+    @Override
+    @Transactional
+    public void createReport(CreateReportRequest request, Long userId) {
+        if (!Objects.equals(userId, request.reporterId())) {
+            throw new CustomApiException(ResErrorCode.FORBIDDEN);
+        }
+        User reporter = getUser(request.reporterId());
+        User reportedUser = getUser(request.reportedUserId());
+
+        Report report = Report.builder()
+            .reporter(reporter)
+            .reportedUser(reportedUser)
+            .reportType(request.reportType())
+            .reportReason(request.reportReason())
+            .build();
+        reportJpaRepository.save(report);
+    }
+
+    private User getUser(Long userId) {
+        return userJpaRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
+    }
+}
