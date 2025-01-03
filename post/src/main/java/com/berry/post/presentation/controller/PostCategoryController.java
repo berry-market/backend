@@ -41,11 +41,11 @@ public class PostCategoryController {
   public ApiResponse<Page<PostCategoryResponse>> getPostCategories(
       @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword, Pageable pageable) {
     Page<PostCategoryResponse> postCategories = postCategoryService.getPostCategories(keyword, pageable);
-    return ApiResponse.OK(ResSuccessCode.READ, postCategories, "게시글 카테고리 전체 조회가 완료되었습니다.");
+    return ApiResponse.OK(ResSuccessCode.READ, postCategories, "게시글 카테고리가 전체 조회되었습니다. ");
   }
 
   @PatchMapping("/{categoryId}")
-  public ResponseEntity<ApiResponse<?>> updatePostCategory(
+  public ResponseEntity<ApiResponse<Void>> updatePostCategory(
       @PathVariable Long categoryId,
       @Valid @RequestBody PostCategoryUpdateRequest postCategoryUpdateRequest) {
     postCategoryService.updatePostCategory(categoryId, postCategoryUpdateRequest);
@@ -53,7 +53,7 @@ public class PostCategoryController {
   }
 
   @PutMapping("/{categoryId}")
-  public ResponseEntity<ApiResponse<?>> deletePostCategory(@PathVariable Long categoryId) {
+  public ResponseEntity<ApiResponse<Void>> deletePostCategory(@PathVariable Long categoryId) {
     postCategoryService.deletePostCategory(categoryId);
     return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "게시글 카테고리가 삭제되었습니다."));
   }
