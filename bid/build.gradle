@@ -45,6 +45,13 @@ dependencies {
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	//DB 및 querydsl 연결
+	implementation 'com.querydsl:querydsl-sql:5.0.0'        // QueryDSL SQL 모듈
+	implementation 'com.querydsl:querydsl-sql-codegen:5.0.0' // QueryDSL 코드 생성기
+	implementation 'com.querydsl:querydsl-sql-spring:5.0.0' // Spring 지원 모듈
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'com.zaxxer:HikariCP:5.0.1'              // HikariCP 연결 풀
+
 }
 
 dependencyManagement {
