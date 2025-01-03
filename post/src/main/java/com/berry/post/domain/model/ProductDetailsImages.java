@@ -30,8 +30,10 @@ public class ProductDetailsImages extends BaseEntity {
   @Column(nullable = false)
   private Long postId;
 
+  @Column(nullable = false)
   private String productDetailsImage;
 
+  @Column(nullable = false)
   private Integer sequence;
 
 

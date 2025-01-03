@@ -45,7 +45,6 @@ public class PostCreateRequest {
   @NotNull(message = "배달비 선택은 필수입니다.")
   private Integer deliveryFee;
 
-  @NotBlank(message = "상품 대표 사진은 필수입니다.")
   private MultipartFile productImage;
 
   private List<MultipartFile> productDetailsImages;
