@@ -31,7 +31,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
   // 필터 제외 경로
   private static final List<Route> EXCLUDED_PATHS = List.of(
-//      new Route("POST", "/api/v1/auth/login"),
+      new Route("POST", "/api/v1/auth/login"),
       new Route("POST", "/api/v1/users/signup"),
       new Route("GET", "/api/v1/posts/**"),
       new Route("GET", "/api/v1/reviews/**")
