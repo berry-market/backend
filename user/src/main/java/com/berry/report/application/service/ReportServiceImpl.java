@@ -3,13 +3,17 @@ package com.berry.report.application.service;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.report.domain.model.Report;
+import com.berry.report.domain.model.ReportStatus;
 import com.berry.report.domain.repository.ReportJpaRepository;
 import com.berry.report.domain.service.ReportService;
 import com.berry.report.infrastructure.repository.ReportQueryRepository;
 import com.berry.report.presentation.dto.request.CreateReportRequest;
+import com.berry.report.presentation.dto.response.ReportResponse;
 import com.berry.user.domain.model.User;
 import com.berry.user.domain.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +43,12 @@ public class ReportServiceImpl implements ReportService {
             .reportReason(request.reportReason())
             .build();
         reportJpaRepository.save(report);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReportResponse> getReports(Pageable pageable, ReportStatus reportStatus) {
+        return reportQueryRepository.getReports(pageable, reportStatus);
     }
 
     private User getUser(Long userId) {
