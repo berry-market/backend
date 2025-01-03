@@ -7,6 +7,7 @@ import com.berry.user.domain.model.User;
 import com.berry.user.domain.repository.UserJpaRepository;
 import com.berry.user.domain.service.UserService;
 import com.berry.user.presentation.dto.request.SignUpRequest;
+import com.berry.user.presentation.dto.response.GetInternalUserResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,8 +44,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomApiException(ResErrorCode.FORBIDDEN);
         }
 
-        User user = userJpaRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
+        User user = getUser(userId);
         return new GetUserResponse(
             user.getId(),
             user.getNickname(),
@@ -55,4 +55,20 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public GetInternalUserResponse getInternalUserById(Long userId) {
+        User user = getUser(userId);
+        return new GetInternalUserResponse(
+            user.getId(),
+            user.getNickname(),
+            user.getProfileImage(),
+            user.getRole()
+        );
+    }
+
+    private User getUser(Long userId) {
+        return userJpaRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
+    }
 }
