@@ -1,11 +1,13 @@
 package com.berry.auth.infrastructure.security.filter;
 
 import com.berry.auth.infrastructure.security.config.FilterConfig;
+import com.berry.auth.infrastructure.security.jwt.JwtAuthenticationToken;
 import com.berry.auth.infrastructure.security.jwt.JwtTokenValidator;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,6 +16,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -49,6 +53,10 @@ public class JwtFilter extends OncePerRequestFilter {
       // 액세스 토큰 유효성 검증
       jwtTokenValidator.validateAccessToken(accessToken);
 
+      // SecurityContext 설정
+      Claims claims = jwtTokenValidator.extractClaims(accessToken);
+      setAuthentication(request, claims);
+
       filterChain.doFilter(request, response); // 다음 필터로 진행
 
     } catch (ExpiredJwtException e) {
@@ -60,6 +68,19 @@ public class JwtFilter extends OncePerRequestFilter {
       handleException(response,
           new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR));
     }
+  }
+
+  // SecurityContext 설정
+  private void setAuthentication(HttpServletRequest request, Claims claims) {
+    JwtAuthenticationToken authentication = new JwtAuthenticationToken(
+        Long.parseLong(claims.getSubject()),
+        claims.get("nickname", String.class),
+        claims.get("role", String.class),
+        null
+    );
+    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    authentication.setAuthenticated(true);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
   // 예외 처리 로직
