@@ -1,5 +1,6 @@
 package com.berry.report.domain.model;
 
+import com.berry.report.presentation.dto.request.UpdateReportStatusRequest;
 import com.berry.user.domain.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -46,4 +47,8 @@ public class Report {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    public void updateReportStatus(UpdateReportStatusRequest request) {
+        this.reportStatus = request.reportStatus();
+        this.resolvedAt = LocalDateTime.now();
+    }
 }
