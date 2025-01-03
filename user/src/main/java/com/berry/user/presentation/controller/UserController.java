@@ -6,6 +6,7 @@ import com.berry.common.role.RoleCheck;
 import com.berry.user.domain.service.UserService;
 import com.berry.user.presentation.dto.request.SignUpRequest;
 import com.berry.user.presentation.dto.request.UpdateEmailRequest;
+import com.berry.user.presentation.dto.request.UpdatePasswordRequest;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import jakarta.validation.Valid;
@@ -54,6 +55,16 @@ public class UserController {
     ) {
         userService.updateUserEmail(headerUserId, userId, request);
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "이메일이 성공적으로 변경되었습니다."));
+    }
+
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<ApiResponse<Void>> updateUserPassword(
+        @RequestHeader("X-User-Id") Long headerUserId,
+        @PathVariable("userId") Long userId,
+        @RequestBody @Valid UpdatePasswordRequest request
+    ) {
+        userService.updateUserPassword(headerUserId, userId, request);
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "비밀번호가 성공적으로 변경되었습니다."));
     }
 
 }

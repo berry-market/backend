@@ -42,4 +42,8 @@ public class User extends BaseEntity {
         this.setUpdatedBy(userId);
     }
 
+    public void updatePassword(String encodedNewPassword, String userId) {
+        this.password = encodedNewPassword;
+        this.setUpdatedBy(userId);
+    }
 }

@@ -9,6 +9,7 @@ import com.berry.user.domain.service.UserService;
 import com.berry.user.infrastructure.repository.UserQueryRepository;
 import com.berry.user.presentation.dto.request.SignUpRequest;
 import com.berry.user.presentation.dto.request.UpdateEmailRequest;
+import com.berry.user.presentation.dto.request.UpdatePasswordRequest;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
@@ -91,6 +92,23 @@ public class UserServiceImpl implements UserService {
         validateEmail(newEmail);
         User user = getUser(userId);
         user.updateEmail(newEmail, String.valueOf(userId));
+    }
+
+    @Override
+    @Transactional
+    public void updateUserPassword(Long headerUserId, Long userId, UpdatePasswordRequest request) {
+        validateUserSelf(headerUserId, userId);
+        User user = getUser(userId);
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new CustomApiException(ResErrorCode.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다.");
+        }
+        if (request.currentPassword().equals(request.newPassword())) {
+            throw new CustomApiException(ResErrorCode.BAD_REQUEST, "새 비밀번호는 기존 비밀번호와 달라야 합니다.");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(request.newPassword());
+        user.updatePassword(encodedNewPassword, String.valueOf(userId));
     }
 
     private void validateEmail(String newEmail) {
