@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,8 +60,6 @@ public class PostServiceImpl implements PostService {
         .likeCount(0)
         .viewCount(0)
         .build();
-
-    // DB에 저장
     Post savedPost = postRepository.save(post);
 
     // ProductDetailsImages 에 다중 이미지 저장
@@ -74,8 +73,25 @@ public class PostServiceImpl implements PostService {
           .build();
       productDetailsImagesRepository.save(productDetailsImage);
     }
+  }
 
-    // 스케줄러 시작해서 시작 날짜, 마감 날짜에 맞게 상품 상태 변하도록 설정
+  // post 상태 자동 업데이트
+  @Scheduled(fixedRate = 60000)  // 1분
+  public void updateProductStatus() {
+    LocalDateTime now = LocalDateTime.now();
 
+    List<Post> productStatusToStarts =
+        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.ACTIVE);
+    for (Post productStatusToStart : productStatusToStarts) {
+      productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
+      postRepository.save(productStatusToStart);
+    }
+
+    List<Post> productStatusToCloses =
+        postRepository.findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.CLOSED);
+    for (Post productStatusToClose : productStatusToCloses) {
+      productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
+      postRepository.save(productStatusToClose);
+    }
   }
 }

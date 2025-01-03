@@ -76,4 +76,7 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private Integer viewCount;
 
+  public void updateProductStatus(ProductStatus productStatus) {
+    this.productStatus = productStatus;
+  }
 }
