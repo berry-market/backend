@@ -28,4 +28,6 @@ public class PostController {
     return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "게시글이 생성되었습니다."));
   }
 
+
+
 }
