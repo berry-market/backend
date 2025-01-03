@@ -2,7 +2,7 @@ package com.berry.post.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
-import com.berry.post.application.service.PostCategoryService;
+import com.berry.post.application.service.postCategory.PostCategoryService;
 import com.berry.post.presentation.request.postCategory.PostCategoryCreateRequest;
 import com.berry.post.presentation.response.postCategory.PostCategoryResponse;
 import jakarta.validation.Valid;

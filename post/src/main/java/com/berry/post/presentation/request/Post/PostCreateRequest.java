@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 public class PostCreateRequest {
@@ -38,13 +39,16 @@ public class PostCreateRequest {
   @Future(message = "미래 날짜만 선택 가능합니다.")
   private LocalDateTime auctionEndedAt;
 
+  @NotBlank(message = "배달 방법 선택은 필수입니다.")
+  private String deliveryMethod;
+
   @NotNull(message = "배달비 선택은 필수입니다.")
   private Integer deliveryFee;
 
   @NotBlank(message = "상품 대표 사진은 필수입니다.")
-  private String productImage;
+  private MultipartFile productImage;
 
-  private List<String> productDetailsImages;
+  private List<MultipartFile> productDetailsImages;
 
 
 }
