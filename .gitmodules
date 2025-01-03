@@ -1,15 +1,9 @@
 [submodule "common"]
 	path = common
 	url = https://github.com/berry-market/common.git
-[submodule "user/src/main/java/com/berry/common"]
-	path = user/src/main/java/com/berry/common
-	url = https://github.com/berry-market/common.git
 [submodule "post/src/main/java/com/berry/common"]
 	path = post/src/main/java/com/berry/common
 	url = https://github.com/berry-market/common.git
 [submodule "delivery/src/main/java/com/berry/common"]
 	path = delivery/src/main/java/com/berry/common
-	url = https://github.com/berry-market/common.git
-[submodule "member/src/main/java/com/berry/common"]
-	path = member/src/main/java/com/berry/common
 	url = https://github.com/berry-market/common.git
