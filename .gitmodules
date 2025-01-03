@@ -10,3 +10,6 @@
 [submodule "delivery/src/main/java/com/berry/common"]
 	path = delivery/src/main/java/com/berry/common
 	url = https://github.com/berry-market/common.git
+[submodule "member/src/main/java/com/berry/common"]
+	path = member/src/main/java/com/berry/common
+	url = https://github.com/berry-market/common.git
