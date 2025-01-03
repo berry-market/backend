@@ -6,10 +6,14 @@ import com.berry.common.role.Role;
 import com.berry.user.domain.model.User;
 import com.berry.user.domain.repository.UserJpaRepository;
 import com.berry.user.domain.service.UserService;
+import com.berry.user.infrastructure.repository.UserQueryRepository;
 import com.berry.user.presentation.dto.request.SignUpRequest;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
+import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserJpaRepository userJpaRepository;
+    private final UserQueryRepository userQueryRepository;
 
     @Override
     @Transactional
@@ -68,6 +73,11 @@ public class UserServiceImpl implements UserService {
         User user = userJpaRepository.findByNickname(nickname)
             .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
         return getInternalUserResponse(user);
+    }
+
+    @Override
+    public Page<GetUserDetailResponse> getUsers(Pageable pageable) {
+        return userQueryRepository.getUsers(pageable);
     }
 
     private User getUser(Long userId) {
