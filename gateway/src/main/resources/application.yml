@@ -1,0 +1,128 @@
+# port
+server:
+  port: ${PORT}
+
+# 유레카 서버 설정
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  application:
+    name: gateway-service
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      default-filters:
+        - name: JwtFilter
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: auth-service-admin
+          uri: lb://auth-service
+          predicates:
+            - Path=/admin/v1/auth/**
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**
+        - id: user-service-admin
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/v1/users/**
+
+        - id: like-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/likes/**
+        - id: like-service-admin
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/v1/likes/**
+
+        - id: report-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/reports/**
+        - id: report-service-admin
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/v1/reports/**
+
+        - id: post-service
+          uri: lb://post-service
+          predicates:
+            - Path=/api/v1/posts/**
+        - id: post-service-admin
+          uri: lb://post-service
+          predicates:
+            - Path=/admin/v1/posts/**
+
+        - id: category-service
+          uri: lb://post-service
+          predicates:
+            - Path=/api/v1/categories/**
+        - id: category-service-admin
+          uri: lb://post-service
+          predicates:
+            - Path=/admin/v1/categories/**
+
+        - id: review-service
+          uri: lb://post-service
+          predicates:
+            - Path=/api/v1/reviews/**
+        - id: review-service-admin
+          uri: lb://post-service
+          predicates:
+            - Path=/admin/v1/reviews/**
+
+        - id: delivery-service
+          uri: lb://delivery-service
+          predicates:
+            - Path=/api/v1/deliveries/**
+        - id: delivery-service-admin
+          uri: lb://delivery-service
+          predicates:
+            - Path=/admin/v1/deliveries/**
+
+        - id: notification-service
+          uri: lb://delivery-service
+          predicates:
+            - Path=/api/v1/notifications/**
+        - id: notification-service-admin
+          uri: lb://delivery-service
+          predicates:
+            - Path=/admin/v1/notifications/**
+
+        - id: bid-service
+          uri: lb://bid-service
+          predicates:
+            - Path=/api/v1/bids/**
+        - id: bid-service-admin
+          uri: lb://bid-service
+          predicates:
+            - Path=/admin/v1/bids/**
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payments/**
+        - id: payment-service-admin
+          uri: lb://payment-service
+          predicates:
+            - Path=/admin/v1/payments/**
+
+      # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
+      discovery:
+        locator:
+          enabled: true
