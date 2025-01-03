@@ -59,16 +59,28 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public GetInternalUserResponse getInternalUserById(Long userId) {
         User user = getUser(userId);
+        return getInternalUserResponse(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GetInternalUserResponse getInternalUserByNickname(String nickname) {
+        User user = userJpaRepository.findByNickname(nickname)
+            .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
+        return getInternalUserResponse(user);
+    }
+
+    private User getUser(Long userId) {
+        return userJpaRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
+    }
+
+    private static GetInternalUserResponse getInternalUserResponse(User user) {
         return new GetInternalUserResponse(
             user.getId(),
             user.getNickname(),
             user.getProfileImage(),
             user.getRole()
         );
-    }
-
-    private User getUser(Long userId) {
-        return userJpaRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
     }
 }

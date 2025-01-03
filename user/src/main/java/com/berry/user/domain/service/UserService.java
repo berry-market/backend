@@ -10,4 +10,6 @@ public interface UserService {
     GetUserResponse getUserById(Long headerUserId, Long userId, String role);
 
     GetInternalUserResponse getInternalUserById(Long userId);
+
+    GetInternalUserResponse getInternalUserByNickname(String nickname);
 }

@@ -23,4 +23,11 @@ public class UserInternalController {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getInternalUserById(userId)));
     }
 
+    @GetMapping("{nickname}")
+    public ResponseEntity<ApiResponse<GetInternalUserResponse>> getInternalUserByNickname(
+        @PathVariable("nickname") String nickname
+    ) {
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getInternalUserByNickname(nickname)));
+    }
+
 }
