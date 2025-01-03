@@ -19,8 +19,8 @@ public class JwtTokenParser {
   }
 
   // 토큰에서 username 추출
-  public String getUsername(String token) {
-    return validator.extractClaims(token).get("username", String.class);
+  public String getNickname(String token) {
+    return validator.extractClaims(token).get("nickname", String.class);
   }
 
   // 토큰에서 role 추출
