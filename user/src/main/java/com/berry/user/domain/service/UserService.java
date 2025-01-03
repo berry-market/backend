@@ -1,6 +1,7 @@
 package com.berry.user.domain.service;
 
 import com.berry.user.presentation.dto.request.SignUpRequest;
+import com.berry.user.presentation.dto.request.UpdateEmailRequest;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
@@ -17,4 +18,6 @@ public interface UserService {
     GetInternalUserResponse getInternalUserByNickname(String nickname);
 
     Page<GetUserDetailResponse> getUsers(Pageable pageable);
+
+    void updateUserEmail(Long headerUserId, Long userId, UpdateEmailRequest request);
 }

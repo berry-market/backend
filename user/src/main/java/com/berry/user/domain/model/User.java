@@ -37,4 +37,9 @@ public class User extends BaseEntity {
     @Column(name = "profile_image")
     private String profileImage;
 
+    public void updateEmail(String email, String userId) {
+        this.email = email;
+        this.setUpdatedBy(userId);
+    }
+
 }

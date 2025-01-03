@@ -8,6 +8,7 @@ import com.berry.user.domain.repository.UserJpaRepository;
 import com.berry.user.domain.service.UserService;
 import com.berry.user.infrastructure.repository.UserQueryRepository;
 import com.berry.user.presentation.dto.request.SignUpRequest;
+import com.berry.user.presentation.dto.request.UpdateEmailRequest;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
@@ -31,6 +32,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void signUp(SignUpRequest request) {
+        validateEmail(request.email());
         String encodedPassword = passwordEncoder.encode(request.password());
         User user = User.builder()
             .nickname(request.nickname())
@@ -76,8 +78,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<GetUserDetailResponse> getUsers(Pageable pageable) {
         return userQueryRepository.getUsers(pageable);
+    }
+
+    @Override
+    @Transactional
+    public void updateUserEmail(Long headerUserId, Long userId, UpdateEmailRequest request) {
+        validateUserSelf(headerUserId, userId);
+        String newEmail = request.email();
+        validateEmail(newEmail);
+        User user = getUser(userId);
+        user.updateEmail(newEmail, String.valueOf(userId));
+    }
+
+    private void validateEmail(String newEmail) {
+        if (userJpaRepository.existsByEmail(newEmail)) {
+            throw new CustomApiException(ResErrorCode.CONFLICT, "이미 사용 중인 이메일입니다.");
+        }
+    }
+
+    private static void validateUserSelf(Long headerUserId, Long userId) {
+        if (!Objects.equals(headerUserId, userId)) {
+            throw new CustomApiException(ResErrorCode.FORBIDDEN);
+        }
     }
 
     private User getUser(Long userId) {

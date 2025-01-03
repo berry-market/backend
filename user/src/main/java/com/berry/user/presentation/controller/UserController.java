@@ -5,6 +5,7 @@ import com.berry.common.response.ResSuccessCode;
 import com.berry.common.role.RoleCheck;
 import com.berry.user.domain.service.UserService;
 import com.berry.user.presentation.dto.request.SignUpRequest;
+import com.berry.user.presentation.dto.request.UpdateEmailRequest;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import jakarta.validation.Valid;
@@ -27,7 +28,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "회원가입이 완료되었습니다."));
     }
 
-    @GetMapping("{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUserById(
         @RequestHeader("X-User-Id") Long headerUserId,
         @RequestHeader("X-User-Role") String role,
@@ -43,6 +44,16 @@ public class UserController {
         Pageable pageable
     ) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUsers(pageable)));
+    }
+
+    @PatchMapping("/{userId}/email")
+    public ResponseEntity<ApiResponse<Void>> updateUserEmail(
+        @RequestHeader("X-User-Id") Long headerUserId,
+        @PathVariable("userId") Long userId,
+        @RequestBody @Valid UpdateEmailRequest request
+    ) {
+        userService.updateUserEmail(headerUserId, userId, request);
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "이메일이 성공적으로 변경되었습니다."));
     }
 
 }
