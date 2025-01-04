@@ -41,6 +41,13 @@ public record DeliveryDto(
                 .bidId(entity.getBidId())
                 .address(entity.getAddress())
                 .status(entity.getStatus())
+                .created_at(Timestamp.valueOf(entity.getCreatedAt()))
+                .created_by(entity.getCreatedBy())
+                .updated_at(Timestamp.valueOf(entity.getUpdatedAt()))
+                .updated_by(entity.getUpdatedBy())
+                .deleted_at(Timestamp.valueOf(entity.getDeletedAt()))
+                .deleted_by(entity.getDeletedBy())
+                .deleted_yn(entity.isDeletedYN())
                 .build();
     }
 }

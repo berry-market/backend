@@ -37,4 +37,10 @@ public class DeliveryController {
     public ResponseEntity<ApiResponse<?>> getDelivery(@PathVariable Long deliveryId) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, deliveryService.getDelivery(deliveryId)));
    }
+
+   @DeleteMapping("/{deliveryId}")
+    public ResponseEntity<ApiResponse<?>> deleteDelivery(@PathVariable Long deliveryId) {
+        deliveryService.deleteDelivery(deliveryId);
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED,"배송이 삭제되었습니다."));
+   }
 }

@@ -6,6 +6,7 @@ import com.berry.delivery.domain.model.Delivery;
 import com.berry.delivery.domain.repository.DeliveryRepository;
 import com.berry.delivery.presentation.dto.DeliveryDto;
 import com.berry.delivery.presentation.dto.request.DeliveryCreateRequest;
+import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
 import com.berry.delivery.presentation.dto.response.DeliverySearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,5 +41,11 @@ public class DeliveryService {
         return DeliverySearchResponse.from(delivery);
     }
 
+    @Transactional
+    public void deleteDelivery(Long deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(()->new CustomApiException(ResErrorCode.BAD_REQUEST,"존재하지 않는 배송입니다."));
 
+        delivery.markAsDeleted();
+    }
 }
