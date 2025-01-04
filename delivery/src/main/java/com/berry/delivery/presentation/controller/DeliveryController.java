@@ -29,7 +29,7 @@ public class DeliveryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getALlDelivery(Pageable pageable) {
+    public ResponseEntity<ApiResponse<?>> getAllDelivery(Pageable pageable) {
         Page<DeliveryDto> deliveries = deliveryService.getAllDelivery(pageable);
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, deliveries));
     }

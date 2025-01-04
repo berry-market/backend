@@ -27,4 +27,8 @@ public class PostCategory extends BaseEntity{
 
   @Column(nullable = false)
   private String categoryName;
+
+  public void updateCategoryName(String newCategoryName) {
+    this.categoryName = newCategoryName;
+  }
 }

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: post-service
+    name: user-service
 
   datasource:
     url: ${DB_URL}
@@ -17,4 +17,9 @@ spring:
         show_sql: true
 
 server:
-  port: 8082
+  port: 8081
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
