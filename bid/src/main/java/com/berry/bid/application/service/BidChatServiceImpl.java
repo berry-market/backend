@@ -7,6 +7,8 @@ import com.berry.bid.domain.service.BidChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class BidChatServiceImpl implements BidChatService {
@@ -28,9 +30,8 @@ public class BidChatServiceImpl implements BidChatService {
 
     @Override
     public Boolean validateBidChat(Long postId, BidChatCreate.Request request) {
-        BidChat bidChat = bidChatRepository.getHighestPrice(bidChatKey + postId)
-                .orElseThrow();
-        return request.getAmount() > bidChat.getAmount();
+        Optional<BidChat> bidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
+        return bidChat.isEmpty() || request.getAmount() > bidChat.get().getAmount();
     }
 
 

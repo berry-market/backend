@@ -3,6 +3,7 @@ package com.berry.bid.infrastructure.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -23,6 +24,8 @@ public class RedisConfig {
 
         // 값 직렬화 설정: GenericJackson2JsonRedisSerializer 사용
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // Java 8 날짜/시간 처리
+        objectMapper.findAndRegisterModules(); // 기타 모듈 자동 등록
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.activateDefaultTyping(
                 objectMapper.getPolymorphicTypeValidator(),
@@ -34,7 +37,7 @@ public class RedisConfig {
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(serializer);
 
-        template.setEnableTransactionSupport(true); // 트랜잭션 지원
+        template.setEnableTransactionSupport(true);
         template.afterPropertiesSet();
 
         return template;

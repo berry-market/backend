@@ -17,7 +17,6 @@ public class BidChatController {
     private final BidChatService bidChatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    //TODO : post man에서 test 필요 ..
     @MessageMapping("/api/v1/post/{postId}/bids-chat")
     public void createBidChat(@DestinationVariable Long postId,
                               @Payload BidChatCreate.Request bidChatCreate) {
