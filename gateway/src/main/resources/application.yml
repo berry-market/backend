@@ -5,6 +5,8 @@ server:
 # 유레카 서버 설정
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
@@ -19,6 +21,10 @@ spring:
     web-application-type: reactive
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       default-filters:
         - name: JwtFilter
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
@@ -121,8 +127,3 @@ spring:
           uri: lb://payment-service
           predicates:
             - Path=/admin/v1/payments/**
-
-      # 서비스 디스커버리를 통해 동적으로 라우트를 생성하도록 설정
-      discovery:
-        locator:
-          enabled: true

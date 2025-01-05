@@ -9,9 +9,12 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -51,38 +54,35 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
         String path = exchange.getRequest().getPath().toString();
         String method = exchange.getRequest().getMethod().name();
 
-        // 검증 제외 경로일 경우 필터 통과
-        if (EXCLUDED_PATHS.stream().anyMatch(route -> route.matches(method, path))) {
+        // Authorization 헤더 추출
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        String accessToken = authHeader != null && authHeader.startsWith("Bearer ")
+            ? authHeader.substring(7)
+            : null;
+
+        // 검증 제외 경로 처리 : "accessToken == null" 일때 필터 통과
+        if (EXCLUDED_PATHS.stream().anyMatch(route -> route.matches(method, path))
+            && accessToken == null) {
           return chain.filter(exchange);
         }
 
-        // Authorization 헤더 추출
-        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        String accessToken = null;
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-          accessToken = authHeader.substring(7);
-        }
-
-        // 쿠키에서 리프레시 토큰 추출
-        String refreshToken = getCookieValue(exchange);
-
-        if (accessToken == null && refreshToken != null) {
-          // 리프레시 토큰 검증 및 재발급
-          return handleRefreshToken(exchange, chain, refreshToken);
-        }
-
-        if (accessToken == null) {
-          throw new GatewayException(HttpStatus.UNAUTHORIZED, "Missing or invalid tokens");
-        }
-
         // 블랙리스트 확인
-        if (redisTokenRepository.isBlacklisted(accessToken)) {
+        if (accessToken != null && redisTokenRepository.isBlacklisted(accessToken)) {
           throw new GatewayException(HttpStatus.UNAUTHORIZED, "Access token is blacklisted");
         }
 
         // 액세스 토큰 검증
-        validateToken(accessToken);
+        if (!isValidAccessToken(accessToken)) {
+          // 액세스 토큰이 유효하지 않을 경우 쿠키에서 리프레시 토큰 추출
+          String refreshToken = getCookieValue(exchange);
+
+          // 리프레시 토큰 유효성 검증
+          if (refreshToken == null || !redisTokenRepository.isRefreshTokenValid(refreshToken)) {
+            throw new GatewayException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+          }
+          // 액세스 토큰 재발급
+          return handleRefreshToken(exchange, chain, refreshToken);
+        }
 
         // 유저정보 및 액세스 토큰 헤더에 추가 및 체인 진행
         return addHeaders(exchange, chain, accessToken);
@@ -97,21 +97,13 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
   // 리프레시 토큰으로 액세스 토큰 재발급 요청 처리
   private Mono<Void> handleRefreshToken(ServerWebExchange exchange, GatewayFilterChain chain,
       String refreshToken) {
-    // 리프레시 토큰 유효성 검증
-    if (!redisTokenRepository.isRefreshTokenValid(refreshToken)) {
-      throw new GatewayException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
-    }
-
     return webClientBuilder.build()
         .post()
-        .uri("http://auth-service/server/v1/auth/refresh")
+        .uri("lb://auth-service/server/v1/auth/refresh")
         .header("Refresh-Token", refreshToken)
         .retrieve()
         .bodyToMono(String.class)
-        .flatMap(newAccessToken -> {
-          // 유저정보 및 액세스토큰 헤더 추가
-          return addHeaders(exchange, chain, newAccessToken);
-        })
+        .flatMap(newAccessToken -> addHeaders(exchange, chain, newAccessToken))
         .onErrorResume(ex -> Mono.error(
             new GatewayException(HttpStatus.UNAUTHORIZED, "Failed to refresh access token")));
   }
@@ -132,14 +124,24 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     return chain.filter(mutatedExchange);
   }
 
-  // JWT 토큰 유효성 검증 (액세스 토큰용)
-  public void validateToken(String accessToken) {
-    Claims claims = extractClaims(accessToken);
+  // 액세스 토큰 유효성 검증
+  private boolean isValidAccessToken(String accessToken) {
+    if (accessToken == null) {
+      return false;
+    }
+    try {
+      Claims claims = extractClaims(accessToken);
 
-    // type 필드 존재 여부와 값 확인
-    String tokenType = claims.get("type", String.class);
-    if (!"access".equals(tokenType)) {
-      throw new GatewayException(HttpStatus.UNAUTHORIZED, "Not an access token");
+      // type 필드 존재 여부와 값 확인
+      String tokenType = claims.get("type", String.class);
+      if (!"access".equals(tokenType)) {
+        throw new GatewayException(HttpStatus.UNAUTHORIZED, "Not an access token");
+      }
+      return true;
+    } catch (io.jsonwebtoken.ExpiredJwtException ex) {
+      return false; // 만료된 토큰
+    } catch (Exception ex) {
+      return false;
     }
   }
 
@@ -175,7 +177,12 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     }
   }
 
+  @Configuration
   public static class Config {
-
+    @Bean
+    @LoadBalanced
+    public WebClient.Builder loadBalancedWebClientBuilder() {
+      return WebClient.builder();
+    }
   }
 }
