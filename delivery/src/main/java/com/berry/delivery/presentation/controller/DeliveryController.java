@@ -34,21 +34,21 @@ public class DeliveryController {
         Page<DeliveryDto> deliveries = deliveryService.getAllDelivery(pageable);
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, deliveries));
     }
-   @GetMapping("/{deliveryId}")
+
+    @GetMapping("/{deliveryId}")
     public ResponseEntity<ApiResponse<?>> getDelivery(@PathVariable Long deliveryId) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, deliveryService.getDelivery(deliveryId)));
-   }
+    }
 
-   @PatchMapping("/{deliveryId}")
-   public ResponseEntity<ApiResponse<?>> updateDelivery(@PathVariable Long deliveryId, @Valid @RequestBody DeliveryUpdateRequest req) {
+    @PatchMapping("/{deliveryId}")
+    public ResponseEntity<ApiResponse<?>> updateDelivery(@PathVariable Long deliveryId, @Valid @RequestBody DeliveryUpdateRequest req) {
         deliveryService.updateDelivery(deliveryId, req);
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED,"배송이 수정되었습니다."));
-   }
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "배송이 수정되었습니다."));
+    }
 
-
-   @DeleteMapping("/{deliveryId}")
+    @DeleteMapping("/{deliveryId}")
     public ResponseEntity<ApiResponse<?>> deleteDelivery(@PathVariable Long deliveryId) {
         deliveryService.deleteDelivery(deliveryId);
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED,"배송이 삭제되었습니다."));
-   }
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "배송이 삭제되었습니다."));
+    }
 }

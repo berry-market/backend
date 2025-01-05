@@ -49,14 +49,7 @@ public class DeliveryService {
 
         validateStatusTransition(delivery.getStatus(), req.status());
 
-        delivery = Delivery.builder()
-                .deliveryId(deliveryId)
-                .receiverId(req.receiverId())
-                .senderId(req.senderId())
-                .bidId(req.bidId())
-                .address(req.address())
-                .status(req.status())
-                .build();
+        delivery.updatedelivery(req);
 
         deliveryRepository.save(delivery);
     }
