@@ -1,9 +1,12 @@
 package com.berry.post.domain.repository.post;
 
 import com.berry.post.domain.model.Post;
+import com.berry.post.domain.model.QPost;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,34 +20,42 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public Page<Post> findAllAndDeletedYNFalse(String keyword, String type, Long postCategoryId, Pageable pageable) {
+  public Page<Post> findAllAndDeletedYNFalse(String keyword, String type, Long postCategoryId, String sort, Pageable pageable) {
     QPost post = QPost.post;
 
-    // 조건 빌더
     BooleanBuilder builder = new BooleanBuilder();
 
-    // 삭제되지 않은 게시글만 조회
+    // 삭제 x
     builder.and(post.deletedYN.isFalse());
 
-    // 1. keyword 검색 조건 (제목, 내용)
+    // keyword 검색
     if (keyword != null && !keyword.isEmpty()) {
-      builder.and(post.title.containsIgnoreCase(keyword)
-          .or(post.content.containsIgnoreCase(keyword)));
+      builder.and(post.productName.containsIgnoreCase(keyword));
     }
 
-    // 2. 카테고리 ID로 필터링
+    // type 에 따른 필터링 추가
+    if (type != null && !type.isEmpty()) {
+      if (type.equals("likes_count")) {
+        builder.and(post.likeCount.goe(1)) // 찜 개수가 1 이상인 상품만 조회
+                .and(post.auctionEndedAt.gt(LocalDateTime.now())); // 마감되지 않은 상품만 조회
+      } else if (type.equals("auction_ended_at")) {
+        builder.and(post.auctionEndedAt.gt(LocalDateTime.now())); // 마감되지 않은 상품만 조회
+      }
+    }
+
+    // 카테고리 Id 필터링 추가
     if (postCategoryId != null) {
-      builder.and(post.category.id.eq(postCategoryId));  // 카테고리 ID 필터링
+      builder.and(post.postCategoryId.eq(postCategoryId));
     }
 
-    // 3. 정렬 기준 처리 (type에 따라 다르게 처리)
-    OrderSpecifier<?> orderSpecifier = getOrderSpecifier(post, type);
+    // 정렬 기준 처리
+    OrderSpecifier<?> orderSpecifier = getOrderSpecifier(post, sort, type);
 
     // 쿼리 실행
     List<Post> posts = jpaQueryFactory
         .selectFrom(post)
         .where(builder)
-        .orderBy(orderSpecifier) // 동적 정렬
+        .orderBy(orderSpecifier)
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .fetch();
@@ -58,15 +69,23 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     return new PageImpl<>(posts, pageable, total);
   }
 
-  private OrderSpecifier<?> getOrderSpecifier(QPost post, String type) {
-    // type에 따라 정렬 기준 결정
-    switch (type) {
-      case "likes_count":
-        return post.likes.count().desc(); // 찜 개수 기준 내림차순 정렬
-      case "auction_ended_at":
-        return post.auctionEndedAt.asc(); // 마감 날짜 기준 오름차순 정렬
-      default:
-        return post.createdAt.desc(); // 기본: 최신순 정렬
+  private OrderSpecifier<?> getOrderSpecifier(QPost post, String sort, String type) {
+    if (type != null && !type.isEmpty()) {
+      if (type.equals("likes_count")) {
+        return post.likeCount.desc();
+      } else if (type.equals("auction_ended_at")) {
+        return post.auctionEndedAt.asc();
+      }
     }
+
+    // 기본 정렬 처리
+    return switch (sort) {
+      case "latest" -> post.createdAt.desc(); // 최신 순
+      case "old" -> post.createdAt.asc(); // 오래된 순
+      case "auction_ended_at" -> post.auctionEndedAt.asc(); // 마감 임박 순
+      case "view_count" -> post.viewCount.desc(); // 조회수 순
+      case "likes_count" -> post.likeCount.desc(); // 찜하기 순
+      default -> post.createdAt.desc(); // 기본값은 최신 순 정렬
+    };
   }
 }

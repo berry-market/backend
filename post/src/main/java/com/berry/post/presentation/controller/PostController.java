@@ -50,10 +50,11 @@ public class PostController {
   public ApiResponse<Page<PostResponse>> getPosts(
       @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
       @RequestParam(name = "type", required = false, defaultValue = "") String type,
-      @RequestParam(name = "postCategoryId", required = false, defaultValue = "") Long postCategoryId,
+      @RequestParam(name = "categoryId", required = false, defaultValue = "") Long postCategoryId,
+      @RequestParam(name = "sort", required = false, defaultValue = "") String sort,
       Pageable pageable
   ) {
-    Page<PostResponse> posts = postServiceImpl.getPosts(keyword, type, postCategoryId, pageable);
+    Page<PostResponse> posts = postServiceImpl.getPosts(keyword, type, postCategoryId, sort, pageable);
     return ApiResponse.OK(ResSuccessCode.READ, posts,"게시글 카테고리가 전체 조회되었습니다. ");
   }
 

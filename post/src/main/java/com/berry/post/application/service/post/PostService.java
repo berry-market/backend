@@ -14,5 +14,5 @@ public interface PostService {
   void createPost(PostCreateRequest postCreateRequest,
       MultipartFile multipartFile, List<MultipartFile> multipartFileList) throws IOException;
 
-  Page<PostResponse> getPosts(String keyword, String type, Long postCategoryId, Pageable pageable);
+  Page<PostResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable);
 }

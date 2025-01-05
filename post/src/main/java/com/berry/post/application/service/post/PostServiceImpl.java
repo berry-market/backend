@@ -82,9 +82,15 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<PostResponse> getPosts(String keyword, String type, Long postCategoryId, Pageable pageable) {
-    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, pageable);
-    return null;
+  public Page<PostResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable) {
+
+    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort, pageable);
+
+    return posts.map(post -> {
+      // todo postId 마다 해당 유저의 찜 여부 확인하고 각각 response 에 추가. userId가 null 이면 로그인하지 않은 사용자이므로 isLiked = null
+      Boolean isLiked = true; // 실제로는 유저에서 게시글마다 찜 여부를 호출해와야 함.
+      return new PostResponse(post, isLiked);
+    });
   }
 
   // post 상태 자동 업데이트
