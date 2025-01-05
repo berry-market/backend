@@ -6,6 +6,7 @@ import com.berry.delivery.application.DeliveryService;
 import com.berry.delivery.domain.model.DeliveryStatus;
 import com.berry.delivery.presentation.dto.DeliveryDto;
 import com.berry.delivery.presentation.dto.request.DeliveryCreateRequest;
+import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
 import com.berry.delivery.presentation.dto.response.DeliverySearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,13 @@ public class DeliveryController {
     public ResponseEntity<ApiResponse<?>> getDelivery(@PathVariable Long deliveryId) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, deliveryService.getDelivery(deliveryId)));
    }
+
+   @PatchMapping("/{deliveryId}")
+   public ResponseEntity<ApiResponse<?>> updateDelivery(@PathVariable Long deliveryId, @Valid @RequestBody DeliveryUpdateRequest req) {
+        deliveryService.updateDelivery(deliveryId, req);
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED,"배송이 수정되었습니다."));
+   }
+
 
    @DeleteMapping("/{deliveryId}")
     public ResponseEntity<ApiResponse<?>> deleteDelivery(@PathVariable Long deliveryId) {
