@@ -132,6 +132,7 @@ public class PostServiceImpl implements PostService {
     return new PostServerResponse(post);
   }
 
+  @Override
   @Transactional
   public void updatePost(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile productImage, List<MultipartFile> productDetailsImages)
       throws IOException {
@@ -175,6 +176,27 @@ public class PostServiceImpl implements PostService {
             .build();
         productDetailsImagesRepository.save(productDetailsImage);
       }
+    }
+  }
+
+  @Override
+  @Transactional
+  public void deletePost(Long postId) {
+    Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+    );
+
+    // todo 본인이 작성한 게시글인지 검증
+
+    // post 삭제 처리
+    post.markAsDeleted();
+    postRepository.save(post);
+
+    // productDetailsImage 삭제 처리
+    List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
+    for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
+      productDetailsImage.markAsDeleted();
+      productDetailsImagesRepository.save(productDetailsImage);
     }
   }
 

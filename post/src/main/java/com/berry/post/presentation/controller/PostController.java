@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -71,6 +72,12 @@ public class PostController {
       ) throws IOException {
     postServiceImpl.updatePost(postId, postUpdateRequest, productImage, productDetailsImages);
     return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "게시글이 수정되었습니다."));
+  }
+
+  @PutMapping("/{postId}")
+  public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
+    postServiceImpl.deletePost(postId);
+    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "게시글이 삭제되었습니다."));
   }
 
 
