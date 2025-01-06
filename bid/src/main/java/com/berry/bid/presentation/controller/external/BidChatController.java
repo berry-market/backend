@@ -1,6 +1,6 @@
 package com.berry.bid.presentation.controller.external;
 
-import com.berry.bid.application.dto.bidchat.BidChatCreate;
+import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
 import com.berry.bid.application.model.cache.BidChat;
 import com.berry.bid.domain.service.BidChatService;
 import lombok.RequiredArgsConstructor;

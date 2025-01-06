@@ -1,8 +1,9 @@
 package com.berry.bid.application.service.consumer;
 
-import com.berry.bid.application.model.cache.BidChat;
+import com.berry.bid.application.model.event.UserEvent;
 
 public interface BidChatProducerService {
 
-    void produceBidChat(BidChat bidChat);
+    void sendUserEvent(UserEvent.Bidding event);
+
 }
