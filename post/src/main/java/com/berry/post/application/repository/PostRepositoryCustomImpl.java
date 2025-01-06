@@ -1,5 +1,6 @@
 package com.berry.post.application.repository;
 
+import com.berry.post.domain.repository.PostRepositoryCustom;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.QPost;
 import com.querydsl.core.BooleanBuilder;

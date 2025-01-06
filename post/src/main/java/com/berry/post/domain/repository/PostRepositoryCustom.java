@@ -1,4 +1,4 @@
-package com.berry.post.application.repository;
+package com.berry.post.domain.repository;
 
 import com.berry.post.domain.model.Post;
 import org.springframework.data.domain.Page;
