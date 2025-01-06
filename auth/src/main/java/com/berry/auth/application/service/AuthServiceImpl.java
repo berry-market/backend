@@ -2,6 +2,7 @@ package com.berry.auth.application.service;
 
 import com.berry.auth.application.dto.TokenValidResDto;
 import com.berry.auth.domain.model.Role;
+import com.berry.auth.domain.repository.AuthRepository;
 import com.berry.auth.infrastructure.client.UserClient;
 import com.berry.auth.infrastructure.security.dto.UserResDto;
 import com.berry.auth.infrastructure.security.jwt.JwtTokenFactory;
@@ -22,6 +23,31 @@ public class AuthServiceImpl implements AuthService {
   private final JwtTokenValidator jwtTokenValidator;
   private final JwtTokenFactory jwtTokenFactory;
   private final UserClient userClient;
+  private final AuthRepository authRepository;
+
+  @Override
+  @Transactional
+  public void logout(String accessToken) {
+    Long userId = jwtTokenParser.getUserId(accessToken);
+
+    // 리프레시 토큰 삭제
+    boolean tokenDeleted = authRepository.deleteRefreshToken(userId);
+    if (!tokenDeleted) {
+      throw new CustomApiException(ResErrorCode.BAD_REQUEST, "리프레시토큰 삭제를 실패하였습니다.");
+    }
+
+    // 액세스 토큰 남은시간 계산
+    long remainingExpiration = jwtTokenParser.getExpiration(accessToken) - System.currentTimeMillis();
+    if (remainingExpiration <= 0) {
+      throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "액세스토큰이 이미 만료되었습니다.");
+    }
+
+    // 액세스 토큰 블랙리스트 추가
+    boolean isBlacklisted = authRepository.addToBlacklist(accessToken, remainingExpiration);
+    if (!isBlacklisted) {
+      throw new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR, "액세스토큰 블랙리스트 등록에 실패하였습니다.");
+    }
+  }
 
   @Override
   @Transactional
