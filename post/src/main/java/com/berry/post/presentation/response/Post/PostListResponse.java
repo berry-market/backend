@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class PostResponse {
+public class PostListResponse {
   private Long categoryId;
   private String productName;
   private Integer immediatePrice;
@@ -17,7 +17,7 @@ public class PostResponse {
   private Integer viewCount;
   private Boolean isLiked;
 
-  public PostResponse(Post post, Boolean isLiked) {
+  public PostListResponse(Post post, Boolean isLiked) {
     this.categoryId = post.getPostCategoryId();
     this.productName = post.getProductName();
     this.immediatePrice = post.getImmediatePrice();
