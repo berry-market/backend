@@ -9,15 +9,14 @@ import com.berry.post.domain.model.ProductStatus;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
+import com.berry.post.presentation.request.Post.PostUpdateRequest;
 import com.berry.post.presentation.response.Post.PostDetailsResponse;
 import com.berry.post.presentation.response.Post.PostListResponse;
 import com.berry.post.presentation.response.Post.PostServerResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -133,6 +132,53 @@ public class PostServiceImpl implements PostService {
     return new PostServerResponse(post);
   }
 
+  @Transactional
+  public void updatePost(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile productImage, List<MultipartFile> productDetailsImages)
+      throws IOException {
+
+    LocalDateTime auctionStartedAt = postUpdateRequest.getAuctionStartedAt();
+    LocalDateTime auctionEndedAt = postUpdateRequest.getAuctionEndedAt();
+    if (auctionStartedAt != null && auctionEndedAt != null) {
+      if (auctionStartedAt.isAfter(auctionEndedAt) || auctionStartedAt.isEqual(auctionEndedAt)) {
+        throw new CustomApiException(ResErrorCode.BAD_REQUEST, "경매 종료 날짜를 시작 날짜 이후로 조정해주세요.");
+      }
+    }
+
+    Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+    );
+
+    // todo 본인이 작성한 게시글인지 검증
+
+    // Post 에 먼저 단일 이미지 저장
+    if (productImage != null) {
+      String productImageUrl = imageUploadService.upload(productImage);
+      post.updateProductImage(productImageUrl);
+    }
+
+    // post 업데이트
+    post.updateProduct(postUpdateRequest);
+    postRepository.save(post);
+
+    // 기존 다중 이미지 삭제 후 다시 저장
+    if (productDetailsImages != null) {
+      List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
+      productDetailsImagesRepository.deleteAll(savedProductDetailsImages);
+
+      for (int i = 0; i < productDetailsImages.size(); i++) {
+        MultipartFile detailsImage = productDetailsImages.get(i);
+        String productDetailsImageUrl = imageUploadService.upload(detailsImage);
+        ProductDetailsImages productDetailsImage = ProductDetailsImages.builder()
+            .postId(post.getId())
+            .productDetailsImage(productDetailsImageUrl)
+            .sequence(i)
+            .build();
+        productDetailsImagesRepository.save(productDetailsImage);
+      }
+    }
+  }
+
+
   // post 상태 자동 업데이트
   @Scheduled(fixedRate = 60000)  // 1분
   public void updateProductStatus() {
@@ -152,5 +198,4 @@ public class PostServiceImpl implements PostService {
       postRepository.save(productStatusToClose);
     }
   }
-
 }

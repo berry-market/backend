@@ -1,6 +1,7 @@
 package com.berry.post.domain.model;
 
 import com.berry.common.auditor.BaseEntity;
+import com.berry.post.presentation.request.Post.PostUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -90,5 +91,35 @@ public class Post extends BaseEntity {
 
   public void minusLikeCount() {
     this.likeCount--;
+  }
+
+  public void updateProduct(PostUpdateRequest postUpdateRequest) {
+    if (postUpdateRequest.getPostCategoryId() != null) {
+      this.postCategoryId = postUpdateRequest.getPostCategoryId();
+    }
+    if (postUpdateRequest.getProductName() != null) {
+      this.productName = postUpdateRequest.getProductName();
+    }
+    if (postUpdateRequest.getProductContent() != null) {
+      this.productContent = postUpdateRequest.getProductContent();
+    }
+    if (postUpdateRequest.getAuctionStartedAt() != null) {
+      this.auctionStartedAt = postUpdateRequest.getAuctionStartedAt();
+    }
+    if (postUpdateRequest.getAuctionEndedAt() != null) {
+      this.auctionEndedAt = postUpdateRequest.getAuctionEndedAt();
+    }
+    if (postUpdateRequest.getDeliveryMethod() != null) {
+      this.deliveryMethod = postUpdateRequest.getDeliveryMethod();
+    }
+    if (postUpdateRequest.getDeliveryFee() != null) {
+      this.deliveryFee = postUpdateRequest.getDeliveryFee();
+    }
+  }
+
+  public void updateProductImage(String productImage) {
+    if (productImage != null) {
+      this.productImage = productImage;
+    }
   }
 }
