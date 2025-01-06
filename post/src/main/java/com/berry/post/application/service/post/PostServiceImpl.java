@@ -85,7 +85,7 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable) {
 
     Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort, pageable);
@@ -98,7 +98,7 @@ public class PostServiceImpl implements PostService {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public PostDetailsResponse getPost(Long postId) {
     Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
@@ -117,7 +117,7 @@ public class PostServiceImpl implements PostService {
     // todo bid 에서 낙찰 됐으면 낙찰 가격 띄워주고 그 전까진 null
     Integer bidPrice = null;
 
-    post.updateViewCount();
+    post.updateViewCount(); // 서버 호출시엔 viewCount 를 세지 않도록 개선해야 함
     postRepository.save(post);
 
     return new PostDetailsResponse(post, productDetailsImages, isLiked, writerNickName, bidPrice);
