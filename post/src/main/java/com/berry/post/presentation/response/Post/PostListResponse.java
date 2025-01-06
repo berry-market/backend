@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class PostListResponse {
-  private Long categoryId;
+  private Long postCategoryId;
   private String productName;
   private Integer immediatePrice;
   private LocalDateTime auctionStartedAt;
@@ -18,7 +18,7 @@ public class PostListResponse {
   private Boolean isLiked;
 
   public PostListResponse(Post post, Boolean isLiked) {
-    this.categoryId = post.getPostCategoryId();
+    this.postCategoryId = post.getPostCategoryId();
     this.productName = post.getProductName();
     this.immediatePrice = post.getImmediatePrice();
     this.auctionStartedAt = post.getAuctionStartedAt();

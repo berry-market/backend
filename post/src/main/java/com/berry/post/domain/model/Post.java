@@ -79,4 +79,8 @@ public class Post extends BaseEntity {
   public void updateProductStatus(ProductStatus productStatus) {
     this.productStatus = productStatus;
   }
+
+  public void updateViewCount() {
+    this.viewCount++;
+  }
 }
