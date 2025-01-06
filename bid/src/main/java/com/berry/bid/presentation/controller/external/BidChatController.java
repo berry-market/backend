@@ -17,7 +17,7 @@ public class BidChatController {
     private final BidChatService bidChatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/api/v1/post/{postId}/bids-chat")
+    @MessageMapping("/api/v1/posts/{postId}/bids-chat")
     public void createBidChat(@DestinationVariable Long postId,
                               @Payload BidChatCreate.Request bidChatCreate) {
 
