@@ -1,8 +1,9 @@
 package com.berry.post.application.service.post;
 
 import com.berry.post.presentation.request.Post.PostCreateRequest;
-import com.berry.post.presentation.response.Post.PostResponse;
-import com.querydsl.core.types.Predicate;
+import com.berry.post.presentation.response.Post.PostDetailsResponse;
+import com.berry.post.presentation.response.Post.PostListResponse;
+import com.berry.post.presentation.response.Post.PostServerResponse;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -14,5 +15,9 @@ public interface PostService {
   void createPost(PostCreateRequest postCreateRequest,
       MultipartFile multipartFile, List<MultipartFile> multipartFileList) throws IOException;
 
-  Page<PostResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable);
+  Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable);
+
+  PostDetailsResponse getPost(Long postId);
+
+  PostServerResponse getServerPost(Long postId);
 }
