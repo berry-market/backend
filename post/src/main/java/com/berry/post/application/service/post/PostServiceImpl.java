@@ -6,13 +6,18 @@ import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
-import com.berry.post.domain.repository.PostRepository;
+import com.berry.post.domain.repository.post.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
+import com.berry.post.domain.repository.post.PostRepositoryCustomImpl;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
+import com.berry.post.presentation.response.Post.PostResponse;
+import com.querydsl.core.types.Predicate;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +78,19 @@ public class PostServiceImpl implements PostService {
           .build();
       productDetailsImagesRepository.save(productDetailsImage);
     }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<PostResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable) {
+
+    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort, pageable);
+
+    return posts.map(post -> {
+      // todo postId 마다 해당 유저의 찜 여부 확인하고 각각 response 에 추가. userId가 null 이면 로그인하지 않은 사용자이므로 isLiked = null
+      Boolean isLiked = true; // 실제로는 유저에서 게시글마다 찜 여부를 호출해와야 함.
+      return new PostResponse(post, isLiked);
+    });
   }
 
   // post 상태 자동 업데이트
