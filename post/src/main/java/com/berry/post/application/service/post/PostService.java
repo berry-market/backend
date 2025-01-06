@@ -3,6 +3,7 @@ package com.berry.post.application.service.post;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.response.Post.PostDetailsResponse;
 import com.berry.post.presentation.response.Post.PostListResponse;
+import com.berry.post.presentation.response.Post.PostServerResponse;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -17,4 +18,6 @@ public interface PostService {
   Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable);
 
   PostDetailsResponse getPost(Long postId);
+
+  PostServerResponse getServerPost(Long postId);
 }

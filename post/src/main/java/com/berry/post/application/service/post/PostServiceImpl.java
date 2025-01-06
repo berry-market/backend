@@ -11,6 +11,7 @@ import com.berry.post.domain.repository.ProductDetailsImagesRepository;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.response.Post.PostDetailsResponse;
 import com.berry.post.presentation.response.Post.PostListResponse;
+import com.berry.post.presentation.response.Post.PostServerResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -117,10 +118,19 @@ public class PostServiceImpl implements PostService {
     // todo bid 에서 낙찰 됐으면 낙찰 가격 띄워주고 그 전까진 null
     Integer bidPrice = null;
 
-    post.updateViewCount(); // 서버 호출시엔 viewCount 를 세지 않도록 개선해야 함
+    post.updateViewCount();
     postRepository.save(post);
 
     return new PostDetailsResponse(post, productDetailsImages, isLiked, writerNickName, bidPrice);
+  }
+
+  @Override
+  @Transactional
+  public PostServerResponse getServerPost(Long postId) {
+    Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+    );
+    return new PostServerResponse(post);
   }
 
   // post 상태 자동 업데이트
