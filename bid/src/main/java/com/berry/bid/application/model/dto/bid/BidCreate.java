@@ -1,4 +1,4 @@
-package com.berry.bid.application.dto.bid;
+package com.berry.bid.application.model.dto.bid;
 
 import lombok.Getter;
 
