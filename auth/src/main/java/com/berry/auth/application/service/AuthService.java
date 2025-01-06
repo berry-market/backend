@@ -6,5 +6,7 @@ public interface AuthService {
 
   String refreshAccessToken(String refreshToken);
 
+  void logout(String accessToken);
+
   TokenValidResDto validateToken(String accessToken);
 }

@@ -1,5 +1,6 @@
 package com.berry.auth.infrastructure.security.filter;
 
+import com.berry.auth.infrastructure.repository.RedisTokenRepository;
 import com.berry.auth.infrastructure.security.config.FilterConfig;
 import com.berry.auth.infrastructure.security.jwt.JwtAuthenticationToken;
 import com.berry.auth.infrastructure.security.jwt.JwtTokenValidator;
@@ -26,6 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtFilter extends OncePerRequestFilter {
 
   private final JwtTokenValidator jwtTokenValidator;
+  private final RedisTokenRepository redisTokenRepository;
 
   // 필터 제외 경로
   @Override
@@ -49,6 +51,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     try {
       String accessToken = authHeader.substring(7);
+
+      // 블랙리스트 확인
+      if (redisTokenRepository.isBlacklisted(accessToken)) {
+        throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "Access token is blacklisted");
+      }
 
       // 액세스 토큰 유효성 검증
       jwtTokenValidator.validateAccessToken(accessToken);
