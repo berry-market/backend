@@ -107,7 +107,6 @@ public class PostServiceImpl implements PostService {
     List<String> productDetailsImages = new ArrayList<>();
     List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
     for (ProductDetailsImages savedProductDetailsImage : savedProductDetailsImages) {
-      log.info("Sequence 순서 확인"+savedProductDetailsImage.getSequence());
       productDetailsImages.add(savedProductDetailsImage.getProductDetailsImage());
     }
 
