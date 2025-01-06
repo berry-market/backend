@@ -1,18 +1,17 @@
-package com.berry.bid.application.dto.bidchat;
+package com.berry.bid.application.model.dto.bidchat;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 public class BidChatCreate {
 
     @Getter
-    @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class Request {
 
-        private final int amount;
+        private int amount;
 
     }
 

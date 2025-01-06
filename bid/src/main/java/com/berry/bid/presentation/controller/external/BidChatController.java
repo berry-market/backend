@@ -1,6 +1,6 @@
 package com.berry.bid.presentation.controller.external;
 
-import com.berry.bid.application.dto.bidchat.BidChatCreate;
+import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
 import com.berry.bid.application.model.cache.BidChat;
 import com.berry.bid.domain.service.BidChatService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class BidChatController {
     private final BidChatService bidChatService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/api/v1/post/{postId}/bids-chat")
+    @MessageMapping("/api/v1/posts/{postId}/bids-chat")
     public void createBidChat(@DestinationVariable Long postId,
                               @Payload BidChatCreate.Request bidChatCreate) {
 
