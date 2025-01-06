@@ -1,4 +1,4 @@
-package com.berry.post.application.service;
+package com.berry.post.application.service.postCategory;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;

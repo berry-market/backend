@@ -1,4 +1,4 @@
-package com.berry.post.application.service;
+package com.berry.post.application.service.review;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
