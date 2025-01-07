@@ -206,7 +206,7 @@ public class PostServiceImpl implements PostService {
     LocalDateTime now = LocalDateTime.now();
 
     List<Post> productStatusToStarts =
-        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.ACTIVE);
+        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusAndDeletedYNFalse(now, ProductStatus.PENDING);
     for (Post productStatusToStart : productStatusToStarts) {
       productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
       Post savedPost = postRepository.save(productStatusToStart);
