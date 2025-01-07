@@ -34,6 +34,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
       new Route("POST", "/api/v1/auth/login"),
       new Route("POST", "/api/v1/users/signup"),
       new Route("GET", "/api/v1/posts/**"),
+      new Route("GET", "/api/v1/categories/**"),
       new Route("GET", "/api/v1/reviews/**")
   );
 
