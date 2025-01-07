@@ -94,26 +94,54 @@ public class Post extends BaseEntity {
   }
 
   public void updateProduct(PostUpdateRequest postUpdateRequest) {
-    if (postUpdateRequest.getPostCategoryId() != null) {
-      this.postCategoryId = postUpdateRequest.getPostCategoryId();
+    updatePostCategoryId(postUpdateRequest.getPostCategoryId());
+    updateProductName(postUpdateRequest.getProductName());
+    updateProductContent(postUpdateRequest.getProductContent());
+    updateAuctionStartedAt(postUpdateRequest.getAuctionStartedAt());
+    updateAuctionEndedAt(postUpdateRequest.getAuctionEndedAt());
+    updateDeliveryMethod(postUpdateRequest.getDeliveryMethod());
+    updateDeliveryFee(postUpdateRequest.getDeliveryFee());
+  }
+
+  private void updatePostCategoryId(Long postCategoryId) {
+    if (postCategoryId != null) {
+      this.postCategoryId = postCategoryId;
     }
-    if (postUpdateRequest.getProductName() != null) {
-      this.productName = postUpdateRequest.getProductName();
+  }
+
+  private void updateProductName(String productName) {
+    if (productName != null) {
+      this.productName = productName;
     }
-    if (postUpdateRequest.getProductContent() != null) {
-      this.productContent = postUpdateRequest.getProductContent();
+  }
+
+  private void updateProductContent(String productContent) {
+    if (productContent != null) {
+      this.productContent = productContent;
     }
-    if (postUpdateRequest.getAuctionStartedAt() != null) {
-      this.auctionStartedAt = postUpdateRequest.getAuctionStartedAt();
+  }
+
+  private void updateAuctionStartedAt(LocalDateTime auctionStartedAt) {
+    if (auctionStartedAt != null) {
+      this.auctionStartedAt = auctionStartedAt;
     }
-    if (postUpdateRequest.getAuctionEndedAt() != null) {
-      this.auctionEndedAt = postUpdateRequest.getAuctionEndedAt();
+  }
+
+  private void updateAuctionEndedAt(LocalDateTime auctionEndedAt) {
+    if (auctionEndedAt != null) {
+      this.auctionEndedAt = auctionEndedAt;
     }
-    if (postUpdateRequest.getDeliveryMethod() != null) {
-      this.deliveryMethod = postUpdateRequest.getDeliveryMethod();
+  }
+
+  private void updateDeliveryMethod(String deliveryMethod) {
+    if (deliveryMethod != null) {
+      this.deliveryMethod = deliveryMethod;
     }
-    if (postUpdateRequest.getDeliveryFee() != null) {
-      this.deliveryFee = postUpdateRequest.getDeliveryFee();
+  }
+
+  private void updateDeliveryFee(Integer deliveryFee) {
+    if (deliveryFee != null) {
+      this.deliveryFee = deliveryFee;
     }
   }
 
