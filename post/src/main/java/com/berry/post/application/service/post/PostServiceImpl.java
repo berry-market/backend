@@ -170,16 +170,7 @@ public class PostServiceImpl implements PostService {
       List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
       productDetailsImagesRepository.deleteAll(savedProductDetailsImages);
 
-      for (int i = 0; i < productDetailsImages.size(); i++) {
-        MultipartFile detailsImage = productDetailsImages.get(i);
-        String productDetailsImageUrl = imageUploadService.upload(detailsImage);
-        ProductDetailsImages productDetailsImage = ProductDetailsImages.builder()
-            .postId(post.getId())
-            .productDetailsImage(productDetailsImageUrl)
-            .sequence(i)
-            .build();
-        productDetailsImagesRepository.save(productDetailsImage);
-      }
+      saveProductDetailsImages(productDetailsImages, post);
     }
   }
 
@@ -194,12 +185,24 @@ public class PostServiceImpl implements PostService {
 
     // post 삭제 처리
     post.markAsDeleted();
-    postRepository.save(post);
 
     // productDetailsImage 삭제 처리
     List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
     for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
       productDetailsImage.markAsDeleted();
+    }
+  }
+
+  private void saveProductDetailsImages(List<MultipartFile> productDetailsImages, Post savedPost)
+      throws IOException {
+    for (int i = 0; i < productDetailsImages.size(); i++) {
+      MultipartFile detailsImage = productDetailsImages.get(i);
+      String productDetailsImageUrl = imageUploadService.upload(detailsImage);
+      ProductDetailsImages productDetailsImage = ProductDetailsImages.builder()
+          .postId(savedPost.getId())
+          .productDetailsImage(productDetailsImageUrl)
+          .sequence(i)
+          .build();
       productDetailsImagesRepository.save(productDetailsImage);
     }
   }
