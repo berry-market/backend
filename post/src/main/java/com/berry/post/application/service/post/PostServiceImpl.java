@@ -3,6 +3,9 @@ package com.berry.post.application.service.post;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.application.event.BidEvent;
+import com.berry.post.application.event.BidEventMessage;
+import com.berry.post.application.event.BidEventMessage.BidPostEvent;
+import com.berry.post.application.service.consumer.PostConsumerServiceImpl;
 import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.application.service.producer.PostProducerServiceImpl;
 import com.berry.post.domain.model.Post;
@@ -37,6 +40,7 @@ public class PostServiceImpl implements PostService {
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
+  private final PostConsumerServiceImpl postConsumerService;
 
   @Override
   @Transactional
@@ -118,13 +122,11 @@ public class PostServiceImpl implements PostService {
     Boolean isLiked = true;
     // todo 작성자 Id로 유저 받아오고 해당 작성자의 닉네임 와서 각 response 에 추가.
     String writerNickName = "berry";
-    // todo bid 에서 낙찰 됐으면 낙찰 가격 띄워주고 그 전까진 null
-    Integer bidPrice = null;
 
     post.updateViewCount();
     postRepository.save(post);
 
-    return new PostDetailsResponse(post, productDetailsImages, isLiked, writerNickName, bidPrice);
+    return new PostDetailsResponse(post, productDetailsImages, isLiked, writerNickName);
   }
 
   @Override

@@ -10,7 +10,7 @@ public class BidEvent {
   @Getter
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
   public static class PostBidEvent {
-    Long Id;
+    Long postId;
     Long writerId;
 
     public static PostBidEvent from(Post post) {

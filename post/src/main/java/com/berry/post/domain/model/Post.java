@@ -77,6 +77,9 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private Integer viewCount;
 
+  @Column
+  private Integer bidPrice;
+
   public void updateProductStatus(ProductStatus productStatus) {
     this.productStatus = productStatus;
   }
@@ -121,5 +124,9 @@ public class Post extends BaseEntity {
     if (productImage != null) {
       this.productImage = productImage;
     }
+  }
+
+  public void updateBidPrice(Integer successfulBidPrice) {
+    this.bidPrice = successfulBidPrice;
   }
 }
