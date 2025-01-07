@@ -2,6 +2,7 @@ package com.berry.delivery.application;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.common.role.RoleCheck;
 import com.berry.delivery.domain.model.Delivery;
 import com.berry.delivery.domain.model.DeliveryStatus;
 import com.berry.delivery.domain.repository.DeliveryRepository;
@@ -34,7 +35,6 @@ public class DeliveryService {
                 .receiverId(req.receiverId())
                 .senderId(req.senderId())
                 .bidId(req.bidId())
-                .address(req.address())
                 .status(DeliveryStatus.READY)
                 .build();
 
@@ -115,6 +115,7 @@ public class DeliveryService {
     }
 
     @Transactional
+    @RoleCheck(value = {"ADMIN"})
     public void deleteDelivery(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 배송입니다."));

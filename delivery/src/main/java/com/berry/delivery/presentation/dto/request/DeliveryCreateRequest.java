@@ -7,18 +7,6 @@ public record DeliveryCreateRequest(
         Long deliveryId,
         Long receiverId,
         Long senderId,
-        Long bidId,
-        String address,
-        String status
+        Long bidId
         ) {
-    public static DeliveryDto toDto(DeliveryCreateRequest request){
-        return DeliveryDto.builder()
-                .deliveryId(request.deliveryId())
-                .receiverId(request.receiverId())
-                .senderId(request.senderId())
-                .bidId(request.bidId())
-                .address(request.address())
-                .status(DeliveryStatus.READY)
-                .build();
-    }
 }
