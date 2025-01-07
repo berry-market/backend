@@ -100,12 +100,17 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
         .header("Refresh-Token", refreshToken)
         .retrieve()
         .bodyToMono(String.class)
-        .flatMap(newAccessToken -> addHeaders(exchange, chain, newAccessToken))
+        .flatMap(newAccessToken -> {
+          // 응답 헤더에 새 액세스 토큰 추가
+          exchange.getResponse().getHeaders().add("New-Access-Token", newAccessToken);
+
+          return addHeaders(exchange, chain, newAccessToken);
+        })
         .onErrorResume(ex -> Mono.error(
             new GatewayException(HttpStatus.UNAUTHORIZED, "Failed to refresh access token")));
   }
 
-  // 유저정보 및 액세스토큰 헤더 추가
+  // 요청 헤더에 유저정보 및 액세스토큰 추가
   private Mono<Void> addHeaders(ServerWebExchange exchange, GatewayFilterChain chain,
       String accessToken) {
     Claims claims = extractClaims(accessToken);
