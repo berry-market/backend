@@ -1,6 +1,7 @@
 package com.berry.post.domain.model;
 
 import com.berry.common.auditor.BaseEntity;
+import com.berry.post.presentation.request.Post.PostUpdateRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -90,5 +91,63 @@ public class Post extends BaseEntity {
 
   public void minusLikeCount() {
     this.likeCount--;
+  }
+
+  public void updateProduct(PostUpdateRequest postUpdateRequest) {
+    updatePostCategoryId(postUpdateRequest.getPostCategoryId());
+    updateProductName(postUpdateRequest.getProductName());
+    updateProductContent(postUpdateRequest.getProductContent());
+    updateAuctionStartedAt(postUpdateRequest.getAuctionStartedAt());
+    updateAuctionEndedAt(postUpdateRequest.getAuctionEndedAt());
+    updateDeliveryMethod(postUpdateRequest.getDeliveryMethod());
+    updateDeliveryFee(postUpdateRequest.getDeliveryFee());
+  }
+
+  private void updatePostCategoryId(Long postCategoryId) {
+    if (postCategoryId != null) {
+      this.postCategoryId = postCategoryId;
+    }
+  }
+
+  private void updateProductName(String productName) {
+    if (productName != null) {
+      this.productName = productName;
+    }
+  }
+
+  private void updateProductContent(String productContent) {
+    if (productContent != null) {
+      this.productContent = productContent;
+    }
+  }
+
+  private void updateAuctionStartedAt(LocalDateTime auctionStartedAt) {
+    if (auctionStartedAt != null) {
+      this.auctionStartedAt = auctionStartedAt;
+    }
+  }
+
+  private void updateAuctionEndedAt(LocalDateTime auctionEndedAt) {
+    if (auctionEndedAt != null) {
+      this.auctionEndedAt = auctionEndedAt;
+    }
+  }
+
+  private void updateDeliveryMethod(String deliveryMethod) {
+    if (deliveryMethod != null) {
+      this.deliveryMethod = deliveryMethod;
+    }
+  }
+
+  private void updateDeliveryFee(Integer deliveryFee) {
+    if (deliveryFee != null) {
+      this.deliveryFee = deliveryFee;
+    }
+  }
+
+  public void updateProductImage(String productImage) {
+    if (productImage != null) {
+      this.productImage = productImage;
+    }
   }
 }

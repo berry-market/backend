@@ -19,7 +19,7 @@ public class PostCreateRequest {
   private Long writerId;
 
   @NotBlank(message = "상품 이름은 필수입니다.")
-  @Size(max = 100, message = "ㅇㅇ 글자 이내로 작성해주세요.")
+  @Size(max = 100, message = "100 글자 이내로 작성해주세요.")
   private String productName;
 
   @NotBlank(message = "상품 설명은 필수입니다.")
@@ -44,10 +44,4 @@ public class PostCreateRequest {
 
   @NotNull(message = "배달비 선택은 필수입니다.")
   private Integer deliveryFee;
-
-  private MultipartFile productImage;
-
-  private List<MultipartFile> productDetailsImages;
-
-
 }
