@@ -190,13 +190,11 @@ public class PostServiceImpl implements PostService {
 
     // post 삭제 처리
     post.markAsDeleted();
-    postRepository.save(post);
 
     // productDetailsImage 삭제 처리
     List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
     for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
       productDetailsImage.markAsDeleted();
-      productDetailsImagesRepository.save(productDetailsImage);
     }
   }
 
