@@ -10,10 +10,12 @@ public class BidUpdateEvent {
   @Getter
   @AllArgsConstructor(access = AccessLevel.PRIVATE)
   public static class PostBidUpdateEvent {
+
+    Long postId;
     String productStatus;
 
     public static PostBidUpdateEvent from(Post post) {
-      return new PostBidUpdateEvent(post.getProductStatus()+"");
+      return new PostBidUpdateEvent(post.getId(),post.getProductStatus()+"");
     }
   }
 
