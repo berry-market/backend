@@ -2,9 +2,8 @@ package com.berry.post.application.service.post;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
-import com.berry.post.application.event.BidEvent;
-import com.berry.post.application.event.BidEventMessage;
-import com.berry.post.application.event.BidEventMessage.BidPostEvent;
+import com.berry.post.application.event.BidCreateEvent.PostBidCreateEvent;
+import com.berry.post.application.event.BidUpdateEvent.PostBidUpdateEvent;
 import com.berry.post.application.service.consumer.PostConsumerServiceImpl;
 import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.application.service.producer.PostProducerServiceImpl;
@@ -40,7 +39,6 @@ public class PostServiceImpl implements PostService {
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
-  private final PostConsumerServiceImpl postConsumerService;
 
   @Override
   @Transactional
@@ -89,7 +87,7 @@ public class PostServiceImpl implements PostService {
           .build();
       productDetailsImagesRepository.save(productDetailsImage);
     }
-    sendPostEventToBid(BidEvent.PostBidEvent.from(savedPost));
+    sendPostCreateEventToBid(PostBidCreateEvent.from(savedPost));
   }
 
   @Override
@@ -208,7 +206,6 @@ public class PostServiceImpl implements PostService {
 
   // ------------------------
 
-
   // post 상태 자동 업데이트
   @Scheduled(fixedRate = 60000)  // 1분
   public void updateProductStatus() {
@@ -218,18 +215,24 @@ public class PostServiceImpl implements PostService {
         postRepository.findAllByAuctionStartedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.ACTIVE);
     for (Post productStatusToStart : productStatusToStarts) {
       productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
-      postRepository.save(productStatusToStart);
+      Post savedPost = postRepository.save(productStatusToStart);
+      sendPostUpdateEventToBid(PostBidUpdateEvent.from(savedPost));
     }
 
     List<Post> productStatusToCloses =
         postRepository.findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.CLOSED);
     for (Post productStatusToClose : productStatusToCloses) {
       productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
-      postRepository.save(productStatusToClose);
+      Post savedPost = postRepository.save(productStatusToClose);
+      sendPostUpdateEventToBid(PostBidUpdateEvent.from(savedPost));
     }
   }
 
-  private void sendPostEventToBid(BidEvent.PostBidEvent event) {
-    postProducerService.sendPostEvent(event);
+  private void sendPostCreateEventToBid(PostBidCreateEvent event) {
+    postProducerService.sendPostCreateEvent(event);
+  }
+
+  private void sendPostUpdateEventToBid(PostBidUpdateEvent event) {
+    postProducerService.sendPostUpdateEvent(event);
   }
 }

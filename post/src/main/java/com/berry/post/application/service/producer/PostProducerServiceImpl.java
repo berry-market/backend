@@ -1,6 +1,7 @@
 package com.berry.post.application.service.producer;
 
-import com.berry.post.application.event.BidEvent.PostBidEvent;
+import com.berry.post.application.event.BidCreateEvent.PostBidCreateEvent;
+import com.berry.post.application.event.BidUpdateEvent.PostBidUpdateEvent;
 import com.berry.post.infrastructure.model.KafkaTopic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -13,7 +14,12 @@ public class PostProducerServiceImpl implements PostProducerService {
   private final KafkaTemplate<String, Object> kafkaTemplate;
 
   @Override
-  public void sendPostEvent(PostBidEvent event) {
-    kafkaTemplate.send(KafkaTopic.BID_EVENTS.getTopicName(), event);
+  public void sendPostCreateEvent(PostBidCreateEvent event) {
+    kafkaTemplate.send(KafkaTopic.BID_EVENTS.getTopicName(), "create", event);
+  }
+
+  @Override
+  public void sendPostUpdateEvent(PostBidUpdateEvent event) {
+    kafkaTemplate.send(KafkaTopic.BID_EVENTS.getTopicName(), "update", event);
   }
 }
