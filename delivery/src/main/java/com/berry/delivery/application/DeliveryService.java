@@ -11,9 +11,14 @@ import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
 import com.berry.delivery.presentation.dto.response.DeliverySearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -37,22 +42,70 @@ public class DeliveryService {
     }
 
     @Transactional
-    public Page<DeliveryDto> getAllDelivery(Pageable pageable) {
-        Page<Delivery> deliveries = deliveryRepository.findAll(pageable);
+    public Page<DeliveryDto> getAllDelivery(
+            Long deliveryId,
+            Long receiverId,
+            Long senderId,
+            Long bidId,
+            DeliveryStatus deliveryStatus,
+            Pageable pageable,
+            String sortType
+    ) {
+        // 페이지 사이즈 제한
+        int[] allowedPageSizes = {10, 30, 50};
+        int pageSize = pageable.getPageSize();
+
+        // 허용되지 않은 페이지 사이즈일 경우 기본값 10으로 설정
+        if (!Arrays.stream(allowedPageSizes).anyMatch(size -> size == pageSize)) {
+            pageable = PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort());
+        }
+
+        // 정렬 로직 추가
+        Sort sort = determineSort(sortType);
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        Page<Delivery> deliveries = deliveryRepository.searchDelivery(
+                deliveryId,
+                receiverId,
+                senderId,
+                bidId,
+                deliveryStatus,
+                pageable
+        );
+
         return deliveries.map(DeliveryDto::from);
+    }
+
+    // 정렬 타입에 따른 Sort 결정 메서드
+    private Sort determineSort(String sortType) {
+        if (StringUtils.isEmpty(sortType)) {
+            // 기본 정렬: 생성일 내림차순
+            return Sort.by("createdAt").descending();
+        }
+
+        switch (sortType) {
+            case "createdAtAsc":
+                return Sort.by("createdAt").ascending();
+            case "updatedAtDesc":
+                return Sort.by("updatedAt").descending();
+            case "updatedAtAsc":
+                return Sort.by("updatedAt").ascending();
+            default:
+                return Sort.by("createdAt").descending();
+        }
     }
 
     @Transactional
     public DeliverySearchResponse getDelivery(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
-                .orElseThrow(()->new CustomApiException(ResErrorCode.BAD_REQUEST,"존재하지 않는 배송입니다."));
+                .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 배송입니다."));
         return DeliverySearchResponse.from(delivery);
     }
 
     @Transactional
     public void updateDelivery(Long deliveryId, DeliveryUpdateRequest req) {
         Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId)
-                .orElseThrow(()->new CustomApiException(ResErrorCode.BAD_REQUEST,"존재하지 않는 배송입니다."));
+                .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 배송입니다."));
 
         validateStatusTransition(delivery.getStatus(), req.status());
 
@@ -64,7 +117,7 @@ public class DeliveryService {
     @Transactional
     public void deleteDelivery(Long deliveryId) {
         Delivery delivery = deliveryRepository.findById(deliveryId)
-                .orElseThrow(()->new CustomApiException(ResErrorCode.BAD_REQUEST,"존재하지 않는 배송입니다."));
+                .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 배송입니다."));
 
         delivery.markAsDeleted();
     }
