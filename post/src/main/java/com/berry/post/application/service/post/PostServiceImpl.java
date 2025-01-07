@@ -77,16 +77,7 @@ public class PostServiceImpl implements PostService {
     Post savedPost = postRepository.save(post);
 
     // ProductDetailsImages 에 다중 이미지 저장
-    for (int i = 0; i < productDetailsImages.size(); i++) {
-      MultipartFile detailsImage = productDetailsImages.get(i);
-      String productDetailsImageUrl = imageUploadService.upload(detailsImage);
-      ProductDetailsImages productDetailsImage = ProductDetailsImages.builder()
-          .postId(savedPost.getId())
-          .productDetailsImage(productDetailsImageUrl)
-          .sequence(i)
-          .build();
-      productDetailsImagesRepository.save(productDetailsImage);
-    }
+    saveProductDetailsImages(productDetailsImages, post);
     sendPostCreateEventToBid(PostBidCreateEvent.from(savedPost));
   }
 
@@ -193,6 +184,8 @@ public class PostServiceImpl implements PostService {
     }
   }
 
+  // ------------------------
+
   private void saveProductDetailsImages(List<MultipartFile> productDetailsImages, Post savedPost)
       throws IOException {
     for (int i = 0; i < productDetailsImages.size(); i++) {
@@ -206,8 +199,6 @@ public class PostServiceImpl implements PostService {
       productDetailsImagesRepository.save(productDetailsImage);
     }
   }
-
-  // ------------------------
 
   // post 상태 자동 업데이트
   @Scheduled(fixedRate = 60000)  // 1분
