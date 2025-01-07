@@ -2,8 +2,9 @@ package com.berry.delivery.presentation.dto;
 
 import com.berry.delivery.domain.model.Delivery;
 import com.berry.delivery.domain.model.DeliveryStatus;
-import java.sql.Timestamp;
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 @Builder
 public record DeliveryDto(
@@ -13,11 +14,11 @@ public record DeliveryDto(
         Long bidId,
         String address,
         DeliveryStatus status,
-        Timestamp created_at,
+        LocalDateTime created_at,
         String created_by,
-        Timestamp updated_at,
+        LocalDateTime updated_at,
         String updated_by,
-        Timestamp deleted_at,
+        LocalDateTime deleted_at,
         String deleted_by,
         Boolean deleted_yn
 ) {
@@ -41,11 +42,11 @@ public record DeliveryDto(
                 .bidId(entity.getBidId())
                 .address(entity.getAddress())
                 .status(entity.getStatus())
-                .created_at(Timestamp.valueOf(entity.getCreatedAt()))
+                .created_at(entity.getCreatedAt())
                 .created_by(entity.getCreatedBy())
-                .updated_at(Timestamp.valueOf(entity.getUpdatedAt()))
+                .updated_at(entity.getUpdatedAt())
                 .updated_by(entity.getUpdatedBy())
-                .deleted_at(Timestamp.valueOf(entity.getDeletedAt()))
+                .deleted_at(entity.getDeletedAt())
                 .deleted_by(entity.getDeletedBy())
                 .deleted_yn(entity.isDeletedYN())
                 .build();

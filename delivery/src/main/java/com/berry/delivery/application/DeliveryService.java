@@ -23,10 +23,17 @@ public class DeliveryService {
 
     @Transactional
     public DeliveryDto createDelivery(DeliveryCreateRequest req) {
-        DeliveryDto dto = DeliveryCreateRequest.toDto(req);
 
-        Delivery deliveryEntity = deliveryRepository.save(dto.toEntity(dto));
-        return DeliveryDto.from(deliveryEntity);
+        Delivery delivery = Delivery.builder()
+                .deliveryId(req.deliveryId())
+                .receiverId(req.receiverId())
+                .senderId(req.senderId())
+                .bidId(req.bidId())
+                .address(req.address())
+                .status(DeliveryStatus.READY)
+                .build();
+
+        return DeliveryDto.from(deliveryRepository.save(delivery));
     }
 
     @Transactional
