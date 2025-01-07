@@ -6,8 +6,11 @@ import com.berry.post.domain.model.PostCategory;
 import com.berry.post.domain.repository.PostCategoryRepository;
 import com.berry.post.presentation.request.postCategory.PostCategoryCreateRequest;
 import com.berry.post.presentation.request.postCategory.PostCategoryUpdateRequest;
+import com.berry.post.presentation.response.postCategory.PostCategoryNavigationResponse;
 import com.berry.post.presentation.response.postCategory.PostCategoryResponse;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -63,7 +66,7 @@ public class PostCategoryService {
     }
 
     PostCategory savedPostCategory = postCategoryRepository.findByIdAndDeletedYNFalse(categoryId)
-        .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 카테고리 아이디입니다."));
+        .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "존재하지 않는 카테고리 아이디입니다."));
 
     savedPostCategory.updateCategoryName(postCategoryUpdateRequest.getNewCategoryName());
 
@@ -73,8 +76,16 @@ public class PostCategoryService {
   @Transactional
   public void deletePostCategory(Long categoryId) {
     PostCategory savedPostCategory = postCategoryRepository.findByIdAndDeletedYNFalse(categoryId)
-        .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 카테고리 아이디입니다."));
+        .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "존재하지 않는 카테고리 아이디입니다."));
 
     savedPostCategory.markAsDeleted();
+  }
+
+  @Transactional(readOnly = true)
+  public List<PostCategoryNavigationResponse> getNavigations() {
+    List<PostCategory> postCategories = postCategoryRepository.findAllByDeletedYNFalse();
+    return postCategories.stream()
+        .map(PostCategoryNavigationResponse::new)
+        .collect(Collectors.toList());
   }
 }
