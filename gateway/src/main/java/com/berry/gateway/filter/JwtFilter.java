@@ -9,12 +9,9 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -177,12 +174,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     }
   }
 
-  @Configuration
   public static class Config {
-    @Bean
-    @LoadBalanced
-    public WebClient.Builder loadBalancedWebClientBuilder() {
-      return WebClient.builder();
-    }
+
   }
 }
