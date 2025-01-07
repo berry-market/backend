@@ -2,7 +2,9 @@ package com.berry.post.application.service.post;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.post.application.event.BidEvent;
 import com.berry.post.application.service.image.ImageUploadService;
+import com.berry.post.application.service.producer.PostProducerServiceImpl;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
@@ -34,6 +36,7 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
   private final ImageUploadService imageUploadService;
+  private final PostProducerServiceImpl postProducerService;
 
   @Override
   @Transactional
@@ -82,6 +85,7 @@ public class PostServiceImpl implements PostService {
           .build();
       productDetailsImagesRepository.save(productDetailsImage);
     }
+    sendPostEventToBid(BidEvent.PostBidEvent.from(savedPost));
   }
 
   @Override
@@ -200,6 +204,8 @@ public class PostServiceImpl implements PostService {
     }
   }
 
+  // ------------------------
+
 
   // post 상태 자동 업데이트
   @Scheduled(fixedRate = 60000)  // 1분
@@ -219,5 +225,9 @@ public class PostServiceImpl implements PostService {
       productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
       postRepository.save(productStatusToClose);
     }
+  }
+
+  private void sendPostEventToBid(BidEvent.PostBidEvent event) {
+    postProducerService.sendPostEvent(event);
   }
 }
