@@ -21,7 +21,6 @@ public class BidChatServiceImpl implements BidChatService {
     private static final String bidChatKey = "post:";
     private final BidChatRepository bidChatRepository;
     private final BidChatProducerService bidChatProducerService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     //TODO : error exception
     @Override
@@ -45,15 +44,9 @@ public class BidChatServiceImpl implements BidChatService {
         updatePoints(UserEvent.Bidding.fromLatest(latestBidChat.orElse(null)));
     }
 
-
     private Boolean validateBidChat(Long postId, BidChatCreate.Request request) {
         Optional<BidChat> bidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
         return bidChat.isEmpty() || request.getAmount() > bidChat.get().getAmount();
-    }
-
-    //여기서 Bid 생성?
-    @Override
-    public void closeBidChat(PostEvent.Close event) {
     }
 
     private void updatePoints(UserEvent.Bidding event) {
