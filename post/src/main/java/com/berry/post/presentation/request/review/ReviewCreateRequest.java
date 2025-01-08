@@ -1,4 +1,4 @@
-package com.berry.post.presentation.request.Post;
+package com.berry.post.presentation.request.review;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
