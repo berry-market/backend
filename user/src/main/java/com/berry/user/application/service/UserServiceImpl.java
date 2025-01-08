@@ -42,7 +42,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public GetUserResponse getUserById(Long headerUserId, Long userId, String role) {
-        if (!Objects.equals(headerUserId, userId) || !Objects.equals(role, "ADMIN")) {
+        if ("MEMBER".equals(role)) {
+            if (!Objects.equals(headerUserId, userId)) {
+                throw new CustomApiException(ResErrorCode.FORBIDDEN);
+            }
+        } else if (!"ADMIN".equals(role)) {
             throw new CustomApiException(ResErrorCode.FORBIDDEN);
         }
 
