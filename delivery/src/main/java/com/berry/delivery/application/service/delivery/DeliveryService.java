@@ -1,4 +1,4 @@
-package com.berry.delivery.application.service;
+package com.berry.delivery.application.service.delivery;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
