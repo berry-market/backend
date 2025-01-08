@@ -1,10 +1,9 @@
 package com.berry.post.application.service.review;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.berry.post.presentation.request.Post.ReviewCreateRequest;
 
-@Service
-@RequiredArgsConstructor
-public class ReviewService {
+public interface ReviewService {
+
+  void createReview(ReviewCreateRequest reviewCreateRequest);
 
 }
