@@ -1,6 +1,7 @@
 package com.berry.post.domain.repository;
 
 import com.berry.post.domain.model.Review;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +13,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long > {
 
   Optional<Review> findByReviewerIdAndPostIdAndDeletedYNFalse(Long reviewerId, Long postId);
 
-  Page<Review> findAllAndDeletedYNFalse(Pageable pageable);
+  Page<Review> findAllByDeletedYNFalse(Pageable pageable);
 
-  Optional<Review> findByPostIdAndDeletedYNFalse(Long postId);
+  Page<Review> findAllByReviewContentAndDeletedYNFalse(Pageable pageable, String keyword);
+
+  Review findByPostIdAndDeletedYNFalse(Long postId);
+
+  List<Review> findAllByPostIdAndDeletedYNFalse(Long postId);
 }

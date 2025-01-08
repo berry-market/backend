@@ -17,4 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
   List<Post> findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(LocalDateTime now, ProductStatus productStatus);
 
   Optional<Post> findByIdAndDeletedYNFalse(Long postId);
+
+  List<Post> findAllByWriterIdAndDeletedYNFalse(Long writerId);
 }

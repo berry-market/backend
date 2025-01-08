@@ -1,6 +1,7 @@
 package com.berry.post.application.service.review;
 
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
+import com.berry.post.presentation.response.review.ReviewGradeResponse;
 import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ public interface ReviewService {
 
   ReviewProductResponse getReview(Long postId);
 
-  Page<ReviewListResponse> getReviews(Pageable pageable);
+  Page<ReviewListResponse> getReviews(String keyword, Pageable pageable);
+
+  ReviewGradeResponse getReviewGrade(Long postId);
 
 }

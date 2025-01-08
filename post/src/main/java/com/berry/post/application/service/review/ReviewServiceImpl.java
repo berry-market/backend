@@ -7,12 +7,17 @@ import com.berry.post.domain.model.Review;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
+import com.berry.post.presentation.response.review.ReviewGradeResponse;
 import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,11 +53,11 @@ public class ReviewServiceImpl implements ReviewService {
   @Override
   @Transactional(readOnly = true)
   public ReviewProductResponse getReview(Long postId) {
-    Review review = reviewRepository.findByPostIdAndDeletedYNFalse(postId).orElseThrow(
-        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 상품에 대한 리뷰가 존재하지 않습니다.")
-    );
+    Review review = reviewRepository.findByPostIdAndDeletedYNFalse(postId);
+    if (review == null) {
+      throw new CustomApiException(ResErrorCode.NOT_FOUND, "해당 상품에 대한 리뷰가 존재하지 않습니다.");
+    }
 
-    // todo postId로 상품명 가져오기
     Post post = postRepository.findByIdAndDeletedYNFalse(review.getPostId()).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
@@ -65,14 +70,49 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<ReviewListResponse> getReviews(Pageable pageable) {
-    Page<Review> reviews = reviewRepository.findAllAndDeletedYNFalse(pageable);
+  public Page<ReviewListResponse> getReviews(String keyword, Pageable pageable) {
 
-    if (reviews.isEmpty()) {
-      throw new CustomApiException(ResErrorCode.NOT_FOUND, "리뷰가 존재하지 않습니다.");
+    int size = pageable.getPageSize();
+    Sort sort = pageable.getSort().isSorted() ? pageable.getSort() : Sort.by(
+        Sort.Order.desc("createdAt")
+    );
+    pageable = PageRequest.of(pageable.getPageNumber(), size, sort);
+
+    Page<Review> reviews;
+    if (keyword.isEmpty()) {
+      reviews = reviewRepository.findAllByDeletedYNFalse(pageable);
+    } else {
+      reviews = reviewRepository.findAllByReviewContentAndDeletedYNFalse(pageable, keyword);
     }
 
-    return null;
+    return reviews.map(ReviewListResponse::new);
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public ReviewGradeResponse getReviewGrade(Long postId) {
+
+    Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+    );
+
+    // 판매자 Id로 판매자가 올린 상품들 전부 조회
+    List<Post> products = postRepository.findAllByWriterIdAndDeletedYNFalse(post.getWriterId());
+
+    // 판매자가 올린 상품의 상품 아이디로 리뷰 조회한 후 점수 저장
+    List<Integer> reviewScore = new ArrayList<>();
+    for (Post product : products) {
+      Review review = reviewRepository.findByPostIdAndDeletedYNFalse(product.getId());
+      if (review != null) {
+        reviewScore.add(review.getReviewScore());
+      }
+    }
+
+    Double totalScore = reviewScore.stream()
+        .mapToDouble(Double::valueOf)
+        .average()
+        .orElse(0.0);
+
+    return new ReviewGradeResponse(totalScore);
+  }
 }
