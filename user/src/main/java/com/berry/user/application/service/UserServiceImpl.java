@@ -2,7 +2,6 @@ package com.berry.user.application.service;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
-import com.berry.common.role.Role;
 import com.berry.user.domain.model.User;
 import com.berry.user.domain.repository.UserJpaRepository;
 import com.berry.user.domain.service.UserService;
@@ -34,13 +33,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void signUp(SignUpRequest request) {
         validateEmail(request.email());
-        String encodedPassword = passwordEncoder.encode(request.password());
-        User user = User.builder()
-            .nickname(request.nickname())
-            .email(request.email())
-            .password(encodedPassword)
-            .role(Role.MEMBER)
-            .build();
+        User user = User.create(request, passwordEncoder.encode(request.password()));
 
         userJpaRepository.save(user);
     }

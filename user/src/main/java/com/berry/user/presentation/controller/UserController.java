@@ -2,17 +2,13 @@ package com.berry.user.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
-import com.berry.common.role.RoleCheck;
 import com.berry.user.domain.service.UserService;
 import com.berry.user.presentation.dto.request.SignUpRequest;
 import com.berry.user.presentation.dto.request.UpdateEmailRequest;
 import com.berry.user.presentation.dto.request.UpdatePasswordRequest;
-import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
