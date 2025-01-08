@@ -1,6 +1,7 @@
 package com.berry.post.application.service.review;
 
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
+import com.berry.post.presentation.request.review.ReviewUpdateRequest;
 import com.berry.post.presentation.response.review.ReviewGradeResponse;
 import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
@@ -16,5 +17,9 @@ public interface ReviewService {
   Page<ReviewListResponse> getReviews(String keyword, Pageable pageable);
 
   ReviewGradeResponse getReviewGrade(Long postId);
+
+  void updateReview(ReviewUpdateRequest updateRequest, Long reviewId);
+
+  void deleteReview(Long reviewId);
 
 }

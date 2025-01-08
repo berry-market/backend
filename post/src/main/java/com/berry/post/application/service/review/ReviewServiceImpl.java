@@ -7,6 +7,7 @@ import com.berry.post.domain.model.Review;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
+import com.berry.post.presentation.request.review.ReviewUpdateRequest;
 import com.berry.post.presentation.response.review.ReviewGradeResponse;
 import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
@@ -114,5 +115,29 @@ public class ReviewServiceImpl implements ReviewService {
         .orElse(0.0);
 
     return new ReviewGradeResponse(totalScore);
+  }
+
+  @Override
+  @Transactional
+  public void updateReview(ReviewUpdateRequest updateRequest, Long reviewId) {
+
+    // todo 본인인지 검증
+
+    Review savedReview = reviewRepository.findByIdAndDeletedYNFalse(reviewId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다.")
+    );
+    savedReview.updateReview(updateRequest);
+  }
+
+  @Override
+  @Transactional
+  public void deleteReview(Long reviewId) {
+
+    // todo 본인인지 검증
+
+    Review savedReview = reviewRepository.findByIdAndDeletedYNFalse(reviewId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다.")
+    );
+    savedReview.markAsDeleted();
   }
 }

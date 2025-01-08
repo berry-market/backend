@@ -16,7 +16,7 @@ public class PostServerResponse {
   private Integer startedPrice;
   private LocalDateTime auctionStartedAt;
   private LocalDateTime auctionEndedAt;
-  private ProductStatus productStatus;
+  private String productStatus;
   private String deliveryMethod;
   private Integer deliveryFee;
   private String productImage;
@@ -32,7 +32,7 @@ public class PostServerResponse {
     this.startedPrice = post.getStartedPrice();
     this.auctionStartedAt = post.getAuctionStartedAt();
     this.auctionEndedAt = post.getAuctionEndedAt();
-    this.productStatus = post.getProductStatus();
+    this.productStatus = post.getProductStatus()+"";
     this.deliveryMethod = post.getDeliveryMethod();
     this.deliveryFee = post.getDeliveryFee();
     this.productImage = post.getProductImage();
