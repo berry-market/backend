@@ -7,7 +7,9 @@ import com.berry.post.domain.model.Review;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
+import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,21 +47,32 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<ReviewProductResponse> getReview(Long postId, Pageable pageable) {
-    Page<Review> reviews = reviewRepository.findByPostIdAndDeletedYNFalse(postId, pageable);
+  public ReviewProductResponse getReview(Long postId) {
+    Review review = reviewRepository.findByPostIdAndDeletedYNFalse(postId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 상품에 대한 리뷰가 존재하지 않습니다.")
+    );
+
+    // todo postId로 상품명 가져오기
+    Post post = postRepository.findByIdAndDeletedYNFalse(review.getPostId()).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+    );
+
+    // todo reviewerId 로 리뷰어 닉네임 가져오기
+    String nickname = "임시 닉네임";
+
+    return new ReviewProductResponse(review, post.getProductName(), nickname);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ReviewListResponse> getReviews(Pageable pageable) {
+    Page<Review> reviews = reviewRepository.findAllAndDeletedYNFalse(pageable);
 
     if (reviews.isEmpty()) {
       throw new CustomApiException(ResErrorCode.NOT_FOUND, "리뷰가 존재하지 않습니다.");
     }
 
-    Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
-        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."));
-    String productName = post.getProductName();
-
-    return reviews.map(r -> {
-      // todo reviewerId 로 유저 닉네임 검색
-      String nickname = "닉네임";
-      return new ReviewProductResponse(r, productName, nickname);
-    });
+    return null;
   }
+
 }

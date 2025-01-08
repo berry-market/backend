@@ -10,9 +10,7 @@ public class ReviewProductResponse {
   private String productName;
   private String reviewContent;
   private Integer reviewScore;
-
   private String nickname;
-
   private LocalDateTime createdAt;
 
   public ReviewProductResponse(Review review, String productName, String nickname) {
