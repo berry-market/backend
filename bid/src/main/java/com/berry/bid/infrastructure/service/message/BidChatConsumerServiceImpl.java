@@ -1,7 +1,7 @@
-package com.berry.bid.infrastructure.service;
+package com.berry.bid.infrastructure.service.message;
 
 import com.berry.bid.application.model.event.PostEvent;
-import com.berry.bid.application.service.consumer.BidChatConsumerService;
+import com.berry.bid.application.service.message.BidChatConsumerService;
 import com.berry.bid.domain.service.BidService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;

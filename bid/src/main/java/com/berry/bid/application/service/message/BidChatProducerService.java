@@ -1,4 +1,4 @@
-package com.berry.bid.application.service.consumer;
+package com.berry.bid.application.service.message;
 
 import com.berry.bid.application.model.event.UserEvent;
 

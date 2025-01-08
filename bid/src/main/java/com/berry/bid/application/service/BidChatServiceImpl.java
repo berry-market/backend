@@ -2,13 +2,11 @@ package com.berry.bid.application.service;
 
 import com.berry.bid.application.model.cache.BidChat;
 import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
-import com.berry.bid.application.model.event.PostEvent;
 import com.berry.bid.application.model.event.UserEvent;
-import com.berry.bid.application.service.consumer.BidChatProducerService;
+import com.berry.bid.application.service.message.BidChatProducerService;
 import com.berry.bid.domain.repository.BidChatRepository;
 import com.berry.bid.domain.service.BidChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

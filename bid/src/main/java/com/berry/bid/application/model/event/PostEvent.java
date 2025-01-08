@@ -11,4 +11,17 @@ public class PostEvent {
         private final Long postId;
         private final Long writerId;
     }
+
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PUBLIC)
+    public static class Price{
+        private final Long bidId;
+        private final Integer price;
+
+        public static Price of(Long bidId, Integer price) {
+            return new Price(bidId, price);
+        }
+
+    }
+
 }
