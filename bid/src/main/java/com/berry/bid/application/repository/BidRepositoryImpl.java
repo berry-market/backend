@@ -7,6 +7,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class BidRepositoryImpl implements BidRepository {
@@ -18,5 +20,10 @@ public class BidRepositoryImpl implements BidRepository {
     @Override
     public void save(Bid bid) {
         bidJpaRepository.save(bid);
+    }
+
+    @Override
+    public Optional<Bid> findById(Long id) {
+        return bidJpaRepository.findById(id);
     }
 }
