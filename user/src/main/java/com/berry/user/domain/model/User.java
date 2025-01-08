@@ -2,6 +2,7 @@ package com.berry.user.domain.model;
 
 import com.berry.common.auditor.BaseEntity;
 import com.berry.common.role.Role;
+import com.berry.user.presentation.dto.request.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,5 +46,16 @@ public class User extends BaseEntity {
     public void updatePassword(String encodedNewPassword, String userId) {
         this.password = encodedNewPassword;
         this.setUpdatedBy(userId);
+    }
+
+    public static User create(SignUpRequest request, String encodedPassword) {
+        User user = User.builder()
+            .nickname(request.nickname())
+            .email(request.email())
+            .password(encodedPassword)
+            .role(Role.MEMBER)
+            .build();
+        user.setCreatedBy(request.nickname());
+        return user;
     }
 }

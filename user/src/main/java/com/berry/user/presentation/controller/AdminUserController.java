@@ -24,7 +24,7 @@ public class AdminUserController {
     @GetMapping
     @RoleCheck("ADMIN")
     public ResponseEntity<ApiResponse<Page<GetUserDetailResponse>>> getUsers(
-        @RequestHeader("X-User-Role") String role,
+        @RequestHeader("X-Role") String role,
         Pageable pageable
     ) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUsers(pageable)));
