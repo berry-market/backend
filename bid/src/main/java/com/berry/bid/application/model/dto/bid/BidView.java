@@ -19,7 +19,7 @@ public class BidView {
         private final LocalDateTime createdAt;
         private final Boolean hasAddress;
         private final String productName;
-        private final String productURL;
+        private final String productImage;
 
         public static Response from(Bid bid, PostInternalView.Response response) {
             return new Response(
@@ -29,7 +29,7 @@ public class BidView {
                     bid.getCreatedAt(),
                     bid.getHasAddress(),
                     response.getProductName(),
-                    response.getProductURL()
+                    response.getProductImage()
             );
         }
 
