@@ -30,8 +30,16 @@ public class DeliveryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getAllDelivery(Pageable pageable) {
-        Page<DeliveryDto> deliveries = deliveryService.getAllDelivery(pageable);
+    public ResponseEntity<ApiResponse<?>> getAllDelivery(
+            Long deliveryId,
+            Long receiverId,
+            Long senderId,
+            Long bidId,
+            DeliveryStatus deliveryStatus,
+            Pageable pageable,
+            String sortType
+    ) {
+        Page<DeliveryDto> deliveries = deliveryService.getAllDelivery(deliveryId,receiverId,senderId,bidId,deliveryStatus,pageable,sortType);
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, deliveries));
     }
 

@@ -17,16 +17,16 @@ public class Delivery extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long deliveryId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Long receiverId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Long senderId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Long bidId;
 
-    @Column(nullable = false)
+    @Column
     private String address;
 
     @Column(nullable = false)
@@ -34,15 +34,6 @@ public class Delivery extends BaseEntity {
     private DeliveryStatus status;
 
     public void updatedelivery(DeliveryUpdateRequest req) {
-        if (req.receiverId() != null) {
-            this.receiverId = req.receiverId();
-        }
-        if (req.senderId() != null) {
-            this.senderId = req.senderId();
-        }
-        if (req.bidId() != null) {
-            this.bidId = req.bidId();
-        }
         if (req.address() != null) {
             this.address = req.address();
         }
