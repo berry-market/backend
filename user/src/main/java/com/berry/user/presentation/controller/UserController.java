@@ -28,7 +28,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUserById(
         @RequestHeader("X-User-Id") Long headerUserId,
-        @RequestHeader("X-User-Role") String role,
+        @RequestHeader("X-Role") String role,
         @PathVariable("userId") Long userId
     ) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUserById(headerUserId, userId, role)));
