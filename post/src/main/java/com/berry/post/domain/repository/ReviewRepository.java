@@ -20,4 +20,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long > {
   Review findByPostIdAndDeletedYNFalse(Long postId);
 
   List<Review> findAllByPostIdAndDeletedYNFalse(Long postId);
+
+  Optional<Review> findByIdAndDeletedYNFalse(Long reviewId);
 }

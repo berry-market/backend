@@ -1,6 +1,7 @@
 package com.berry.post.domain.model;
 
 import com.berry.common.auditor.BaseEntity;
+import com.berry.post.presentation.request.review.ReviewUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,4 +41,8 @@ public class Review extends BaseEntity {
   @Column(nullable = false)
   private Integer reviewScore;
 
+  public void updateReview(ReviewUpdateRequest updateRequest) {
+    this.reviewContent = updateRequest.getReviewContent();
+    this.reviewScore = updateRequest.getReviewScore();
+  }
 }
