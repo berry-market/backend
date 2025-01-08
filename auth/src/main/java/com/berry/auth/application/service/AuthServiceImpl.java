@@ -11,6 +11,8 @@ import com.berry.auth.infrastructure.security.jwt.JwtTokenValidator;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import feign.FeignException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,17 +29,28 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   @Transactional
-  public void logout(String accessToken) {
-    Long userId = jwtTokenParser.getUserId(accessToken);
+  public void logout(String authorizationHeader, String refreshToken,
+      HttpServletResponse response) {
+
+    if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+      throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "인증정보가 없거나 유효하지 않습니다");
+    }
+
+    if (refreshToken == null) {
+      throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "리프레시 토큰이 존재하지 않습니다");
+    }
+
+    String accessToken = authorizationHeader.substring(7);
 
     // 리프레시 토큰 삭제
-    boolean tokenDeleted = authRepository.deleteRefreshToken(userId);
+    boolean tokenDeleted = authRepository.deleteRefreshToken(refreshToken);
     if (!tokenDeleted) {
-      throw new CustomApiException(ResErrorCode.BAD_REQUEST, "리프레시토큰 삭제를 실패하였습니다.");
+      throw new CustomApiException(ResErrorCode.BAD_REQUEST, "리프레시 토큰 삭제에 실패하였습니다.");
     }
 
     // 액세스 토큰 남은시간 계산
-    long remainingExpiration = jwtTokenParser.getExpiration(accessToken) - System.currentTimeMillis();
+    long remainingExpiration =
+        jwtTokenParser.getExpiration(accessToken) - System.currentTimeMillis();
     if (remainingExpiration <= 0) {
       throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "액세스토큰이 이미 만료되었습니다.");
     }
@@ -47,6 +60,14 @@ public class AuthServiceImpl implements AuthService {
     if (!isBlacklisted) {
       throw new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR, "액세스토큰 블랙리스트 등록에 실패하였습니다.");
     }
+
+  // RefreshToken 쿠키 만료 설정
+  Cookie expiredCookie = new Cookie("refreshToken", null);
+    expiredCookie.setHttpOnly(true);
+    expiredCookie.setSecure(true);
+    expiredCookie.setPath("/");
+    expiredCookie.setMaxAge(0); // 즉시 만료
+    response.addCookie(expiredCookie);
   }
 
   @Override

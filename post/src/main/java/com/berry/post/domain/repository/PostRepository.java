@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
 
-  List<Post> findAllByAuctionStartedAtBeforeAndProductStatusNotAndDeletedYNFalse(LocalDateTime now, ProductStatus productStatus);
+  List<Post> findAllByAuctionStartedAtBeforeAndProductStatusAndDeletedYNFalse(LocalDateTime now, ProductStatus productStatus);
 
   List<Post> findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(LocalDateTime now, ProductStatus productStatus);
 

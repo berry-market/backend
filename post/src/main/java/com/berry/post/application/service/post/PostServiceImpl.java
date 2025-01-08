@@ -2,7 +2,11 @@ package com.berry.post.application.service.post;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.post.application.event.BidCreateEvent.PostBidCreateEvent;
+import com.berry.post.application.event.BidUpdateEvent.PostBidUpdateEvent;
+import com.berry.post.application.service.consumer.PostConsumerServiceImpl;
 import com.berry.post.application.service.image.ImageUploadService;
+import com.berry.post.application.service.producer.PostProducerServiceImpl;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
@@ -34,6 +38,7 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
   private final ImageUploadService imageUploadService;
+  private final PostProducerServiceImpl postProducerService;
 
   @Override
   @Transactional
@@ -72,7 +77,8 @@ public class PostServiceImpl implements PostService {
     Post savedPost = postRepository.save(post);
 
     // ProductDetailsImages 에 다중 이미지 저장
-    saveProductDetailsImages(productDetailsImages, savedPost);
+    saveProductDetailsImages(productDetailsImages, post);
+    sendPostCreateEventToBid(PostBidCreateEvent.from(savedPost));
   }
 
   @Override
@@ -105,13 +111,11 @@ public class PostServiceImpl implements PostService {
     Boolean isLiked = true;
     // todo 작성자 Id로 유저 받아오고 해당 작성자의 닉네임 와서 각 response 에 추가.
     String writerNickName = "berry";
-    // todo bid 에서 낙찰 됐으면 낙찰 가격 띄워주고 그 전까진 null
-    Integer bidPrice = null;
 
     post.updateViewCount();
     postRepository.save(post);
 
-    return new PostDetailsResponse(post, productDetailsImages, isLiked, writerNickName, bidPrice);
+    return new PostDetailsResponse(post, productDetailsImages, isLiked, writerNickName);
   }
 
   @Override
@@ -180,6 +184,8 @@ public class PostServiceImpl implements PostService {
     }
   }
 
+  // ------------------------
+
   private void saveProductDetailsImages(List<MultipartFile> productDetailsImages, Post savedPost)
       throws IOException {
     for (int i = 0; i < productDetailsImages.size(); i++) {
@@ -194,24 +200,33 @@ public class PostServiceImpl implements PostService {
     }
   }
 
-
   // post 상태 자동 업데이트
   @Scheduled(fixedRate = 60000)  // 1분
   public void updateProductStatus() {
     LocalDateTime now = LocalDateTime.now();
 
     List<Post> productStatusToStarts =
-        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.ACTIVE);
+        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusAndDeletedYNFalse(now, ProductStatus.PENDING);
     for (Post productStatusToStart : productStatusToStarts) {
       productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
-      postRepository.save(productStatusToStart);
+      Post savedPost = postRepository.save(productStatusToStart);
+      sendPostUpdateEventToBid(PostBidUpdateEvent.from(savedPost));
     }
 
     List<Post> productStatusToCloses =
         postRepository.findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.CLOSED);
     for (Post productStatusToClose : productStatusToCloses) {
       productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
-      postRepository.save(productStatusToClose);
+      Post savedPost = postRepository.save(productStatusToClose);
+      sendPostUpdateEventToBid(PostBidUpdateEvent.from(savedPost));
     }
+  }
+
+  private void sendPostCreateEventToBid(PostBidCreateEvent event) {
+    postProducerService.sendPostCreateEvent(event);
+  }
+
+  private void sendPostUpdateEventToBid(PostBidUpdateEvent event) {
+    postProducerService.sendPostUpdateEvent(event);
   }
 }

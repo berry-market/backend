@@ -26,7 +26,7 @@ public class PostDetailsResponse {
   private String writerNickname;
   private Integer bidPrice;
 
-  public PostDetailsResponse(Post post, List<String> productDetailsImages, Boolean isLiked, String writerNickName, Integer bidPrice) {
+  public PostDetailsResponse(Post post, List<String> productDetailsImages, Boolean isLiked, String writerNickName) {
     this.postCategoryId = post.getPostCategoryId();
     this.productName = post.getProductName();
     this.immediatePrice = post.getImmediatePrice();
@@ -39,10 +39,10 @@ public class PostDetailsResponse {
     this.productContent = post.getProductContent();
     this.likeCount = post.getLikeCount();
     this.viewCount = post.getViewCount();
+    this.bidPrice = post.getBidPrice();
 
     this.productDetailsImages = productDetailsImages;
     this.isLiked = isLiked;
     this.writerNickname = writerNickName;
-    this.bidPrice = bidPrice;
   }
 }

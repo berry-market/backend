@@ -86,7 +86,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     response.addCookie(refreshTokenCookie);
 
     // 응답
-    LoginResDto loginResDto = new LoginResDto(accessToken, refreshToken);
+    LoginResDto loginResDto = LoginResDto.builder()
+        .accessToken(accessToken)
+        .userId(user.getId())
+        .nickname(user.getUsername())
+        .role(user.getAuthorities().iterator().next().getAuthority())
+        .build();
+
     ApiResponse<LoginResDto> apiResponse = ApiResponse.OK(ResSuccessCode.SUCCESS, loginResDto);
 
     response.setContentType("application/json");

@@ -2,7 +2,6 @@ package com.berry.bid.application.service;
 
 import com.berry.bid.application.model.cache.BidChat;
 import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
-import com.berry.bid.application.model.event.PostEvent;
 import com.berry.bid.application.model.event.UserEvent;
 import com.berry.bid.application.service.consumer.BidChatProducerService;
 import com.berry.bid.domain.repository.BidChatRepository;
@@ -52,9 +51,9 @@ public class BidChatServiceImpl implements BidChatService {
     }
 
     //여기서 Bid 생성?
-    @Override
-    public void closeBidChat(PostEvent.Close event) {
-    }
+//    @Override
+//    public void closeBidChat(PostEvent.Close event) {
+//    }
 
     private void updatePoints(UserEvent.Bidding event) {
         bidChatProducerService.sendUserEvent(event);
