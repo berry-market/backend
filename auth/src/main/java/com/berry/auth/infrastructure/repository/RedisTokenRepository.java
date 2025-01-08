@@ -25,26 +25,17 @@ public class RedisTokenRepository implements AuthRepository {
     }
 
     String refreshKey = getKey("refreshToken", refreshToken);
-    String userKey = getKey("userId", userId.toString());
 
-    redisTemplate.opsForValue().set(refreshKey, userId.toString(), remainingExpiration, TimeUnit.MILLISECONDS);
-    redisTemplate.opsForValue().set(userKey, refreshToken, remainingExpiration, TimeUnit.MILLISECONDS);
+    redisTemplate.opsForValue().set(refreshKey, String.valueOf(userId), remainingExpiration, TimeUnit.MILLISECONDS);
 
-    return redisTemplate.hasKey(refreshKey) && redisTemplate.hasKey(userKey);
+    return redisTemplate.hasKey(refreshKey);
   }
 
   @Override
-  public boolean deleteRefreshToken(Long userId) {
-    String userKey = getKey("userId", userId.toString());
-    String refreshToken = redisTemplate.opsForValue().get(userKey);
+  public boolean deleteRefreshToken(String refreshToken) {
+    String refreshKey = getKey("refreshToken", refreshToken);
 
-    if (refreshToken != null) {
-      String refreshKey = getKey("refreshToken", refreshToken);
-      boolean refreshDeleted = Boolean.TRUE.equals(redisTemplate.delete(refreshKey));
-      boolean userDeleted = Boolean.TRUE.equals(redisTemplate.delete(userKey));
-      return refreshDeleted && userDeleted; // 두 키 모두 삭제되었을 경우 true 반환
-    }
-    return false;
+    return Boolean.TRUE.equals(redisTemplate.delete(refreshKey));
   }
 
   // 액세스 토큰 블랙리스트 추가

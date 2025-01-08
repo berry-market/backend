@@ -1,11 +1,13 @@
 package com.berry.auth.application.dto;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class LoginResDto {
-  private final String accessToken;
-  private final String refreshToken;
+  private String accessToken;
+  private Long userId;
+  private String nickname;
+  private String role;
 }

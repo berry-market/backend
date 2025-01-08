@@ -4,7 +4,7 @@ public interface AuthRepository {
 
   boolean saveRefreshToken(Long userId, String refreshToken);
 
-  boolean deleteRefreshToken(Long userId);
+  boolean deleteRefreshToken(String refreshToken);
 
   boolean addToBlacklist(String accessToken, long remainingExpiration);
 
