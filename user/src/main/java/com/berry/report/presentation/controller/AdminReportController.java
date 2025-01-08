@@ -24,7 +24,7 @@ public class AdminReportController {
     @GetMapping
     @RoleCheck("ADMIN")
     public ResponseEntity<ApiResponse<Page<ReportResponse>>> getReports(
-        @RequestHeader("X-User-Role") String role,
+        @RequestHeader("X-Role") String role,
         Pageable pageable,
         @RequestParam ReportStatus reportStatus
     ) {
@@ -34,7 +34,7 @@ public class AdminReportController {
     @PatchMapping
     @RoleCheck("ADMIN")
     public ResponseEntity<ApiResponse<Void>> updateReportStatus(
-        @RequestHeader("X-User-Role") String role,
+        @RequestHeader("X-Role") String role,
         @RequestBody @Valid UpdateReportStatusRequest request
     ) {
         reportService.updateReportStatus(request);
