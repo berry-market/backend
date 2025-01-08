@@ -10,6 +10,7 @@ import com.berry.user.presentation.dto.request.SignUpRequest;
 import com.berry.user.presentation.dto.request.UpdateEmailRequest;
 import com.berry.user.presentation.dto.request.UpdatePasswordRequest;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
+import com.berry.user.presentation.dto.response.GetLoginUserResponse;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -60,15 +61,25 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public GetInternalUserResponse getInternalUserById(Long userId) {
         User user = getUser(userId);
-        return getInternalUserResponse(user);
+        return new GetInternalUserResponse(
+            user.getId(),
+            user.getNickname(),
+            user.getProfileImage(),
+            user.getRole()
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GetInternalUserResponse getInternalUserByNickname(String nickname) {
+    public GetLoginUserResponse getInternalUserByNickname(String nickname) {
         User user = userJpaRepository.findByNickname(nickname)
             .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
-        return getInternalUserResponse(user);
+        return new GetLoginUserResponse(
+            user.getId(),
+            user.getNickname(),
+            user.getPassword(),
+            user.getRole()
+        );
     }
 
     @Override
@@ -119,14 +130,5 @@ public class UserServiceImpl implements UserService {
     private User getUser(Long userId) {
         return userJpaRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException(ResErrorCode.NOT_FOUND.getMessage()));
-    }
-
-    private static GetInternalUserResponse getInternalUserResponse(User user) {
-        return new GetInternalUserResponse(
-            user.getId(),
-            user.getNickname(),
-            user.getProfileImage(),
-            user.getRole()
-        );
     }
 }

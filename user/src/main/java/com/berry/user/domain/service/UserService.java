@@ -4,6 +4,7 @@ import com.berry.user.presentation.dto.request.SignUpRequest;
 import com.berry.user.presentation.dto.request.UpdateEmailRequest;
 import com.berry.user.presentation.dto.request.UpdatePasswordRequest;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
+import com.berry.user.presentation.dto.response.GetLoginUserResponse;
 import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ public interface UserService {
 
     GetInternalUserResponse getInternalUserById(Long userId);
 
-    GetInternalUserResponse getInternalUserByNickname(String nickname);
+    GetLoginUserResponse getInternalUserByNickname(String nickname);
 
     Page<GetUserDetailResponse> getUsers(Pageable pageable);
 

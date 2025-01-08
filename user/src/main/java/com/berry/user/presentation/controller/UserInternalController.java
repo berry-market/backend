@@ -4,6 +4,7 @@ import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
 import com.berry.user.domain.service.UserService;
 import com.berry.user.presentation.dto.response.GetInternalUserResponse;
+import com.berry.user.presentation.dto.response.GetLoginUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,7 @@ public class UserInternalController {
     }
 
     @GetMapping("{nickname}")
-    public ResponseEntity<ApiResponse<GetInternalUserResponse>> getInternalUserByNickname(
+    public ResponseEntity<ApiResponse<GetLoginUserResponse>> getInternalUserByNickname(
         @PathVariable("nickname") String nickname
     ) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getInternalUserByNickname(nickname)));
