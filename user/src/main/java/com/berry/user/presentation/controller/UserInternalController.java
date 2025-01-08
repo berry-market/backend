@@ -7,10 +7,7 @@ import com.berry.user.presentation.dto.response.GetInternalUserResponse;
 import com.berry.user.presentation.dto.response.GetLoginUserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,14 +16,14 @@ public class UserInternalController {
 
     private final UserService userService;
 
-    @GetMapping("{userId}")
-    public ResponseEntity<ApiResponse<GetInternalUserResponse>> getInternalUserById(@PathVariable("userId") Long userId) {
+    @GetMapping("/by-id")
+    public ResponseEntity<ApiResponse<GetInternalUserResponse>> getInternalUserById(@RequestParam("userId") Long userId) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getInternalUserById(userId)));
     }
 
-    @GetMapping("{nickname}")
+    @GetMapping("/by-nickname")
     public ResponseEntity<ApiResponse<GetLoginUserResponse>> getInternalUserByNickname(
-        @PathVariable("nickname") String nickname
+        @RequestParam("nickname") String nickname
     ) {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getInternalUserByNickname(nickname)));
     }
