@@ -42,7 +42,12 @@ public class Review extends BaseEntity {
   private Integer reviewScore;
 
   public void updateReview(ReviewUpdateRequest updateRequest) {
-    this.reviewContent = updateRequest.getReviewContent();
-    this.reviewScore = updateRequest.getReviewScore();
+    if (updateRequest.getReviewContent() != null) {
+      this.reviewContent = updateRequest.getReviewContent();
+    }
+
+    if (updateRequest.getReviewContent() != null) {
+      this.reviewScore = updateRequest.getReviewScore();
+    }
   }
 }
