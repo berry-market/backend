@@ -128,4 +128,16 @@ public class ReviewServiceImpl implements ReviewService {
     );
     savedReview.updateReview(updateRequest);
   }
+
+  @Override
+  @Transactional
+  public void deleteReview(Long reviewId) {
+
+    // todo 본인인지 검증
+
+    Review savedReview = reviewRepository.findByIdAndDeletedYNFalse(reviewId).orElseThrow(
+        () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다.")
+    );
+    savedReview.markAsDeleted();
+  }
 }
