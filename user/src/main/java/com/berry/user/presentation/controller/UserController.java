@@ -38,15 +38,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUserById(headerUserId, userId, role)));
     }
 
-    @GetMapping
-    @RoleCheck("ADMIN")
-    public ResponseEntity<ApiResponse<Page<GetUserDetailResponse>>> getUsers(
-        @RequestHeader("X-User-Role") String role,
-        Pageable pageable
-    ) {
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUsers(pageable)));
-    }
-
     @PatchMapping("/{userId}/email")
     public ResponseEntity<ApiResponse<Void>> updateUserEmail(
         @RequestHeader("X-User-Id") Long headerUserId,
