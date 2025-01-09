@@ -1,4 +1,4 @@
-package com.berry.post.application.event;
+package com.berry.post.application.model.event;
 
 
 import com.berry.post.domain.model.Post;

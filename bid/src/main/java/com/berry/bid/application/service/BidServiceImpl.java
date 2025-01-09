@@ -22,6 +22,7 @@ public class BidServiceImpl implements BidService {
     @Override
     @Transactional
     public void createBid(PostEvent.Close event) {
+
         Bid bid = eventToBid(event);
         bidRepository.save(bid);
         bidProducerService.sendPostEvent(bidToPrice(bid));
