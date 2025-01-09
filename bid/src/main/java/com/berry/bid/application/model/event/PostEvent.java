@@ -16,7 +16,7 @@ public class PostEvent {
     @AllArgsConstructor(access = AccessLevel.PUBLIC)
     public static class Price{
         private final Long bidId;
-        private final Integer price;
+        private final Integer successfulBidPrice;
 
         public static Price of(Long bidId, Integer price) {
             return new Price(bidId, price);
