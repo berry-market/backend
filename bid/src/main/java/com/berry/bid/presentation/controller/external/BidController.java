@@ -20,13 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class BidController {
 
     private final BidService bidService;
-    private final PostClient postClient;
 
     @GetMapping("/bids/{bidId}")
     @RoleCheck({"MEMBER","ADMIN"})
     public ApiResponse<BidView.Response> bidView(@PathVariable Long bidId) {
         Bid bid = bidService.getBidById(bidId);
-        PostInternalView.Response postResponse = postClient.getPost(bid.getPostId());
+        PostInternalView.Response postResponse = bidService.getPostDetails(bidId);
         BidView.Response response = BidView.Response.from(bid,postResponse);
         return ApiResponse.OK(ResSuccessCode.READ, response);
     }
