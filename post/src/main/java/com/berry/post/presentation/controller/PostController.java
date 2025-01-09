@@ -36,8 +36,6 @@ public class PostController {
 
   private final PostServiceImpl postServiceImpl;
 
-  // todo 게시글 생성 수정 삭제 권한 설정
-
   @PostMapping
   public ApiResponse<Void> createPost(
       @Valid @RequestPart(value = "postCreateRequest") PostCreateRequest postCreateRequest,

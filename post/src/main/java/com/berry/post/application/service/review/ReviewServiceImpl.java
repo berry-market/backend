@@ -2,15 +2,18 @@ package com.berry.post.application.service.review;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.post.application.dto.GetInternalUserResponse;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.Review;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ReviewRepository;
+import com.berry.post.infrastructure.client.UserClient;
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
 import com.berry.post.presentation.request.review.ReviewUpdateRequest;
 import com.berry.post.presentation.response.review.ReviewGradeResponse;
 import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
+import feign.FeignException.FeignClientException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +32,7 @@ public class ReviewServiceImpl implements ReviewService {
 
   private final ReviewRepository reviewRepository;
   private final PostRepository postRepository;
+  private final UserClient userClient;
 
   @Override
   @Transactional
@@ -61,8 +65,15 @@ public class ReviewServiceImpl implements ReviewService {
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
 
-    // todo reviewerId 로 user 에서 닉네임 가져오기
-    String nickname = "임시 닉네임";
+    GetInternalUserResponse user;
+    try {
+      user = userClient.getInternalUserById(review.getReviewerId()).getBody().getData();
+    } catch (FeignClientException e) {
+      throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
+          "User Service: " + e.getMessage());
+    }
+
+    String nickname = user.nickname();
 
     return new ReviewProductResponse(review, post.getProductName(), nickname);
   }
