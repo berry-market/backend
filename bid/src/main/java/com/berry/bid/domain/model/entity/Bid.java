@@ -26,6 +26,9 @@ public class Bid {
     @Column(name = "successful_bid_price", nullable = false)
     private Integer successfulBidPrice;
 
+    @Column(name = "has_address", nullable = false)
+    private Boolean hasAddress = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

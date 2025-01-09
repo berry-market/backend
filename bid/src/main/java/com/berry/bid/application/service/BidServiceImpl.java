@@ -27,6 +27,12 @@ public class BidServiceImpl implements BidService {
         bidProducerService.sendPostEvent(bidToPrice(bid));
     }
 
+    //TODO : error exception
+    @Override
+    public Bid getBidById(Long id) {
+        return bidRepository.findById(id).orElseThrow(NullPointerException::new);
+    }
+
     // delivery 로 event 넘겨주기
     // post 로 event 넘겨주기
     //TODO : error exception
