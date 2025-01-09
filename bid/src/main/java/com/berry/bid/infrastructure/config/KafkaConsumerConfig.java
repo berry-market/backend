@@ -44,15 +44,6 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-
-    @Bean
-    public NewTopic autoCreatedTopic() {
-        return TopicBuilder.name("post-topic")
-                .partitions(3)  // 파티션 수 설정
-                .replicas(1)    // 복제본 수 설정
-                .build();
-    }
-
 }
 
 

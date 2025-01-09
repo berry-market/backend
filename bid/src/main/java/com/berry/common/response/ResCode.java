@@ -1,4 +1,4 @@
-package com.berry.bid.infrastructure.common.response;
+package com.berry.common.response;
 
 public interface ResCode {
 
