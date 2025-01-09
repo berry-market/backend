@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface PostService {
 
   void createPost(PostCreateRequest postCreateRequest,
-      MultipartFile multipartFile, List<MultipartFile> multipartFileList) throws IOException;
+      MultipartFile productImage, List<MultipartFile> productDetailsImages, Long userId, String role) throws IOException;
 
   Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, String sort,
       Pageable pageable);
@@ -23,8 +23,10 @@ public interface PostService {
 
   PostServerResponse getServerPost(Long postId);
 
-  void updatePost(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile productImage,
-      List<MultipartFile> productDetailsImages) throws IOException;
+  void updatePost(Long postId, PostUpdateRequest postUpdateRequest,
+      MultipartFile productImage, List<MultipartFile> productDetailsImages, Long userId,
+      String role)
+      throws IOException;
 
-  void deletePost(Long postId);
+  void deletePost(Long postId, Long userId, String role);
 }
