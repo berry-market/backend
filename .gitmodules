@@ -10,3 +10,6 @@
 [submodule "post/src/main/java/com/berry/common"]
 	path = post/src/main/java/com/berry/common
 	url = https://github.com/berry-market/common.git
+[submodule "payment/src/main/java/com/berry/common"]
+	path = payment/src/main/java/com/berry/common
+	url = https://github.com/berry-market/common.git
