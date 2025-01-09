@@ -20,7 +20,7 @@ public class ReportController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> createReport(
         @Valid @RequestBody CreateReportRequest request,
-        @RequestHeader("X-User-Id") Long userId
+        @RequestHeader("X-UserId") Long userId
     ) {
         reportService.createReport(request, userId);
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "신고가 접수되었습니다."));

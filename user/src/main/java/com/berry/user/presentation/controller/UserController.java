@@ -27,7 +27,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<GetUserResponse>> getUserById(
-        @RequestHeader("X-User-Id") Long headerUserId,
+        @RequestHeader("X-UserId") Long headerUserId,
         @RequestHeader("X-Role") String role,
         @PathVariable("userId") Long userId
     ) {
@@ -36,7 +36,7 @@ public class UserController {
 
     @PatchMapping("/{userId}/email")
     public ResponseEntity<ApiResponse<Void>> updateUserEmail(
-        @RequestHeader("X-User-Id") Long headerUserId,
+        @RequestHeader("X-UserId") Long headerUserId,
         @PathVariable("userId") Long userId,
         @RequestBody @Valid UpdateEmailRequest request
     ) {
@@ -46,7 +46,7 @@ public class UserController {
 
     @PatchMapping("/{userId}/password")
     public ResponseEntity<ApiResponse<Void>> updateUserPassword(
-        @RequestHeader("X-User-Id") Long headerUserId,
+        @RequestHeader("X-UserId") Long headerUserId,
         @PathVariable("userId") Long userId,
         @RequestBody @Valid UpdatePasswordRequest request
     ) {
