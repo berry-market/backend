@@ -2,6 +2,7 @@ package com.berry.post.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
+import com.berry.common.role.RoleCheck;
 import com.berry.post.application.service.postCategory.PostCategoryServiceImpl;
 import com.berry.post.presentation.request.postCategory.PostCategoryCreateRequest;
 import com.berry.post.presentation.request.postCategory.PostCategoryUpdateRequest;
@@ -30,13 +31,15 @@ public class PostCategoryController {
 
   // todo auth 되면 admin 권한 확인 추가
 
+  @RoleCheck("ADMIN")
   @PostMapping("/admin/v1/categories")
-  public ResponseEntity<ApiResponse<Void>> createPostCategory(
+  public ApiResponse<Void> createPostCategory(
       @Valid @RequestBody PostCategoryCreateRequest postCategoryCreateRequest) {
     postCategoryServiceImpl.createPostCategory(postCategoryCreateRequest);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "게시글 카테고리가 생성되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.CREATED, "게시글 카테고리가 생성되었습니다.");
   }
 
+  @RoleCheck("ADMIN")
   @GetMapping("/admin/v1/categories")
   public ApiResponse<Page<PostCategoryResponse>> getPostCategories(
       @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword, Pageable pageable) {
@@ -44,24 +47,26 @@ public class PostCategoryController {
     return ApiResponse.OK(ResSuccessCode.READ, postCategories, "게시글 카테고리가 전체 조회되었습니다. ");
   }
 
+  @RoleCheck("ADMIN")
   @PatchMapping("/admin/v1/categories/{categoryId}")
-  public ResponseEntity<ApiResponse<Void>> updatePostCategory(
+  public ApiResponse<Void> updatePostCategory(
       @PathVariable Long categoryId,
       @Valid @RequestBody PostCategoryUpdateRequest postCategoryUpdateRequest) {
     postCategoryServiceImpl.updatePostCategory(categoryId, postCategoryUpdateRequest);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "게시글 카테고리가 수정되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.UPDATED, "게시글 카테고리가 수정되었습니다.");
   }
 
+  @RoleCheck("ADMIN")
   @PutMapping("/admin/v1/categories/{categoryId}")
-  public ResponseEntity<ApiResponse<Void>> deletePostCategory(@PathVariable Long categoryId) {
+  public ApiResponse<Void> deletePostCategory(@PathVariable Long categoryId) {
     postCategoryServiceImpl.deletePostCategory(categoryId);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "게시글 카테고리가 삭제되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.DELETED, "게시글 카테고리가 삭제되었습니다.");
   }
 
   @GetMapping("/api/v1/categories")
-  public ResponseEntity<ApiResponse<List<PostCategoryNavigationResponse>>> getNavigations() {
+  public ApiResponse<List<PostCategoryNavigationResponse>> getNavigations() {
     List<PostCategoryNavigationResponse> navigations = postCategoryServiceImpl.getNavigations();
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, navigations,"게시글 카테고리가 전체 조회되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.READ, navigations,"게시글 카테고리가 전체 조회되었습니다.");
   }
 
 }

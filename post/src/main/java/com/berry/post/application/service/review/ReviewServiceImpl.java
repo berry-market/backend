@@ -13,6 +13,7 @@ import com.berry.post.presentation.response.review.ReviewListResponse;
 import com.berry.post.presentation.response.review.ReviewProductResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,18 +32,15 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional
-  public void createReview(ReviewCreateRequest reviewCreateRequest) {
+  public void createReview(ReviewCreateRequest reviewCreateRequest, Long userId) {
 
-    // todo 리뷰어 아이디는 현재 로그인 중인 유저의 아이디에서 가져오기
-    Long reviewerId = 1L;
-
-    if (reviewRepository.findByReviewerIdAndPostIdAndDeletedYNFalse(reviewerId,
+    if (reviewRepository.findByReviewerIdAndPostIdAndDeletedYNFalse(userId,
         reviewCreateRequest.getPostId()).isPresent()) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "이미 리뷰 작성이 완료된 상품입니다.");
     }
 
     Review review = Review.builder()
-        .reviewerId(reviewerId)
+        .reviewerId(userId)
         .bidId(reviewCreateRequest.getBidId())
         .postId(reviewCreateRequest.getPostId())
         .reviewContent(reviewCreateRequest.getReviewContent())
@@ -63,7 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
 
-    // todo reviewerId 로 리뷰어 닉네임 가져오기
+    // todo reviewerId 로 user 에서 닉네임 가져오기
     String nickname = "임시 닉네임";
 
     return new ReviewProductResponse(review, post.getProductName(), nickname);
@@ -119,25 +117,39 @@ public class ReviewServiceImpl implements ReviewService {
 
   @Override
   @Transactional
-  public void updateReview(ReviewUpdateRequest updateRequest, Long reviewId) {
+  public void updateReview(ReviewUpdateRequest updateRequest, Long reviewId, Long userId, String role) {
 
-    // todo 본인인지 검증
+    if (!role.equals("MEMBER") && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN);
+    }
 
     Review savedReview = reviewRepository.findByIdAndDeletedYNFalse(reviewId).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다.")
     );
+
+    if (!Objects.equals(savedReview.getReviewerId(), userId) && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
+    }
+
     savedReview.updateReview(updateRequest);
   }
 
   @Override
   @Transactional
-  public void deleteReview(Long reviewId) {
+  public void deleteReview(Long reviewId, Long userId, String role) {
 
-    // todo 본인인지 검증
+    if (!role.equals("MEMBER") && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN);
+    }
 
     Review savedReview = reviewRepository.findByIdAndDeletedYNFalse(reviewId).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다.")
     );
+
+    if (!Objects.equals(savedReview.getReviewerId(), userId) && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
+    }
+
     savedReview.markAsDeleted();
   }
 }

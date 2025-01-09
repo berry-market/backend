@@ -15,9 +15,6 @@ public class PostCreateRequest {
   @NotNull(message = "게시글 카테고리 선택은 필수입니다.")
   private Long postCategoryId;
 
-  @NotNull
-  private Long writerId;
-
   @NotBlank(message = "상품 이름은 필수입니다.")
   @Size(max = 100, message = "100 글자 이내로 작성해주세요.")
   private String productName;

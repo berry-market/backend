@@ -2,6 +2,7 @@ package com.berry.post.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
+import com.berry.common.role.RoleCheck;
 import com.berry.post.application.service.review.ReviewServiceImpl;
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
 import com.berry.post.presentation.request.review.ReviewUpdateRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,25 +32,27 @@ public class ReviewController {
 
   private final ReviewServiceImpl reviewService;
 
+  @RoleCheck("MEMBER")
   @PostMapping
-  public ResponseEntity<ApiResponse<Void>> createReview(
-      @Valid @RequestBody ReviewCreateRequest reviewCreateRequest) {
-    reviewService.createReview(reviewCreateRequest);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "리뷰가 생성되었습니다."));
+  public ApiResponse<Void> createReview(
+      @Valid @RequestBody ReviewCreateRequest reviewCreateRequest,
+      @RequestHeader(value = "X-UserId") Long userId) {
+    reviewService.createReview(reviewCreateRequest, userId);
+    return ApiResponse.OK(ResSuccessCode.CREATED, "리뷰가 생성되었습니다.");
   }
 
   @GetMapping("/by-id")
-  public ResponseEntity<ApiResponse<ReviewProductResponse>> getReview(
+  public ApiResponse<ReviewProductResponse> getReview(
       @RequestParam Long postId) {
     ReviewProductResponse review = reviewService.getReview(postId);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, review,"리뷰 단건 조회가 완료되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.READ, review,"리뷰 단건 조회가 완료되었습니다.");
   }
 
   @GetMapping("/grade")
-  public ResponseEntity<ApiResponse<ReviewGradeResponse>> getReviewGrade(
+  public ApiResponse<ReviewGradeResponse> getReviewGrade(
       @RequestParam Long postId) {
     ReviewGradeResponse response = reviewService.getReviewGrade(postId);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, response, "리뷰 평점 평균 조회가 완료되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.READ, response, "리뷰 평점 평균 조회가 완료되었습니다.");
 
   }
 
@@ -61,18 +65,22 @@ public class ReviewController {
   }
 
   @PatchMapping("/{reviewId}")
-  public ResponseEntity<ApiResponse<Void>> updateReview(
+  public ApiResponse<Void> updateReview(
       @Valid @RequestBody ReviewUpdateRequest updateRequest,
-      @PathVariable Long reviewId) {
-    reviewService.updateReview(updateRequest, reviewId);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "리뷰가 수정되었습니다."));
+      @PathVariable Long reviewId,
+      @RequestHeader(value = "X-UserId") Long userId,
+      @RequestHeader(value = "X-Role") String role) {
+    reviewService.updateReview(updateRequest, reviewId, userId, role);
+    return ApiResponse.OK(ResSuccessCode.UPDATED, "리뷰가 수정되었습니다.");
   }
 
   @PutMapping("/{reviewId}")
-  public ResponseEntity<ApiResponse<Void>> deleteReview(
-      @PathVariable Long reviewId) {
-    reviewService.deleteReview(reviewId);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "리뷰가 삭제되었습니다."));
+  public ApiResponse<Void> deleteReview(
+      @PathVariable Long reviewId,
+      @RequestHeader(value = "X-UserId") Long userId,
+      @RequestHeader(value = "X-Role") String role) {
+    reviewService.deleteReview(reviewId, userId, role);
+    return ApiResponse.OK(ResSuccessCode.DELETED, "리뷰가 삭제되었습니다.");
   }
 
 }

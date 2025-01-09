@@ -4,7 +4,6 @@ import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.application.event.BidCreateEvent.PostBidCreateEvent;
 import com.berry.post.application.event.BidUpdateEvent.PostBidUpdateEvent;
-import com.berry.post.application.service.consumer.PostConsumerServiceImpl;
 import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.application.service.producer.PostProducerServiceImpl;
 import com.berry.post.domain.model.Post;
@@ -21,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,12 @@ public class PostServiceImpl implements PostService {
   @Override
   @Transactional
   public void createPost(PostCreateRequest postCreateRequest,
-      MultipartFile productImage, List<MultipartFile> productDetailsImages) throws IOException {
+      MultipartFile productImage, List<MultipartFile> productDetailsImages, Long userId,
+      String role) throws IOException {
+
+    if (!role.equals("MEMBER")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
+    }
 
     LocalDateTime auctionStartedAt = postCreateRequest.getAuctionStartedAt();
     LocalDateTime auctionEndedAt = postCreateRequest.getAuctionEndedAt();
@@ -53,9 +58,6 @@ public class PostServiceImpl implements PostService {
 
     // Post 에 먼저 단일 이미지 저장
     String productImageUrl = imageUploadService.upload(productImage);
-
-    // todo 임시 유저 아이디
-    Long userId = 1L;
 
     // 생성 시에는 일단 상품 상태 PENDING 상태로 생성
     Post post = Post.builder()
@@ -83,9 +85,11 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
-  public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, String sort, Pageable pageable) {
+  public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId,
+      String sort, Pageable pageable) {
 
-    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort, pageable);
+    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort,
+        pageable);
 
     return posts.map(post -> {
       // todo postId 마다 해당 유저의 찜 여부 확인하고 각각 response 에 추가. userId가 null 이면 로그인하지 않은 사용자이므로 isLiked = null
@@ -102,7 +106,8 @@ public class PostServiceImpl implements PostService {
     );
 
     List<String> productDetailsImages = new ArrayList<>();
-    List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
+    List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
+        post.getId());
     for (ProductDetailsImages savedProductDetailsImage : savedProductDetailsImages) {
       productDetailsImages.add(savedProductDetailsImage.getProductDetailsImage());
     }
@@ -129,8 +134,14 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
-  public void updatePost(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile productImage, List<MultipartFile> productDetailsImages)
+  public void updatePost(Long postId, PostUpdateRequest postUpdateRequest,
+      MultipartFile productImage, List<MultipartFile> productDetailsImages, Long userId,
+      String role)
       throws IOException {
+
+    if (!role.equals("MEMBER") && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN);
+    }
 
     LocalDateTime auctionStartedAt = postUpdateRequest.getAuctionStartedAt();
     LocalDateTime auctionEndedAt = postUpdateRequest.getAuctionEndedAt();
@@ -144,7 +155,9 @@ public class PostServiceImpl implements PostService {
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
 
-    // todo 본인이 작성한 게시글인지 검증
+    if (!Objects.equals(post.getWriterId(), userId) && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
+    }
 
     // Post 에 먼저 단일 이미지 저장
     if (productImage != null) {
@@ -154,11 +167,11 @@ public class PostServiceImpl implements PostService {
 
     // post 업데이트
     post.updateProduct(postUpdateRequest);
-    postRepository.save(post);
 
     // 기존 다중 이미지 삭제 후 다시 저장
     if (productDetailsImages != null) {
-      List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
+      List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
+          post.getId());
       productDetailsImagesRepository.deleteAll(savedProductDetailsImages);
 
       saveProductDetailsImages(productDetailsImages, post);
@@ -167,18 +180,26 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
-  public void deletePost(Long postId) {
+  public void deletePost(Long postId, Long userId, String role) {
+
+    if (!role.equals("MEMBER") && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN);
+    }
+
     Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
 
-    // todo 본인이 작성한 게시글인지 검증
+    if (!Objects.equals(post.getWriterId(), userId) && !role.equals("ADMIN")) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
+    }
 
     // post 삭제 처리
     post.markAsDeleted();
 
     // productDetailsImage 삭제 처리
-    List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(post.getId());
+    List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
+        post.getId());
     for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
       productDetailsImage.markAsDeleted();
     }
@@ -206,7 +227,8 @@ public class PostServiceImpl implements PostService {
     LocalDateTime now = LocalDateTime.now();
 
     List<Post> productStatusToStarts =
-        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusAndDeletedYNFalse(now, ProductStatus.PENDING);
+        postRepository.findAllByAuctionStartedAtBeforeAndProductStatusAndDeletedYNFalse(now,
+            ProductStatus.PENDING);
     for (Post productStatusToStart : productStatusToStarts) {
       productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
       Post savedPost = postRepository.save(productStatusToStart);
@@ -214,7 +236,8 @@ public class PostServiceImpl implements PostService {
     }
 
     List<Post> productStatusToCloses =
-        postRepository.findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(now, ProductStatus.CLOSED);
+        postRepository.findAllByAuctionEndedAtBeforeAndProductStatusNotAndDeletedYNFalse(now,
+            ProductStatus.CLOSED);
     for (Post productStatusToClose : productStatusToCloses) {
       productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
       Post savedPost = postRepository.save(productStatusToClose);
