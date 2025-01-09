@@ -1,9 +1,9 @@
-package com.berry.bid.infrastructure.common.role;
+package com.berry.common.role;
 
 
 
-import com.berry.bid.infrastructure.common.exceptionhandler.CustomApiException;
-import com.berry.bid.infrastructure.common.response.ResErrorCode;
+import com.berry.common.exceptionhandler.CustomApiException;
+import com.berry.common.response.ResErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

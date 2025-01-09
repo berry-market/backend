@@ -1,4 +1,4 @@
-package com.berry.bid.infrastructure.common.auditor;
+package com.berry.common.auditor;
 
 
 import jakarta.servlet.http.HttpServletRequest;
