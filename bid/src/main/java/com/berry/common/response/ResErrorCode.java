@@ -1,4 +1,4 @@
-package com.berry.bid.infrastructure.common.response;
+package com.berry.common.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
