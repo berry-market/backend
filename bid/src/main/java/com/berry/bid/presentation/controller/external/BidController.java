@@ -7,6 +7,7 @@ import com.berry.bid.infrastructure.client.PostClient;
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
 import com.berry.bid.infrastructure.model.dto.PostInternalView;
+import com.berry.common.role.RoleCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ public class BidController {
     private final PostClient postClient;
 
     @GetMapping("/bids/{bidId}")
+    @RoleCheck({"MEMBER","ADMIN"})
     public ApiResponse<BidView.Response> bidView(@PathVariable Long bidId) {
         Bid bid = bidService.getBidById(bidId);
         PostInternalView.Response postResponse = postClient.getPost(bid.getPostId());

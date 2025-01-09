@@ -3,6 +3,7 @@ package com.berry.bid.presentation.controller.external;
 import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
 import com.berry.bid.application.model.cache.BidChat;
 import com.berry.bid.domain.service.BidChatService;
+import com.berry.common.role.RoleCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,6 +20,7 @@ public class BidChatController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/api/v1/posts/{postId}/bids-chat")
+    @RoleCheck("MEMBER")
     public void createBidChat(@DestinationVariable Long postId,
                               @RequestHeader("X-UserId") Long userId,
                               @RequestHeader("X-Nickname") String nickname,

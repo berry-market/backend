@@ -6,6 +6,8 @@ import com.berry.bid.application.model.event.UserEvent;
 import com.berry.bid.application.service.message.BidChatProducerService;
 import com.berry.bid.domain.repository.BidChatRepository;
 import com.berry.bid.domain.service.BidChatService;
+import com.berry.common.exceptionhandler.CustomApiException;
+import com.berry.common.response.ResErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +22,6 @@ public class BidChatServiceImpl implements BidChatService {
     private final BidChatRepository bidChatRepository;
     private final BidChatProducerService bidChatProducerService;
 
-    //TODO : error exception
     @Override
     @Transactional
     public BidChat createBidChat(Long postId, BidChatCreate.Request request, Long bidderId) {
@@ -30,7 +31,7 @@ public class BidChatServiceImpl implements BidChatService {
             bidChatRepository.saveToSortedSet(bidChatKey + postId, bidChat);
             renewPoints(postId, bidChat);
         } else {
-            throw new RuntimeException();
+            throw new CustomApiException(ResErrorCode.BAD_REQUEST, "입찰가가 정상적으로 설정되지 않았습니다.");
         }
 
         return bidChat;
