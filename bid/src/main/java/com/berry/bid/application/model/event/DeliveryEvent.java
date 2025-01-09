@@ -11,10 +11,10 @@ public class DeliveryEvent {
     public static class Create {
         private final Long bidId;
         private final Long sellerId;
-        private final Long buyerId;
+        private final Long winnerId;
 
-        public static Create of(Long id, Long sellerId, Long buyerId) {
-            return new Create(id, sellerId, buyerId);
+        public static Create of(Long id, Long sellerId, Long winnerId) {
+            return new Create(id, sellerId, winnerId);
         }
     }
 
