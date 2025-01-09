@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ReviewService {
 
-  void createReview(ReviewCreateRequest reviewCreateRequest);
+  void createReview(ReviewCreateRequest reviewCreateRequest, Long userId);
 
   ReviewProductResponse getReview(Long postId);
 
@@ -18,8 +18,8 @@ public interface ReviewService {
 
   ReviewGradeResponse getReviewGrade(Long postId);
 
-  void updateReview(ReviewUpdateRequest updateRequest, Long reviewId);
+  void updateReview(ReviewUpdateRequest updateRequest, Long reviewId, Long userId, String role);
 
-  void deleteReview(Long reviewId);
+  void deleteReview(Long reviewId, Long userId, String role);
 
 }

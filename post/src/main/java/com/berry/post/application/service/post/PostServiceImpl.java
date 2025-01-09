@@ -155,7 +155,7 @@ public class PostServiceImpl implements PostService {
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
 
-    if (!Objects.equals(post.getWriterId(), userId)) {
+    if (!Objects.equals(post.getWriterId(), userId) && !role.equals("ADMIN")) {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
     }
 
@@ -190,7 +190,7 @@ public class PostServiceImpl implements PostService {
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
 
-    if (!Objects.equals(post.getWriterId(), userId)) {
+    if (!Objects.equals(post.getWriterId(), userId) && !role.equals("ADMIN")) {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
     }
 
