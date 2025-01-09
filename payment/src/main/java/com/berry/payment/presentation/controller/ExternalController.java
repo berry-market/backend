@@ -2,7 +2,9 @@ package com.berry.payment.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
+import com.berry.payment.application.dto.ConfirmPaymentReqDto;
 import com.berry.payment.application.dto.TempPaymentReqDto;
+import com.berry.payment.application.dto.TossPaymentResDto;
 import com.berry.payment.application.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,5 +25,12 @@ public class ExternalController {
     paymentService.saveTempPaymentData(request);
 
     return ApiResponse.OK(ResSuccessCode.SUCCESS, "결제 정보를 임시 저장하였습니다");
+  }
+
+  @PostMapping("/toss-confirm")
+  public synchronized ApiResponse<TossPaymentResDto> confirmPayment(
+      @RequestBody ConfirmPaymentReqDto request) {
+    TossPaymentResDto response = paymentService.confirmPayment(request);
+    return ApiResponse.OK(ResSuccessCode.SUCCESS, response);
   }
 }

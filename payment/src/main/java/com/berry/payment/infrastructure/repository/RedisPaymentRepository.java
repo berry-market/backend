@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisPaymentRepository implements PaymentRepository {
+public class RedisPaymentRepository {
 
   private final RedisTemplate<String, Object> redisTemplate;
 
