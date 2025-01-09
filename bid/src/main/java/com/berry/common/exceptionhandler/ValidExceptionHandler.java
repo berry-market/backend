@@ -1,7 +1,7 @@
-package com.berry.bid.infrastructure.common.exceptionhandler;
+package com.berry.common.exceptionhandler;
 
-import com.berry.bid.infrastructure.common.response.ApiResponse;
-import com.berry.bid.infrastructure.common.response.ResErrorCode;
+import com.berry.common.response.ApiResponse;
+import com.berry.common.response.ResErrorCode;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.stream.Collectors;

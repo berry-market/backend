@@ -1,6 +1,6 @@
-package com.berry.bid.infrastructure.common.exceptionhandler;
+package com.berry.common.exceptionhandler;
 
-import com.berry.bid.infrastructure.common.response.ResCode;
+import com.berry.common.response.ResCode;
 import lombok.Getter;
 
 @Getter
