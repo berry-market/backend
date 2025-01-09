@@ -6,9 +6,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserResDto {
-  private Long id;
+public class UserInfoResDto {
+  private Long userId;
   private String nickname;
+  private String profileImage;
   private Role role;
-  private String password;
 }
