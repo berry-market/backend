@@ -49,11 +49,8 @@ public class Payment extends BaseEntity {
   @Column(nullable = false)
   private String paymentStatus;
 
-  @Column(nullable = false)
-  private Boolean successYN;
-
   @Column
-  private String failReason;
+  private String cancelReason;
 
   @Column(nullable = false)
   private LocalDateTime requestedAt;
