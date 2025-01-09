@@ -14,7 +14,7 @@ public class BidChatConsumerServiceImpl implements BidChatConsumerService {
     private final BidService bidService;
 
     @Override
-    @KafkaListener(topics = "post-topic")
+    @KafkaListener(topics = "bid-events")
     public void closePostEvent(PostEvent.Close postEvent) {
         bidService.createBid(postEvent);
     }
