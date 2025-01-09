@@ -4,10 +4,13 @@ import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
 import com.berry.post.application.service.like.LikeService;
 import com.berry.post.presentation.request.like.CreatePostLikeRequest;
+import com.berry.post.presentation.response.like.LikeResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +26,14 @@ public class LikeController {
     ) {
         likeService.createPostLike(request, userId);
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "찜이 생성되었습니다."));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<LikeResponse>>> getLikes(
+        @RequestHeader("X-UserId") Long headerUserId,
+        @RequestHeader("X-Role") String role
+    ) {
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, likeService.getLikes(headerUserId, role)));
     }
 
     @DeleteMapping("/{likeId}")
