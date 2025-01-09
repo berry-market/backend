@@ -1,4 +1,4 @@
-package com.berry.bid.application.model.event;
+package com.berry.post.application.model.event;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ public class PostEvent {
     @Getter
     @AllArgsConstructor(access = AccessLevel.PUBLIC)
     public static class Price{
-        private final Long bidId;
+        private final Long postId;
         private final Integer successfulBidPrice;
 
         public static Price of(Long bidId, Integer price) {

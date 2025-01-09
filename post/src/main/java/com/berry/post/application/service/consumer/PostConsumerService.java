@@ -1,9 +1,9 @@
 package com.berry.post.application.service.consumer;
 
-import com.berry.post.application.event.BidEventMessage.BidPostEvent;
+import com.berry.post.application.model.event.PostEvent;
 
 public interface PostConsumerService {
 
-  void receiveBidEvent(BidPostEvent event);
+  void receiveBidEvent(PostEvent.Price event);
 
 }

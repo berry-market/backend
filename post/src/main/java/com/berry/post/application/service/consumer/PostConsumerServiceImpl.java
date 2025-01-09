@@ -2,7 +2,7 @@ package com.berry.post.application.service.consumer;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
-import com.berry.post.application.event.BidEventMessage.BidPostEvent;
+import com.berry.post.application.model.event.PostEvent;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.repository.PostRepository;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class PostConsumerServiceImpl implements PostConsumerService{
 
   @Override
   @KafkaListener(topics = "post-events")
-  public void receiveBidEvent(BidPostEvent event) {
+  public void receiveBidEvent(PostEvent.Price event) {
     Post post = postRepository.findByIdAndDeletedYNFalse(event.getPostId()).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
