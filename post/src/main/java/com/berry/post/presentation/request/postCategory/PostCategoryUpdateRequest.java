@@ -7,6 +7,6 @@ import lombok.Getter;
 public class PostCategoryUpdateRequest {
 
   @NotBlank(message = "카테고리명은 필수입니다.")
-  private String newCategoryName;
+  private String categoryName;
 
 }

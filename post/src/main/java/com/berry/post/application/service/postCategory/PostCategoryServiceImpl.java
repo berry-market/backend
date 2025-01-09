@@ -63,14 +63,14 @@ public class PostCategoryServiceImpl implements PostCategoryService {
   @Override
   @Transactional
   public void updatePostCategory(Long categoryId, PostCategoryUpdateRequest postCategoryUpdateRequest) {
-    if (postCategoryRepository.findByCategoryNameAndDeletedYNFalse(postCategoryUpdateRequest.getNewCategoryName()).isPresent()) {
+    if (postCategoryRepository.findByCategoryNameAndDeletedYNFalse(postCategoryUpdateRequest.getCategoryName()).isPresent()) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "이미 존재하는 카테고리입니다.");
     }
 
     PostCategory savedPostCategory = postCategoryRepository.findByIdAndDeletedYNFalse(categoryId)
         .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "존재하지 않는 카테고리 아이디입니다."));
 
-    savedPostCategory.updateCategoryName(postCategoryUpdateRequest.getNewCategoryName());
+    savedPostCategory.updateCategoryName(postCategoryUpdateRequest.getCategoryName());
 
     postCategoryRepository.save(savedPostCategory);
   }
