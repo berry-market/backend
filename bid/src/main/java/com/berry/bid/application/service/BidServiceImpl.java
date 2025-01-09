@@ -1,5 +1,6 @@
 package com.berry.bid.application.service;
 
+import com.berry.bid.application.model.event.BidEvent;
 import com.berry.bid.application.model.event.DeliveryEvent;
 import com.berry.bid.application.model.event.PostEvent;
 import com.berry.bid.application.service.message.BidProducerService;
@@ -44,6 +45,15 @@ public class BidServiceImpl implements BidService {
     @Override
     public PostInternalView.Response getPostDetails(Long bidId) {
         return postClient.getPost(bidId);
+    }
+
+    @Override
+    @Transactional
+    public void putAddress(BidEvent.Delivery event) {
+        Bid bid = bidRepository.findById(event.getBidId()).orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND,"해당 낙찰 건이 존재하지 않습니다."));
+        if (event.getDeliveryStatus().equals("STARTED")){
+            bid.putAddress();
+        }
     }
 
     private Long getSellerIdByPost(Long bidId) {

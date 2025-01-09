@@ -49,4 +49,8 @@ public class Bid {
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void putAddress() {
+        this.hasAddress = true;
+    }
 }
