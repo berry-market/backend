@@ -10,8 +10,10 @@ import com.berry.post.application.service.producer.PostProducerServiceImpl;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
+import com.berry.post.domain.model.Review;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
+import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.infrastructure.client.UserClient;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.request.Post.PostUpdateRequest;
@@ -40,6 +42,7 @@ public class PostServiceImpl implements PostService {
 
   private final PostRepository postRepository;
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
+  private final ReviewRepository reviewRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
   private final UserClient userClient;
@@ -215,9 +218,13 @@ public class PostServiceImpl implements PostService {
     for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
       productDetailsImage.markAsDeleted();
     }
-  }
 
-  // ------------------------
+    // 해당 postId에 리뷰가 있다면 그 리뷰도 삭제처리
+    Review review = reviewRepository.findByPostIdAndDeletedYNFalse(post.getId());
+    if (review != null) {
+      review.markAsDeleted();
+    }
+  }
 
   private void saveProductDetailsImages(List<MultipartFile> productDetailsImages, Post savedPost)
       throws IOException {
