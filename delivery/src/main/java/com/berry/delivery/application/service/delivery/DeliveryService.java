@@ -1,8 +1,9 @@
-package com.berry.delivery.application;
+package com.berry.delivery.application.service.delivery;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.common.role.RoleCheck;
+import com.berry.delivery.application.service.producer.DeliveryStatusProducer;
 import com.berry.delivery.domain.model.Delivery;
 import com.berry.delivery.domain.model.DeliveryStatus;
 import com.berry.delivery.domain.repository.DeliveryRepository;
@@ -11,21 +12,25 @@ import com.berry.delivery.presentation.dto.request.DeliveryCreateRequest;
 import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
 import com.berry.delivery.presentation.dto.response.DeliverySearchResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.kafka.KafkaException;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryStatusProducer deliveryStatusProducer;
 
     @Transactional
     public DeliveryDto createDelivery(DeliveryCreateRequest req) {
@@ -110,6 +115,15 @@ public class DeliveryService {
         validateStatusTransition(delivery.getStatus(), req.status());
 
         delivery.updatedelivery(req);
+
+        if (req.status() == DeliveryStatus.STARTED) {
+            try {
+                deliveryStatusProducer.publishDeliveryStatus(delivery.getBidId(), req.status());
+            } catch (KafkaException e) {
+                // 예외 객체 e는 마지막 파라미터로 전달
+                log.error("Kafka 이벤트 발행 실패. deliveryId={}, bidId={}, status={}", deliveryId, delivery.getBidId(), req.status(), e);
+            }
+        }
 
         deliveryRepository.save(delivery);
     }

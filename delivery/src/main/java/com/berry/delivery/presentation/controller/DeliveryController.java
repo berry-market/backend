@@ -2,12 +2,11 @@ package com.berry.delivery.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
-import com.berry.delivery.application.DeliveryService;
+import com.berry.delivery.application.service.delivery.DeliveryService;
 import com.berry.delivery.domain.model.DeliveryStatus;
 import com.berry.delivery.presentation.dto.DeliveryDto;
 import com.berry.delivery.presentation.dto.request.DeliveryCreateRequest;
 import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
-import com.berry.delivery.presentation.dto.response.DeliverySearchResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
