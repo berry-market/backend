@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,14 +20,12 @@ public class BidChatController {
 
     @MessageMapping("/api/v1/posts/{postId}/bids-chat")
     public void createBidChat(@DestinationVariable Long postId,
+                              @RequestHeader("X-UserId") Long userId,
+                              @RequestHeader("X-Nickname") String nickname,
                               @Payload BidChatCreate.Request bidChatCreate) {
 
-        //TODO : user 검증 시 바꾸기
-        Long bidderId = 1L;
-        String bidderNickname = "bidder";
-
-        BidChat bidchat = bidChatService.createBidChat(postId, bidChatCreate, bidderId);
-        BidChatCreate.Response response = BidChatCreate.Response.of(bidchat.getAmount(), bidderNickname, bidchat.getCreatedAt());
+        BidChat bidchat = bidChatService.createBidChat(postId, bidChatCreate, userId);
+        BidChatCreate.Response response = BidChatCreate.Response.of(bidchat.getAmount(), nickname, bidchat.getCreatedAt());
 
         messagingTemplate.convertAndSend("/topic/bids-chat/" + postId, response);
 
