@@ -116,7 +116,7 @@ public class DeliveryService {
 
         delivery.updatedelivery(req);
 
-        if (req.status() == DeliveryStatus.DONE) {
+        if (req.status() == DeliveryStatus.STARTED) {
             try {
                 deliveryStatusProducer.publishDeliveryStatus(delivery.getBidId(), req.status());
             } catch (KafkaException e) {
