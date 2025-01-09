@@ -2,6 +2,7 @@ package com.berry.post.application.service.post;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.post.application.dto.GetInternalUserResponse;
 import com.berry.post.application.event.BidCreateEvent.PostBidCreateEvent;
 import com.berry.post.application.event.BidUpdateEvent.PostBidUpdateEvent;
 import com.berry.post.application.service.image.ImageUploadService;
@@ -11,11 +12,13 @@ import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
+import com.berry.post.infrastructure.client.UserClient;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.request.Post.PostUpdateRequest;
 import com.berry.post.presentation.response.Post.PostDetailsResponse;
 import com.berry.post.presentation.response.Post.PostListResponse;
 import com.berry.post.presentation.response.Post.PostServerResponse;
+import feign.FeignException.FeignClientException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ public class PostServiceImpl implements PostService {
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
+  private final UserClient userClient;
 
   @Override
   @Transactional
@@ -114,8 +118,16 @@ public class PostServiceImpl implements PostService {
 
     // todo postId 마다 현재 로그인한 유저의 찜 여부 확인하고 각각 response 에 추가. userId가 null 이면 로그인하지 않은 사용자이므로 isLiked = null
     Boolean isLiked = true;
-    // todo 작성자 Id로 유저 받아오고 해당 작성자의 닉네임 와서 각 response 에 추가.
-    String writerNickName = "berry";
+
+    GetInternalUserResponse user;
+    try {
+      user = userClient.getInternalUserById(post.getWriterId()).getBody().getData();
+    } catch (FeignClientException e) {
+      throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
+          "User Service: " + e.getMessage());
+    }
+
+    String writerNickName = user.nickname();
 
     post.updateViewCount();
     postRepository.save(post);
