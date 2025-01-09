@@ -25,4 +25,13 @@ public class LikeController {
         return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "찜이 생성되었습니다."));
     }
 
+    @DeleteMapping("/{likeId}")
+    public ResponseEntity<ApiResponse<Void>> deletePostLike(
+        @RequestHeader("X-UserId") Long headerUserId,
+        @PathVariable("likeId") Long likeId
+    ) {
+        likeService.deletePostLike(headerUserId, likeId);
+        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "찜이 삭제되었습니다."));
+    }
+
 }
