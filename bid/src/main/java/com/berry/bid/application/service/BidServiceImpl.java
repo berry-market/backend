@@ -6,6 +6,8 @@ import com.berry.bid.domain.model.entity.Bid;
 import com.berry.bid.domain.repository.BidChatRepository;
 import com.berry.bid.domain.repository.BidRepository;
 import com.berry.bid.domain.service.BidService;
+import com.berry.common.exceptionhandler.CustomApiException;
+import com.berry.common.response.ResErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,18 +29,20 @@ public class BidServiceImpl implements BidService {
         bidProducerService.sendPostEvent(bidToPrice(bid));
     }
 
-    //TODO : error exception
     @Override
     public Bid getBidById(Long id) {
-        return bidRepository.findById(id).orElseThrow(NullPointerException::new);
+        return bidRepository.findById(id)
+                .orElseThrow(
+                        ()->new CustomApiException(ResErrorCode.NOT_FOUND,"해당하는 낙찰 정보가 존재하지 않습니다")
+                );
     }
 
     // delivery 로 event 넘겨주기
-    // post 로 event 넘겨주기
-    //TODO : error exception
     private Bid eventToBid(PostEvent.Close event) {
         Integer amount = bidChatRepository.getHighestPrice(bidChatKey + event.getPostId())
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(
+                        ()->new CustomApiException(ResErrorCode.NOT_FOUND,"해당하는 입찰 정보가 존재하지 않습니다")
+                )
                 .getAmount();
         return Bid.create(event.getPostId(), event.getWriterId(), amount);
     }
