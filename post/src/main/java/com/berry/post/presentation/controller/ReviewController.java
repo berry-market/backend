@@ -65,22 +65,22 @@ public class ReviewController {
   }
 
   @PatchMapping("/{reviewId}")
-  public ResponseEntity<ApiResponse<Void>> updateReview(
+  public ApiResponse<Void> updateReview(
       @Valid @RequestBody ReviewUpdateRequest updateRequest,
       @PathVariable Long reviewId,
       @RequestHeader(value = "X-UserId") Long userId,
       @RequestHeader(value = "X-Role") String role) {
     reviewService.updateReview(updateRequest, reviewId, userId, role);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "리뷰가 수정되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.UPDATED, "리뷰가 수정되었습니다.");
   }
 
   @PutMapping("/{reviewId}")
-  public ResponseEntity<ApiResponse<Void>> deleteReview(
+  public ApiResponse<Void> deleteReview(
       @PathVariable Long reviewId,
       @RequestHeader(value = "X-UserId") Long userId,
       @RequestHeader(value = "X-Role") String role) {
     reviewService.deleteReview(reviewId, userId, role);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.DELETED, "리뷰가 삭제되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.DELETED, "리뷰가 삭제되었습니다.");
   }
 
 }
