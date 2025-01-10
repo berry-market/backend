@@ -21,13 +21,11 @@ public class ExternalController {
 
   @PostMapping
   public ApiResponse<Void> saveTempPaymentData(@RequestBody TempPaymentReqDto request) {
-    // 서비스 호출
     paymentService.saveTempPaymentData(request);
-
     return ApiResponse.OK(ResSuccessCode.SUCCESS, "결제 정보를 임시 저장하였습니다");
   }
 
-  @PostMapping("/toss-confirm")
+  @PostMapping("/confirm")
   public synchronized ApiResponse<TossPaymentResDto> confirmPayment(
       @RequestBody ConfirmPaymentReqDto request) {
     TossPaymentResDto response = paymentService.confirmPayment(request);
