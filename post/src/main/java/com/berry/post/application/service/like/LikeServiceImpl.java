@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +26,7 @@ public class LikeServiceImpl implements LikeService {
         Like like = Like.builder()
             .userId(userId)
             .postId(request.postId())
+            .createdAt(LocalDateTime.now())
             .build();
         likeRepository.save(like);
     }
