@@ -54,7 +54,7 @@ public class PostController {
       @RequestParam(name = "type", required = false, defaultValue = "") String type,
       @RequestParam(name = "categoryId", required = false, defaultValue = "") Long postCategoryId,
       @RequestParam(name = "sort", required = false, defaultValue = "") String sort,
-      @RequestHeader(value = "X-UserId") Long userId,
+      @RequestHeader(value = "X-UserId", required = false) Long userId,
       Pageable pageable
   ) {
     Page<PostListResponse> posts = postServiceImpl.getPosts(keyword, type, postCategoryId, sort, pageable, userId);
@@ -76,7 +76,7 @@ public class PostController {
       @Valid @RequestPart(value = "postUpdateRequest") PostUpdateRequest postUpdateRequest,
       @RequestPart(value = "productImage", required = false) MultipartFile productImage,
       @RequestPart(value = "productDetailsImages", required = false) List<MultipartFile> productDetailsImages,
-      @RequestHeader(value = "X-UserId", required = false) Long userId,
+      @RequestHeader(value = "X-UserId") Long userId,
       @RequestHeader(value = "X-Role") String role
       ) throws IOException {
     postServiceImpl.updatePost(postId, postUpdateRequest, productImage, productDetailsImages, userId, role);
