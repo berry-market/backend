@@ -3,8 +3,7 @@ package com.berry.post.application.service.post;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.application.dto.GetInternalUserResponse;
-import com.berry.post.application.model.event.BidCreateEvent.PostBidCreateEvent;
-import com.berry.post.application.model.event.BidUpdateEvent.PostBidUpdateEvent;
+import com.berry.post.application.model.event.PostEvent;
 import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.application.service.producer.PostProducerServiceImpl;
 import com.berry.post.domain.model.Post;
@@ -87,7 +86,7 @@ public class PostServiceImpl implements PostService {
 
     // ProductDetailsImages 에 다중 이미지 저장
     saveProductDetailsImages(productDetailsImages, post);
-    sendPostCreateEventToBid(PostBidCreateEvent.from(savedPost));
+    sendPostCreateEventToBid(PostEvent.Close.from(savedPost));
   }
 
   @Override
@@ -251,7 +250,7 @@ public class PostServiceImpl implements PostService {
     for (Post productStatusToStart : productStatusToStarts) {
       productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
       Post savedPost = postRepository.save(productStatusToStart);
-      sendPostUpdateEventToBid(PostBidUpdateEvent.from(savedPost));
+      sendPostUpdateEventToBid(PostEvent.Update.from(savedPost));
     }
 
     List<Post> productStatusToCloses =
@@ -260,15 +259,15 @@ public class PostServiceImpl implements PostService {
     for (Post productStatusToClose : productStatusToCloses) {
       productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
       Post savedPost = postRepository.save(productStatusToClose);
-      sendPostUpdateEventToBid(PostBidUpdateEvent.from(savedPost));
+      sendPostUpdateEventToBid(PostEvent.Update.from(savedPost));
     }
   }
 
-  private void sendPostCreateEventToBid(PostBidCreateEvent event) {
+  private void sendPostCreateEventToBid(PostEvent.Close event) {
     postProducerService.sendPostCreateEvent(event);
   }
 
-  private void sendPostUpdateEventToBid(PostBidUpdateEvent event) {
+  private void sendPostUpdateEventToBid(PostEvent.Update event) {
     postProducerService.sendPostUpdateEvent(event);
   }
 }

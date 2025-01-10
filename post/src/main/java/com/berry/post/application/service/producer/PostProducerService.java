@@ -1,12 +1,11 @@
 package com.berry.post.application.service.producer;
 
-import com.berry.post.application.model.event.BidCreateEvent.PostBidCreateEvent;
-import com.berry.post.application.model.event.BidUpdateEvent.PostBidUpdateEvent;
+import com.berry.post.application.model.event.PostEvent;
 
 public interface PostProducerService {
 
-  void sendPostCreateEvent(PostBidCreateEvent event);
+  void sendPostCreateEvent(PostEvent.Close event);
 
-  void sendPostUpdateEvent(PostBidUpdateEvent event);
+  void sendPostUpdateEvent(PostEvent.Update event);
 
 }
