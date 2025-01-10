@@ -1,10 +1,14 @@
 package com.berry.payment.infrastructure.repository;
 
+import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -32,5 +36,21 @@ public class PaymentRepositoryImpl implements PaymentRepository {
   @Override
   public Payment save(Payment payment) {
     return jpaRepository.save(payment);
+  }
+
+
+  @Override
+  public Page<PaymentGetResDto> findAllByBuyerIdAndRequestedAtBetween(
+      Long buyerId,
+      LocalDateTime startDateTime,
+      LocalDateTime endDateTime,
+      Pageable pageable
+  ) {
+    return jpaRepository.findAllByBuyerIdAndRequestedAtBetween(
+        buyerId,
+        startDateTime,
+        endDateTime,
+        pageable
+    );
   }
 }

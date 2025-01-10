@@ -1,8 +1,12 @@
 package com.berry.payment.domain.repository;
 
+import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.domain.model.Payment;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PaymentRepository {
 
@@ -14,4 +18,10 @@ public interface PaymentRepository {
 
   Payment save(Payment payment);
 
+  Page<PaymentGetResDto> findAllByBuyerIdAndRequestedAtBetween(
+      Long buyerId,
+      LocalDateTime startDateTime,
+      LocalDateTime endDateTime,
+      Pageable pageable
+  );
 }
