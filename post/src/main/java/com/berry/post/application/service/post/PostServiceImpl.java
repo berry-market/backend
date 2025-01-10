@@ -7,10 +7,12 @@ import com.berry.post.application.model.event.BidCreateEvent.PostBidCreateEvent;
 import com.berry.post.application.model.event.BidUpdateEvent.PostBidUpdateEvent;
 import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.application.service.producer.PostProducerServiceImpl;
+import com.berry.post.domain.model.Like;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
 import com.berry.post.domain.model.Review;
+import com.berry.post.domain.repository.LikeRepository;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
 import com.berry.post.domain.repository.ReviewRepository;
@@ -43,6 +45,7 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final ProductDetailsImagesRepository productDetailsImagesRepository;
   private final ReviewRepository reviewRepository;
+  private final LikeRepository likeRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
   private final UserClient userClient;
@@ -93,21 +96,23 @@ public class PostServiceImpl implements PostService {
   @Override
   @Transactional
   public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId,
-      String sort, Pageable pageable) {
+      String sort, Pageable pageable, Long userId) {
 
     Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort,
         pageable);
 
     return posts.map(post -> {
-      // todo postId 마다 해당 유저의 찜 여부 확인하고 각각 response 에 추가. userId가 null 이면 로그인하지 않은 사용자이므로 isLiked = null
-      Boolean isLiked = true; // 실제로는 유저에서 게시글마다 찜 여부를 호출해와야 함.
+      Boolean isLiked = null;
+      if (userId != null) {
+        isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
+      }
       return new PostListResponse(post, isLiked);
     });
   }
 
   @Override
   @Transactional
-  public PostDetailsResponse getPost(Long postId) {
+  public PostDetailsResponse getPost(Long postId, Long userId) {
     Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
         () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
     );
@@ -119,8 +124,10 @@ public class PostServiceImpl implements PostService {
       productDetailsImages.add(savedProductDetailsImage.getProductDetailsImage());
     }
 
-    // todo postId 마다 현재 로그인한 유저의 찜 여부 확인하고 각각 response 에 추가. userId가 null 이면 로그인하지 않은 사용자이므로 isLiked = null
-    Boolean isLiked = true;
+    Boolean isLiked = null;
+    if (userId != null) {
+      isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
+    }
 
     GetInternalUserResponse user;
     try {

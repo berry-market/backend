@@ -6,6 +6,7 @@ import com.berry.post.domain.model.Like;
 import com.berry.post.domain.repository.LikeRepository;
 import com.berry.post.presentation.request.like.CreatePostLikeRequest;
 import com.berry.post.presentation.response.like.LikeResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class LikeServiceImpl implements LikeService {
         Like like = Like.builder()
             .userId(userId)
             .postId(request.postId())
+            .createdAt(LocalDateTime.now())
             .build();
         likeRepository.save(like);
     }
