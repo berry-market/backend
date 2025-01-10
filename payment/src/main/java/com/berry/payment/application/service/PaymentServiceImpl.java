@@ -55,9 +55,6 @@ public class PaymentServiceImpl implements PaymentService {
     // 토스 API 호출
     TossPaymentResDto response = tossPaymentClient.confirmPayment(orderId, paymentKey, amount);
 
-    // Redis 데이터 삭제
-    paymentRepository.deleteTempPaymentData(orderId);
-
     // 결제 승인 성공: Payment 데이터 저장
     Payment payment = Payment.builder()
         .buyerId(request.getBuyerId())
@@ -72,6 +69,9 @@ public class PaymentServiceImpl implements PaymentService {
         .build();
 
     paymentRepository.save(payment);
+
+    // Redis 데이터 삭제
+    paymentRepository.deleteTempPaymentData(orderId);
 
     return response;
   }
