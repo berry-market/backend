@@ -8,7 +8,6 @@ import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +22,11 @@ public class AdminUserController {
 
     @GetMapping
     @RoleCheck("ADMIN")
-    public ResponseEntity<ApiResponse<Page<GetUserDetailResponse>>> getUsers(
+    public ApiResponse<Page<GetUserDetailResponse>> getUsers(
         @RequestHeader("X-Role") String role,
         Pageable pageable
     ) {
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUsers(pageable)));
+        return ApiResponse.OK(ResSuccessCode.READ, userService.getUsers(pageable));
     }
 
 }

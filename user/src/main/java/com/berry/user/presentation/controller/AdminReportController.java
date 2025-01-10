@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,22 +22,22 @@ public class AdminReportController {
 
     @GetMapping
     @RoleCheck("ADMIN")
-    public ResponseEntity<ApiResponse<Page<ReportResponse>>> getReports(
+    public ApiResponse<Page<ReportResponse>> getReports(
         @RequestHeader("X-Role") String role,
         Pageable pageable,
         @RequestParam ReportStatus reportStatus
     ) {
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, reportService.getReports(pageable, reportStatus)));
+        return ApiResponse.OK(ResSuccessCode.READ, reportService.getReports(pageable, reportStatus));
     }
 
     @PatchMapping
     @RoleCheck("ADMIN")
-    public ResponseEntity<ApiResponse<Void>> updateReportStatus(
+    public ApiResponse<Void> updateReportStatus(
         @RequestHeader("X-Role") String role,
         @RequestBody @Valid UpdateReportStatusRequest request
     ) {
         reportService.updateReportStatus(request);
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "신고된 내용이 적절히 처리되었습니다."));
+        return ApiResponse.OK(ResSuccessCode.UPDATED, "신고된 내용이 적절히 처리되었습니다.");
     }
 
 }
