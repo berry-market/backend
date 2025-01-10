@@ -37,7 +37,7 @@ public class Report {
 
     @Column(name = "report_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ReportStatus reportStatus = ReportStatus.PENDING;
+    private ReportStatus reportStatus;
 
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;

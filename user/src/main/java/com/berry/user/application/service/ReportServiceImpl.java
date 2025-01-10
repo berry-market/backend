@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
@@ -42,6 +43,8 @@ public class ReportServiceImpl implements ReportService {
             .reportedUser(reportedUser)
             .reportType(request.reportType())
             .reportReason(request.reportReason())
+            .createdAt(LocalDateTime.now())
+            .reportStatus(ReportStatus.PENDING)
             .build();
         reportJpaRepository.save(report);
     }
