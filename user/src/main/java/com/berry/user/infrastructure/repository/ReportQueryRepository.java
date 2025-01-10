@@ -1,9 +1,9 @@
-package com.berry.report.infrastructure.repository;
+package com.berry.user.infrastructure.repository;
 
 
-import com.berry.report.domain.model.QReport;
-import com.berry.report.domain.model.ReportStatus;
-import com.berry.report.presentation.dto.response.ReportResponse;
+import com.berry.user.domain.model.QReport;
+import com.berry.user.domain.model.ReportStatus;
+import com.berry.user.presentation.dto.response.ReportResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,9 @@
-package com.berry.report.presentation.controller;
+package com.berry.user.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
-import com.berry.report.domain.service.ReportService;
-import com.berry.report.presentation.dto.request.CreateReportRequest;
+import com.berry.user.domain.service.ReportService;
+import com.berry.user.presentation.dto.request.CreateReportRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

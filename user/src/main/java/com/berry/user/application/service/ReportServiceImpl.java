@@ -1,15 +1,15 @@
-package com.berry.report.application.service;
+package com.berry.user.application.service;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
-import com.berry.report.domain.model.Report;
-import com.berry.report.domain.model.ReportStatus;
-import com.berry.report.domain.repository.ReportJpaRepository;
-import com.berry.report.domain.service.ReportService;
-import com.berry.report.infrastructure.repository.ReportQueryRepository;
-import com.berry.report.presentation.dto.request.CreateReportRequest;
-import com.berry.report.presentation.dto.request.UpdateReportStatusRequest;
-import com.berry.report.presentation.dto.response.ReportResponse;
+import com.berry.user.domain.model.Report;
+import com.berry.user.domain.model.ReportStatus;
+import com.berry.user.domain.repository.ReportJpaRepository;
+import com.berry.user.domain.service.ReportService;
+import com.berry.user.infrastructure.repository.ReportQueryRepository;
+import com.berry.user.presentation.dto.request.CreateReportRequest;
+import com.berry.user.presentation.dto.request.UpdateReportStatusRequest;
+import com.berry.user.presentation.dto.response.ReportResponse;
 import com.berry.user.domain.model.User;
 import com.berry.user.domain.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;

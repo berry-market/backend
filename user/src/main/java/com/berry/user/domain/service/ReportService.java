@@ -1,9 +1,9 @@
-package com.berry.report.domain.service;
+package com.berry.user.domain.service;
 
-import com.berry.report.domain.model.ReportStatus;
-import com.berry.report.presentation.dto.request.CreateReportRequest;
-import com.berry.report.presentation.dto.request.UpdateReportStatusRequest;
-import com.berry.report.presentation.dto.response.ReportResponse;
+import com.berry.user.domain.model.ReportStatus;
+import com.berry.user.presentation.dto.request.CreateReportRequest;
+import com.berry.user.presentation.dto.request.UpdateReportStatusRequest;
+import com.berry.user.presentation.dto.response.ReportResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

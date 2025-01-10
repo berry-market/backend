@@ -1,7 +1,6 @@
-package com.berry.report.domain.model;
+package com.berry.user.domain.model;
 
-import com.berry.report.presentation.dto.request.UpdateReportStatusRequest;
-import com.berry.user.domain.model.User;
+import com.berry.user.presentation.dto.request.UpdateReportStatusRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

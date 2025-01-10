@@ -1,12 +1,12 @@
-package com.berry.report.presentation.controller;
+package com.berry.user.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
 import com.berry.common.role.RoleCheck;
-import com.berry.report.domain.model.ReportStatus;
-import com.berry.report.domain.service.ReportService;
-import com.berry.report.presentation.dto.request.UpdateReportStatusRequest;
-import com.berry.report.presentation.dto.response.ReportResponse;
+import com.berry.user.domain.model.ReportStatus;
+import com.berry.user.domain.service.ReportService;
+import com.berry.user.presentation.dto.request.UpdateReportStatusRequest;
+import com.berry.user.presentation.dto.response.ReportResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

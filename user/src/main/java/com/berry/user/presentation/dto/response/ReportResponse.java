@@ -1,7 +1,7 @@
-package com.berry.report.presentation.dto.response;
+package com.berry.user.presentation.dto.response;
 
-import com.berry.report.domain.model.ReportStatus;
-import com.berry.report.domain.model.ReportType;
+import com.berry.user.domain.model.ReportStatus;
+import com.berry.user.domain.model.ReportType;
 
 import java.time.LocalDateTime;
 
