@@ -10,8 +10,6 @@ import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
 import jakarta.transaction.Transactional;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,11 +67,8 @@ public class PaymentServiceImpl implements PaymentService {
         .amount(response.getTotalAmount())
         .paymentMethod(response.getMethod())
         .paymentStatus(response.getStatus())
-        .requestedAt(
-            LocalDateTime.parse(response.getRequestedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-        .approvedAt(response.getApprovedAt() != null
-            ? LocalDateTime.parse(response.getApprovedAt(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            : null)
+        .requestedAt(response.getRequestedAt())
+        .approvedAt(response.getApprovedAt())
         .build();
 
     paymentRepository.save(payment);

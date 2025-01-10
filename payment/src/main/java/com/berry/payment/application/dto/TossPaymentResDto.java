@@ -1,6 +1,8 @@
 package com.berry.payment.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 import lombok.Getter;
 import org.json.simple.JSONObject;
@@ -16,10 +18,11 @@ public class TossPaymentResDto {
   private int totalAmount;
   private String status;
   private String method;
-  private String requestedAt;
-  private String approvedAt;
+  private LocalDateTime requestedAt;
+  private LocalDateTime approvedAt;
 
   public static TossPaymentResDto fromJson(JSONObject jsonResponse) {
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     return TossPaymentResDto.builder()
         .paymentKey((String) jsonResponse.get("paymentKey"))
         .orderId((String) jsonResponse.get("orderId"))
@@ -27,8 +30,12 @@ public class TossPaymentResDto {
         .totalAmount(((Long) jsonResponse.get("totalAmount")).intValue())
         .status((String) jsonResponse.get("status"))
         .method((String) jsonResponse.get("method"))
-        .requestedAt((String) jsonResponse.get("requestedAt"))
-        .approvedAt((String) jsonResponse.get("approvedAt"))
+        .requestedAt(parseDateTime((String) jsonResponse.get("requestedAt"), formatter))
+        .approvedAt(parseDateTime((String) jsonResponse.get("approvedAt"), formatter))
         .build();
+  }
+
+  private static LocalDateTime parseDateTime(String dateTime, DateTimeFormatter formatter) {
+    return dateTime != null ? LocalDateTime.parse(dateTime, formatter) : null;
   }
 }
