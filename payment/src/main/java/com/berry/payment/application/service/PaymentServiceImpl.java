@@ -3,15 +3,19 @@ package com.berry.payment.application.service;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.payment.application.dto.ConfirmPaymentReqDto;
+import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.application.dto.TempPaymentReqDto;
 import com.berry.payment.application.dto.TossPaymentResDto;
 import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -74,5 +78,17 @@ public class PaymentServiceImpl implements PaymentService {
     paymentRepository.deleteTempPaymentData(orderId);
 
     return response;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<PaymentGetResDto> getPayments (
+      Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    return paymentRepository.findAllByBuyerIdAndRequestedAtBetween(
+        userId,
+        startDate.atStartOfDay(),
+        endDate.plusDays(1).atStartOfDay(),
+        pageable
+    );
   }
 }
