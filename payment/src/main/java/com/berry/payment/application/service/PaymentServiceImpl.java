@@ -9,6 +9,7 @@ import com.berry.payment.application.dto.TossPaymentResDto;
 import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
+import com.berry.payment.infrastructure.kafka.PaymentCompletedEvent;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
 
   private final PaymentRepository paymentRepository;
   private final TossPaymentClient tossPaymentClient;
+  private final PaymentProducerService paymentProducer;
 
   @Override
   @Transactional
@@ -76,6 +78,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     // Redis 데이터 삭제
     paymentRepository.deleteTempPaymentData(orderId);
+
+    // Kafka 이벤트 발행
+    PaymentCompletedEvent event = new PaymentCompletedEvent(request.getBuyerId(), response.getTotalAmount());
+    paymentProducer.sendPaymentEvent(event);
 
     return response;
   }
