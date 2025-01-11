@@ -102,10 +102,7 @@ public class PostServiceImpl implements PostService {
         pageable);
 
     return posts.map(post -> {
-      Boolean isLiked = null;
-      if (userId != null) {
-        isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
-      }
+      Boolean isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
       return new PostListResponse(post, isLiked);
     });
   }
@@ -124,10 +121,7 @@ public class PostServiceImpl implements PostService {
       productDetailsImages.add(savedProductDetailsImage.getProductDetailsImage());
     }
 
-    Boolean isLiked = null;
-    if (userId != null) {
-      isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
-    }
+    Boolean isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
 
     GetInternalUserResponse user;
     try {
