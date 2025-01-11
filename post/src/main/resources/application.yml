@@ -28,12 +28,11 @@ spring:
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      auto-offset-reset: earliest  # 메시지를 처음부터 읽을지(latest: 최신만 읽음) 설정
       properties:
         spring:
           json:
             trusted:
-              packages: "com.berry.bid.application.model.event"
+              packages: "*"
 
 server:
   port: 8082
