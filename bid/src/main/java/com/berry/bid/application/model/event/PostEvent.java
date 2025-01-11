@@ -3,13 +3,15 @@ package com.berry.bid.application.model.event;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class PostEvent {
     @Getter
     @AllArgsConstructor(access = AccessLevel.PUBLIC)
+    @NoArgsConstructor(access = AccessLevel.PUBLIC)
     public static class Close{
-        private final Long postId;
-        private final Long writerId;
+        private Long postId;
+        private Long writerId;
     }
 
     @Getter
