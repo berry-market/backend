@@ -54,15 +54,19 @@ public class PostController {
       @RequestParam(name = "type", required = false, defaultValue = "") String type,
       @RequestParam(name = "categoryId", required = false, defaultValue = "") Long postCategoryId,
       @RequestParam(name = "sort", required = false, defaultValue = "") String sort,
+      @RequestHeader(value = "X-UserId", required = false) Long userId,
       Pageable pageable
   ) {
-    Page<PostListResponse> posts = postServiceImpl.getPosts(keyword, type, postCategoryId, sort, pageable);
+    Page<PostListResponse> posts = postServiceImpl.getPosts(keyword, type, postCategoryId, sort, pageable, userId);
     return ApiResponse.OK(ResSuccessCode.READ, posts,"게시글이 전체 조회되었습니다.");
   }
 
   @GetMapping("/{postId}")
-  public ApiResponse<PostDetailsResponse> getPost(@PathVariable Long postId) {
-    PostDetailsResponse post = postServiceImpl.getPost(postId);
+  public ApiResponse<PostDetailsResponse> getPost(
+      @PathVariable Long postId,
+      @RequestHeader(value = "X-UserId", required = false) Long userId
+  ) {
+    PostDetailsResponse post = postServiceImpl.getPost(postId, userId);
     return ApiResponse.OK(ResSuccessCode.READ, post, "게시글이 단건 조회되었습니다.");
   }
 
