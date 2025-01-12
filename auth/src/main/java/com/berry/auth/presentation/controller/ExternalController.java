@@ -21,13 +21,13 @@ public class ExternalController {
   private final AuthService authService;
 
   @PostMapping("/logout")
-  public ResponseEntity<ApiResponse<Void>> logout(
+  public ApiResponse<Void> logout(
       @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
       @CookieValue(value = "refreshToken", required = false) String refreshToken,
       HttpServletResponse response) {
 
     authService.logout(authorizationHeader, refreshToken, response);
 
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.SUCCESS, "로그아웃이 완료되었습니다."));
+    return ApiResponse.OK(ResSuccessCode.SUCCESS, "로그아웃이 완료되었습니다.");
   }
 }

@@ -27,10 +27,10 @@ public class InternalController {
   }
 
   @PostMapping("/validate-token")
-  public ResponseEntity<ApiResponse<TokenValidResDto>> validateToken(
+  public ApiResponse<TokenValidResDto> validateToken(
       @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
     String accessToken = authorizationHeader.substring(7);
     TokenValidResDto userInfo = authService.validateToken(accessToken);
-    return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.SUCCESS, userInfo));
+    return ApiResponse.OK(ResSuccessCode.SUCCESS, userInfo);
   }
 }
