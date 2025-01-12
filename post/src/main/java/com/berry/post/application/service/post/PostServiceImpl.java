@@ -124,7 +124,7 @@ public class PostServiceImpl implements PostService {
 
     GetInternalUserResponse user;
     try {
-      user = userClient.getInternalUserById(post.getWriterId()).getBody().getData();
+      user = userClient.getInternalUserById(post.getWriterId()).getData();
     } catch (FeignClientException e) {
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
           "User Service: " + e.getMessage());
