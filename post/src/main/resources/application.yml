@@ -21,7 +21,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -35,7 +35,7 @@ spring:
               packages: "*"
 
 server:
-  port: 8082
+  port: ${PORT}
 
 
 s3:
@@ -45,6 +45,8 @@ s3:
     region: ap-northeast-2
   bucket: ${S3_BUCKET}
 
-
-
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULT_ZONE}
 

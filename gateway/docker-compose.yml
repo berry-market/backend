@@ -1,0 +1,30 @@
+services:
+  gateway-service:
+    build:
+      context: .
+    image: gateway-service:latest
+    container_name: gateway-service
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+      - EUREKA_DEFAULT_ZONE=${EUREKA_DEFAULT_ZONE}
+      - AUTH_REDIS_HOST=${AUTH_REDIS_HOST}
+      - AUTH_REDIS_PORT=${AUTH_REDIS_PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - BID_URI=${BID_URI}
+    env_file:
+      - ../.env
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT}/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: always
+    networks:
+      - msa-network
+
+networks:
+  msa-network:
+    external: true

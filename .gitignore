@@ -9,3 +9,5 @@
 # IntelliJ IDEA
 .idea/
 *.iml
+
+.env
