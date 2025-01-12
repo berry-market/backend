@@ -1,6 +1,6 @@
-package com.berry.report.presentation.dto.request;
+package com.berry.user.presentation.dto.request;
 
-import com.berry.report.domain.model.ReportType;
+import com.berry.user.domain.model.ReportType;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateReportRequest(

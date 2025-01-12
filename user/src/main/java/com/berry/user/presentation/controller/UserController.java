@@ -9,7 +9,6 @@ import com.berry.user.presentation.dto.request.UpdatePasswordRequest;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,38 +19,38 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
+    public ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         userService.signUp(request);
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.CREATED, "회원가입이 완료되었습니다."));
+        return ApiResponse.OK(ResSuccessCode.CREATED, "회원가입이 완료되었습니다.");
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<GetUserResponse>> getUserById(
+    public ApiResponse<GetUserResponse> getUserById(
         @RequestHeader("X-UserId") Long headerUserId,
         @RequestHeader("X-Role") String role,
         @PathVariable("userId") Long userId
     ) {
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.READ, userService.getUserById(headerUserId, userId, role)));
+        return ApiResponse.OK(ResSuccessCode.READ, userService.getUserById(headerUserId, userId, role));
     }
 
     @PatchMapping("/{userId}/email")
-    public ResponseEntity<ApiResponse<Void>> updateUserEmail(
+    public ApiResponse<Void> updateUserEmail(
         @RequestHeader("X-UserId") Long headerUserId,
         @PathVariable("userId") Long userId,
         @RequestBody @Valid UpdateEmailRequest request
     ) {
         userService.updateUserEmail(headerUserId, userId, request);
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "이메일이 성공적으로 변경되었습니다."));
+        return ApiResponse.OK(ResSuccessCode.UPDATED, "이메일이 성공적으로 변경되었습니다.");
     }
 
     @PatchMapping("/{userId}/password")
-    public ResponseEntity<ApiResponse<Void>> updateUserPassword(
+    public ApiResponse<Void> updateUserPassword(
         @RequestHeader("X-UserId") Long headerUserId,
         @PathVariable("userId") Long userId,
         @RequestBody @Valid UpdatePasswordRequest request
     ) {
         userService.updateUserPassword(headerUserId, userId, request);
-        return ResponseEntity.ok(ApiResponse.OK(ResSuccessCode.UPDATED, "비밀번호가 성공적으로 변경되었습니다."));
+        return ApiResponse.OK(ResSuccessCode.UPDATED, "비밀번호가 성공적으로 변경되었습니다.");
     }
 
 }

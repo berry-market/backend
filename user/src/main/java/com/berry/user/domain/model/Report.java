@@ -1,7 +1,6 @@
-package com.berry.report.domain.model;
+package com.berry.user.domain.model;
 
-import com.berry.report.presentation.dto.request.UpdateReportStatusRequest;
-import com.berry.user.domain.model.User;
+import com.berry.user.presentation.dto.request.UpdateReportStatusRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -38,7 +37,7 @@ public class Report {
 
     @Column(name = "report_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ReportStatus reportStatus = ReportStatus.PENDING;
+    private ReportStatus reportStatus;
 
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
