@@ -1,5 +1,6 @@
 package com.berry.post.infrastructure.config;
 
+import com.berry.post.application.model.event.PostEvent;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -27,8 +28,12 @@ public class KafkaConsumerConfig {
     configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaPort);
     configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "post-group");
     configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-    configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
+
+    // 올바르게 JsonDeserializer 클래스를 문자열로 설정
+    configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
     configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+    configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, PostEvent.Price.class);
+
     return new DefaultKafkaConsumerFactory<>(configProps);
   }
 
