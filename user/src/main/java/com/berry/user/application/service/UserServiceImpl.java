@@ -136,10 +136,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void withdrawUser(Long headerUserId, Long userId) {
         validateUserSelf(headerUserId, userId);
         User user = getUser(userId);
-        user.delete(String.valueOf(headerUserId));
+        user.markAsDeleted();
     }
 
     private void validateEmail(String newEmail) {

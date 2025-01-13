@@ -66,9 +66,4 @@ public class User extends BaseEntity {
         this.setUpdatedBy(userId);
     }
 
-    public void delete(String userId) {
-        this.setDeletedYN(true);
-        this.setDeletedAt(LocalDateTime.now());
-        this.setDeletedBy(userId);
-    }
 }
