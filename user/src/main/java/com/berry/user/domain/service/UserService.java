@@ -26,7 +26,7 @@ public interface UserService {
 
     void updateUserPassword(Long headerUserId, Long userId, UpdatePasswordRequest request);
 
-    Boolean isUserIdDuplicated(String userId);
+    Boolean isUserIdDuplicated(String nickname);
 
     void updateProfileImage(Long headerUserId, Long userId, MultipartFile profileImage);
 

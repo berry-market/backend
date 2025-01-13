@@ -122,8 +122,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean isUserIdDuplicated(String userId) {
-        return userJpaRepository.existsByNickname(userId);
+    public Boolean isUserIdDuplicated(String nickname) {
+        return userJpaRepository.existsByNickname(nickname);
     }
 
     @Override
