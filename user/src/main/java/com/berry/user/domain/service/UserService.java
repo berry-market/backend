@@ -29,4 +29,6 @@ public interface UserService {
     Boolean isUserIdDuplicated(String userId);
 
     void updateProfileImage(Long headerUserId, Long userId, MultipartFile profileImage);
+
+    void withdrawUser(Long headerUserId, Long userId);
 }

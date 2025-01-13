@@ -135,6 +135,13 @@ public class UserServiceImpl implements UserService {
         user.updateProfileImage(imageUrl, String.valueOf(headerUserId));
     }
 
+    @Override
+    public void withdrawUser(Long headerUserId, Long userId) {
+        validateUserSelf(headerUserId, userId);
+        User user = getUser(userId);
+        user.delete(String.valueOf(headerUserId));
+    }
+
     private void validateEmail(String newEmail) {
         if (userJpaRepository.existsByEmail(newEmail)) {
             throw new CustomApiException(ResErrorCode.CONFLICT, "이미 사용 중인 이메일입니다.");

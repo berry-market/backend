@@ -69,4 +69,13 @@ public class UserController {
         return ApiResponse.OK(ResSuccessCode.UPDATED, "프로필 이미지가 성공적으로 수정되었습니다.");
     }
 
+    @DeleteMapping("/withdraw/{userId}")
+    public ApiResponse<Void> withdrawUser(
+        @RequestHeader("X-UserId") Long headerUserId,
+        @PathVariable("userId") Long userId
+    ) {
+        userService.withdrawUser(headerUserId, userId);
+        return ApiResponse.OK(ResSuccessCode.DELETED, "회원 탈퇴가 완료되었습니다.");
+    }
+
 }
