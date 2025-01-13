@@ -53,4 +53,9 @@ public class UserController {
         return ApiResponse.OK(ResSuccessCode.UPDATED, "비밀번호가 성공적으로 변경되었습니다.");
     }
 
+    @GetMapping("/check-id/{userId}")
+    public ApiResponse<Boolean> checkUserIdDuplication(@PathVariable("userId") String userId) {
+        return ApiResponse.OK(ResSuccessCode.READ, userService.isUserIdDuplicated(userId));
+    }
+
 }

@@ -24,4 +24,6 @@ public interface UserService {
     void updateUserEmail(Long headerUserId, Long userId, UpdateEmailRequest request);
 
     void updateUserPassword(Long headerUserId, Long userId, UpdatePasswordRequest request);
+
+    Boolean isUserIdDuplicated(String userId);
 }

@@ -119,6 +119,11 @@ public class UserServiceImpl implements UserService {
         user.updatePassword(encodedNewPassword, String.valueOf(userId));
     }
 
+    @Override
+    public Boolean isUserIdDuplicated(String userId) {
+        return userJpaRepository.existsByNickname(userId);
+    }
+
     private void validateEmail(String newEmail) {
         if (userJpaRepository.existsByEmail(newEmail)) {
             throw new CustomApiException(ResErrorCode.CONFLICT, "이미 사용 중인 이메일입니다.");
