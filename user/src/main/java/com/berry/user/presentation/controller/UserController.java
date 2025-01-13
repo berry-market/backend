@@ -10,6 +10,7 @@ import com.berry.user.presentation.dto.response.GetUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,6 +57,16 @@ public class UserController {
     @GetMapping("/check-id/{userId}")
     public ApiResponse<Boolean> checkUserIdDuplication(@PathVariable("userId") String userId) {
         return ApiResponse.OK(ResSuccessCode.READ, userService.isUserIdDuplicated(userId));
+    }
+
+    @PatchMapping("/{userId}/profile-image")
+    public ApiResponse<Void> updateProfileImage(
+        @RequestHeader("X-UserId") Long headerUserId,
+        @PathVariable("userId") Long userId,
+        @RequestPart(value = "profileImage") MultipartFile profileImage
+    ) {
+        userService.updateProfileImage(headerUserId, userId, profileImage);
+        return ApiResponse.OK(ResSuccessCode.UPDATED, "프로필 이미지가 성공적으로 수정되었습니다.");
     }
 
 }

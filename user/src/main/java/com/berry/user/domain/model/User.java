@@ -58,4 +58,9 @@ public class User extends BaseEntity {
         user.setCreatedBy(request.nickname());
         return user;
     }
+
+    public void updateProfileImage(String imageUrl, String userId) {
+        this.profileImage = imageUrl;
+        this.setUpdatedBy(userId);
+    }
 }

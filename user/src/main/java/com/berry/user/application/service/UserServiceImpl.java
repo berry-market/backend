@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserJpaRepository userJpaRepository;
     private final UserQueryRepository userQueryRepository;
+    private final S3UploadService s3UploadService;
 
     @Override
     @Transactional
@@ -122,6 +124,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean isUserIdDuplicated(String userId) {
         return userJpaRepository.existsByNickname(userId);
+    }
+
+    @Override
+    @Transactional
+    public void updateProfileImage(Long headerUserId, Long userId, MultipartFile profileImage) {
+        validateUserSelf(headerUserId, userId);
+        User user = getUser(headerUserId);
+        String imageUrl = s3UploadService.imageUpload(profileImage);
+        user.updateProfileImage(imageUrl, String.valueOf(headerUserId));
     }
 
     private void validateEmail(String newEmail) {

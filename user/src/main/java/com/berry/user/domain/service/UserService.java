@@ -9,6 +9,7 @@ import com.berry.user.presentation.dto.response.GetUserDetailResponse;
 import com.berry.user.presentation.dto.response.GetUserResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     void signUp(SignUpRequest request);
@@ -26,4 +27,6 @@ public interface UserService {
     void updateUserPassword(Long headerUserId, Long userId, UpdatePasswordRequest request);
 
     Boolean isUserIdDuplicated(String userId);
+
+    void updateProfileImage(Long headerUserId, Long userId, MultipartFile profileImage);
 }
