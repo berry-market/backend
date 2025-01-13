@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserClient {
 
   @GetMapping("/server/v1/users/by-id")
-  ResponseEntity<ApiResponse<GetInternalUserResponse>> getInternalUserById(@RequestParam("userId") Long userId);
+  ApiResponse<GetInternalUserResponse> getInternalUserById(@RequestParam("userId") Long userId);
 }

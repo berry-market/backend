@@ -67,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     GetInternalUserResponse user;
     try {
-      user = userClient.getInternalUserById(review.getReviewerId()).getBody().getData();
+      user = userClient.getInternalUserById(review.getReviewerId()).getData();
     } catch (FeignClientException e) {
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
           "User Service: " + e.getMessage());
