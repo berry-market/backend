@@ -16,6 +16,7 @@ import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
 import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.infrastructure.client.UserClient;
+import com.berry.post.infrastructure.client.UserService;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.request.Post.PostUpdateRequest;
 import com.berry.post.presentation.response.Post.PostDetailsResponse;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,7 +49,7 @@ public class PostServiceImpl implements PostService {
   private final LikeRepository likeRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
-  private final UserClient userClient;
+  private final UserService userService;
 
   @Override
   @Transactional
@@ -123,8 +125,8 @@ public class PostServiceImpl implements PostService {
 
     GetInternalUserResponse user;
     try {
-      user = userClient.getInternalUserById(post.getWriterId()).getData();
-    } catch (FeignClientException e) {
+      user = userService.getInternalUserByIdAsync(post.getWriterId()).get().getData();
+    } catch (FeignClientException | InterruptedException | ExecutionException e) {
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
           "User Service: " + e.getMessage());
     }
