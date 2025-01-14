@@ -67,10 +67,8 @@ public class PostServiceImpl implements PostService {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "경매 종료 날짜를 시작 날짜 이후로 조정해주세요.");
     }
 
-    // Post 에 먼저 단일 이미지 저장
     String productImageUrl = imageUploadService.upload(productImage);
 
-    // 생성 시에는 일단 상품 상태 PENDING 상태로 생성
     Post post = Post.builder()
         .postCategoryId(postCreateRequest.getPostCategoryId())
         .writerId(userId)
@@ -89,7 +87,6 @@ public class PostServiceImpl implements PostService {
         .build();
     Post savedPost = postRepository.save(post);
 
-    // ProductDetailsImages 에 다중 이미지 저장
     saveProductDetailsImages(productDetailsImages, post);
     sendPostCreateEventToBid(PostEvent.Close.from(savedPost));
   }
@@ -175,16 +172,13 @@ public class PostServiceImpl implements PostService {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
     }
 
-    // Post 에 먼저 단일 이미지 저장
     if (productImage != null) {
       String productImageUrl = imageUploadService.upload(productImage);
       post.updateProductImage(productImageUrl);
     }
 
-    // post 업데이트
     post.updateProduct(postUpdateRequest);
 
-    // 기존 다중 이미지 삭제 후 다시 저장
     if (productDetailsImages != null) {
       List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
           post.getId());
@@ -210,17 +204,14 @@ public class PostServiceImpl implements PostService {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
     }
 
-    // post 삭제 처리
     post.markAsDeleted();
 
-    // productDetailsImage 삭제 처리
     List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
         post.getId());
     for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
       productDetailsImage.markAsDeleted();
     }
 
-    // 해당 postId에 리뷰가 있다면 그 리뷰도 삭제처리
     Review review = reviewRepository.findByPostIdAndDeletedYNFalse(post.getId());
     if (review != null) {
       review.markAsDeleted();
