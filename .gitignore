@@ -11,3 +11,5 @@
 *.iml
 
 .env
+
+/mysql_data

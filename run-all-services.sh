@@ -1,7 +1,24 @@
 #!/bin/bash
 
+# berry-network 생성
+network_name="berry-network"
+existing_network=$(docker network ls --filter name="^${network_name}$" -q)
+
+if [ -n "$existing_network" ]; then
+  echo "Network $network_name already exists. Skipping creation."
+else
+  echo "Creating network $network_name..."
+  docker network create $network_name
+  if [ $? -eq 0 ]; then
+    echo "Network $network_name created successfully!"
+  else
+    echo "Error creating network $network_name. Exiting..."
+    exit 1
+  fi
+fi
+
 # 공통 서비스 실행
-echo "==== Starting common services (Kafka, Zookeeper, Redis) ===="
+echo "==== Starting common services (Kafka, Zookeeper, Redis, MySQL) ===="
 docker-compose --env-file .env up -d
 if [ $? -eq 0 ]; then
   echo "Common services started successfully!"
@@ -11,11 +28,11 @@ else
 fi
 
 # 개별 서비스 목록 및 상대 경로 설정
-services=("eureka" "gateway" "auth" "user" "post" "bid" "delivery" "payment")
+services=("eureka" "gateway" "auth" "user" "post" "bid" "delivery" "payment" "monitoring")
 base_dir="$(pwd)" # 현재 경로를 기준으로 설정
 
 # 루트 환경 변수 파일 경로
-COMMON_ENV_FILE="$base_dir/.env"
+ENV_FILE="$base_dir/.env"
 
 # 모든 서비스 실행
 for service in "${services[@]}"; do
@@ -31,7 +48,7 @@ for service in "${services[@]}"; do
   fi
 
   # Docker Compose 실행
-  docker-compose --env-file "$COMMON_ENV_FILE" --env-file .env up -d
+  docker-compose --env-file "$ENV_FILE" up -d
 
   # 실행 결과 확인
   if [ $? -eq 0 ]; then

@@ -2,25 +2,25 @@ services:
   delivery-service:
     build:
       context: .
-    image: delivery-service:latest
-    container_name: delivery-service
+    image: ${DELIVERY_NAME}:latest
+    container_name: ${DELIVERY_NAME}
     ports:
-      - ${PORT}:${PORT}
+      - ${DELIVERY_PORT}:${DELIVERY_PORT}
     environment:
-      - PORT=${PORT}
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
-      - EUREKA_DEFAULT_ZONE=${EUREKA_DEFAULT_ZONE}
+      - DELIVERY_NAME=${DELIVERY_NAME}
+      - DELIVERY_PORT=${DELIVERY_PORT}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - KAFKA_HOST=${KAFKA_HOST}
+      - KAFKA_PORT=${KAFKA_PORT}
+      - EUREKA_HOST=${EUREKA_HOST}
+      - EUREKA_PORT=${EUREKA_PORT}
     env_file:
       - ../.env
-      - .env
-    depends_on:
-      delivery-mysql:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PORT}/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${DELIVERY_PORT}/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -28,35 +28,11 @@ services:
     volumes:
       - spring_logs:/logs
     networks:
-      - msa-network
-      - common-network
-
-  delivery-mysql:
-    image: mysql:8.0
-    container_name: delivery-mysql
-    environment:
-      MYSQL_DATABASE: delivery
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USERNAME}", "-p${DB_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
-    networks:
-      - msa-network
+      - ${NETWORK}
 
 networks:
-  msa-network:
-    external: true
-  common-network:
+  berry-network:
     external: true
 
 volumes:
-  mysql_data:
   spring_logs:
