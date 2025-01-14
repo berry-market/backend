@@ -6,6 +6,8 @@ import com.berry.user.presentation.dto.request.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -58,4 +60,10 @@ public class User extends BaseEntity {
         user.setCreatedBy(request.nickname());
         return user;
     }
+
+    public void updateProfileImage(String imageUrl, String userId) {
+        this.profileImage = imageUrl;
+        this.setUpdatedBy(userId);
+    }
+
 }

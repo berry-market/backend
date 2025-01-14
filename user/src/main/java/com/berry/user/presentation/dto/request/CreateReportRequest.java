@@ -7,7 +7,7 @@ public record CreateReportRequest(
     @NotNull
     Long reporterId,
     @NotNull
-    Long reportedUserId,
+    Long reportedId,
     @NotNull
     ReportType reportType,
     @NotNull

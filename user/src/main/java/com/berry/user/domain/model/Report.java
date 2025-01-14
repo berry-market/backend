@@ -24,9 +24,8 @@ public class Report {
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_user_id", nullable = false)
-    private User reportedUser;
+    @Column(name = "reported_id", nullable = false)
+    private Long reportedId;
 
     @Column(name = "report_type", nullable = false)
     @Enumerated(EnumType.STRING)

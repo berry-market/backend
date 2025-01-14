@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 public record ReportResponse(
     Long reportId,
     Long reporterId,
-    Long reportedUserId,
+    String reporterName,
+    Long reportedId,
     ReportType reportType,
     String reportReason,
     ReportStatus reportStatus,

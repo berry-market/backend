@@ -10,6 +10,7 @@ import com.berry.user.presentation.dto.response.GetUserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +52,30 @@ public class UserController {
     ) {
         userService.updateUserPassword(headerUserId, userId, request);
         return ApiResponse.OK(ResSuccessCode.UPDATED, "비밀번호가 성공적으로 변경되었습니다.");
+    }
+
+    @GetMapping("/check-id/{nickname}")
+    public ApiResponse<Boolean> checkUserIdDuplication(@PathVariable("nickname") String nickname) {
+        return ApiResponse.OK(ResSuccessCode.READ, userService.isUserIdDuplicated(nickname));
+    }
+
+    @PatchMapping("/{userId}/profile-image")
+    public ApiResponse<Void> updateProfileImage(
+        @RequestHeader("X-UserId") Long headerUserId,
+        @PathVariable("userId") Long userId,
+        @RequestPart(value = "profileImage") MultipartFile profileImage
+    ) {
+        userService.updateProfileImage(headerUserId, userId, profileImage);
+        return ApiResponse.OK(ResSuccessCode.UPDATED, "프로필 이미지가 성공적으로 수정되었습니다.");
+    }
+
+    @DeleteMapping("/withdraw/{userId}")
+    public ApiResponse<Void> withdrawUser(
+        @RequestHeader("X-UserId") Long headerUserId,
+        @PathVariable("userId") Long userId
+    ) {
+        userService.withdrawUser(headerUserId, userId);
+        return ApiResponse.OK(ResSuccessCode.DELETED, "회원 탈퇴가 완료되었습니다.");
     }
 
 }
