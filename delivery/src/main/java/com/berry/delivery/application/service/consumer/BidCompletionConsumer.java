@@ -3,7 +3,7 @@ package com.berry.delivery.application.service.consumer;
 import com.berry.delivery.application.event.BidCompletionEvent;
 import com.berry.delivery.application.service.delivery.DeliveryService;
 import com.berry.delivery.presentation.dto.DeliveryDto;
-import com.berry.delivery.presentation.dto.request.DeliveryCreateRequest;
+import com.berry.delivery.presentation.dto.request.delivery.DeliveryCreateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
