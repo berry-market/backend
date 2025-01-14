@@ -16,10 +16,10 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationId;
 
-    @Column(nullable = false)
+    @Column
     private Long winnerId;
 
-    @Column(nullable = false)
+    @Column
     private Long sellerId;
 
     @Column(nullable = false)
