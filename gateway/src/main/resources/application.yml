@@ -1,22 +1,10 @@
-# port
-server:
-  port: ${PORT}
-
-# 유레카 서버 설정
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: ${EUREKA_DEFAULT_ZONE}
-
 spring:
   application:
-    name: gateway-service
+    name: ${GATEWAY_NAME}
   data:
     redis:
-      host: ${AUTH_REDIS_HOST}
-      port: ${AUTH_REDIS_PORT}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   main:
     web-application-type: reactive
   cloud:
@@ -29,107 +17,126 @@ spring:
         - name: JwtFilter
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
       routes:
-        - id: auth-service
-          uri: lb://auth-service
+        - id: ${AUTH_NAME}
+          uri: lb://${AUTH_NAME}
           predicates:
             - Path=/api/v1/auth/**
-        - id: auth-service-admin
-          uri: lb://auth-service
+        - id: ${AUTH_NAME}-admin
+          uri: lb://${AUTH_NAME}
           predicates:
             - Path=/admin/v1/auth/**
 
-        - id: user-service
-          uri: lb://user-service
+        - id: ${USER_NAME}
+          uri: lb://${USER_NAME}
           predicates:
             - Path=/api/v1/users/**
-        - id: user-service-admin
-          uri: lb://user-service
+        - id: ${USER_NAME}-admin
+          uri: lb://${USER_NAME}
           predicates:
             - Path=/admin/v1/users/**
 
-        - id: like-service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/v1/likes/**
-        - id: like-service-admin
-          uri: lb://user-service
-          predicates:
-            - Path=/admin/v1/likes/**
-
         - id: report-service
-          uri: lb://user-service
+          uri: lb://${USER_NAME}
           predicates:
             - Path=/api/v1/reports/**
         - id: report-service-admin
-          uri: lb://user-service
+          uri: lb://${USER_NAME}
           predicates:
             - Path=/admin/v1/reports/**
 
         - id: post-service
-          uri: lb://post-service
+          uri: lb://${POST_NAME}
           predicates:
             - Path=/api/v1/posts/**
         - id: post-service-admin
-          uri: lb://post-service
+          uri: lb://${POST_NAME}
           predicates:
             - Path=/admin/v1/posts/**
 
         - id: category-service
-          uri: lb://post-service
+          uri: lb://${POST_NAME}
           predicates:
             - Path=/api/v1/categories/**
         - id: category-service-admin
-          uri: lb://post-service
+          uri: lb://${POST_NAME}
           predicates:
             - Path=/admin/v1/categories/**
 
         - id: review-service
-          uri: lb://post-service
+          uri: lb://${POST_NAME}
           predicates:
             - Path=/api/v1/reviews/**
         - id: review-service-admin
-          uri: lb://post-service
+          uri: lb://${POST_NAME}
           predicates:
             - Path=/admin/v1/reviews/**
 
-        - id: delivery-service
-          uri: lb://delivery-service
+        - id: like-service
+          uri: lb://${POST_NAME}
+          predicates:
+            - Path=/api/v1/likes/**
+        - id: like-service-admin
+          uri: lb://${POST_NAME}
+          predicates:
+            - Path=/admin/v1/likes/**
+
+        - id: ${DELIVERY_NAME}
+          uri: lb://${DELIVERY_NAME}
           predicates:
             - Path=/api/v1/deliveries/**
-        - id: delivery-service-admin
-          uri: lb://delivery-service
+        - id: ${DELIVERY_NAME}-admin
+          uri: lb://${DELIVERY_NAME}
           predicates:
             - Path=/admin/v1/deliveries/**
 
         - id: notification-service
-          uri: lb://delivery-service
+          uri: lb://${DELIVERY_NAME}
           predicates:
             - Path=/api/v1/notifications/**
         - id: notification-service-admin
-          uri: lb://delivery-service
+          uri: lb://${DELIVERY_NAME}
           predicates:
             - Path=/admin/v1/notifications/**
 
-        - id: bid-service
-          uri: lb://bid-service
+        - id: ${BID_NAME}
+          uri: lb://${BID_NAME}
           predicates:
             - Path=/api/v1/bids/**
-        - id: bid-service-admin
-          uri: lb://bid-service
+        - id: ${BID_NAME}-admin
+          uri: lb://${BID_NAME}
           predicates:
             - Path=/admin/v1/bids/**
         - id: bid-service-websocket
-          uri: ws://${BID_URI}
+          uri: ws://${BID_NAME}:${BID_PORT}
           predicates:
             - Path=/ws/**
           filters:
             - PreserveHostHeader
 
-        - id: payment-service
-          uri: lb://payment-service
+        - id: ${PAYMENT_NAME}
+          uri: lb://${PAYMENT_NAME}
           predicates:
             - Path=/api/v1/payments/**
-        - id: payment-service-admin
-          uri: lb://payment-service
+        - id: ${PAYMENT_NAME}-admin
+          uri: lb://${PAYMENT_NAME}
           predicates:
             - Path=/admin/v1/payments/**
+
+server:
+  port: ${GATEWAY_PORT}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  endpoint:
+    health:
+      show-details: always

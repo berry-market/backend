@@ -1,27 +1,25 @@
 services:
   auth-service:
-    image: auth-service:latest
-    container_name: auth-service
     build:
       context: .
+    image: ${AUTH_NAME}:latest
+    container_name: ${AUTH_NAME}
     ports:
-      - ${PORT}:${PORT}
+      - ${AUTH_PORT}:${AUTH_PORT}
     environment:
-      - PORT=${PORT}
-      - AUTH_REDIS_HOST=${AUTH_REDIS_HOST}
-      - AUTH_REDIS_PORT=${AUTH_REDIS_PORT}
+      - AUTH_NAME=${AUTH_NAME}
+      - AUTH_PORT=${AUTH_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
       - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
       - JWT_SECRET=${JWT_SECRET}
-      - EUREKA_DEFAULT_ZONE=${EUREKA_DEFAULT_ZONE}
+      - EUREKA_HOST=${EUREKA_HOST}
+      - EUREKA_PORT=${EUREKA_PORT}
     env_file:
       - ../.env
-      - .env
-    depends_on:
-      auth-redis:
-        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PORT}/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${AUTH_PORT}/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -29,27 +27,11 @@ services:
     volumes:
       - spring_logs:/logs
     networks:
-      - msa-network
-
-  auth-redis:
-    image: redis:7.0
-    container_name: auth-redis
-    command: [ "redis-server", "--appendonly", "yes" ]
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-    networks:
-      - msa-network
+      - ${NETWORK}
 
 networks:
-  msa-network:
+  berry-network:
     external: true
 
 volumes:
-  redis_data:
   spring_logs:

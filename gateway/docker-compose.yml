@@ -2,29 +2,36 @@ services:
   gateway-service:
     build:
       context: .
-    image: gateway-service:latest
-    container_name: gateway-service
+    image: ${GATEWAY_NAME}:latest
+    container_name: ${GATEWAY_NAME}
     ports:
-      - ${PORT}:${PORT}
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
     environment:
-      - PORT=${PORT}
-      - EUREKA_DEFAULT_ZONE=${EUREKA_DEFAULT_ZONE}
-      - AUTH_REDIS_HOST=${AUTH_REDIS_HOST}
-      - AUTH_REDIS_PORT=${AUTH_REDIS_PORT}
+      - GATEWAY_NAME=${GATEWAY_NAME}
+      - GATEWAY_PORT=${GATEWAY_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
       - JWT_SECRET=${JWT_SECRET}
-      - BID_URI=${BID_URI}
+      - EUREKA_HOST=${EUREKA_HOST}
+      - EUREKA_PORT=${EUREKA_PORT}
+      - USER_NAME=${USER_NAME}
+      - POST_NAME=${POST_NAME}
+      - BID_NAME=${BID_NAME}
+      - BID_PORT={BID_PORT}
+      - DELIVERY_NAME=${DELIVERY_NAME}
+      - PAYMENT_NAME=${PAYMENT_NAME}
+      - AUTH_NAME=${AUTH_NAME}
     env_file:
       - ../.env
-      - .env
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PORT}/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${GATEWAY_PORT}/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
     restart: always
     networks:
-      - msa-network
+      - ${NETWORK}
 
 networks:
-  msa-network:
+  berry-network:
     external: true
