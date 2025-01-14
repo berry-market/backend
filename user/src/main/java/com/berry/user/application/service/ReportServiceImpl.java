@@ -36,11 +36,10 @@ public class ReportServiceImpl implements ReportService {
             throw new CustomApiException(ResErrorCode.FORBIDDEN);
         }
         User reporter = getUser(request.reporterId());
-        User reportedUser = getUser(request.reportedUserId());
 
         Report report = Report.builder()
             .reporter(reporter)
-            .reportedUser(reportedUser)
+            .reportedId(request.reportedId())
             .reportType(request.reportType())
             .reportReason(request.reportReason())
             .createdAt(LocalDateTime.now())
