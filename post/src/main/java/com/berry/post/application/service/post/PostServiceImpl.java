@@ -94,11 +94,10 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
-  public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId,
+  public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, Long writerId,
       String sort, Pageable pageable, Long userId) {
 
-    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort,
-        pageable);
+    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, writerId, sort, pageable, userId);
 
     return posts.map(post -> {
       Boolean isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
