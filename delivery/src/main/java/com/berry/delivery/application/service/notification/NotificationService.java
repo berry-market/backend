@@ -4,7 +4,7 @@ import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.delivery.domain.model.notification.Notification;
 import com.berry.delivery.domain.repository.notification.NotificationRepository;
-import com.berry.delivery.presentation.dto.request.notification.NotifiactionCreateRequest;
+import com.berry.delivery.presentation.dto.request.notification.NotificationCreateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.berry.delivery.presentation.dto.NotificationDto;
@@ -21,7 +21,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Transactional
-    public NotificationDto createNotification(NotifiactionCreateRequest req) {
+    public NotificationDto createNotification(NotificationCreateRequest req) {
 
         Notification notification = Notification.builder()
                 .notificationId(req.notificationId())
