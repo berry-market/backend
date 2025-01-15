@@ -16,7 +16,7 @@ public interface PostService {
   void createPost(PostCreateRequest postCreateRequest,
       MultipartFile productImage, List<MultipartFile> productDetailsImages, Long userId, String role) throws IOException;
 
-  Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId,
+  Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, Long writerId,
       String sort, Pageable pageable, Long userId);
 
   PostDetailsResponse getPost(Long postId, Long userId);

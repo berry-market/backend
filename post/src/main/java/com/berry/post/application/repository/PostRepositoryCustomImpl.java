@@ -20,7 +20,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public Page<Post> findAllAndDeletedYNFalse(String keyword, String type, Long postCategoryId, String sort, Pageable pageable) {
+  public Page<Post> findAllAndDeletedYNFalse(String keyword, String type, Long postCategoryId, Long writerId, String sort, Pageable pageable, Long userId) {
     QPost post = QPost.post;
 
     BooleanBuilder builder = new BooleanBuilder();
@@ -46,6 +46,11 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     // 카테고리 Id 필터링 추가
     if (postCategoryId != null) {
       builder.and(post.postCategoryId.eq(postCategoryId));
+    }
+
+    // 작성자 Id 필터링 추가
+    if (writerId != null) {
+      builder.and(post.writerId.eq(writerId));
     }
 
     // 정렬 기준 처리

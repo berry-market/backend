@@ -8,6 +8,7 @@ import com.berry.post.domain.model.Review;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.infrastructure.client.UserClient;
+import com.berry.post.infrastructure.client.UserService;
 import com.berry.post.presentation.request.review.ReviewCreateRequest;
 import com.berry.post.presentation.request.review.ReviewUpdateRequest;
 import com.berry.post.presentation.response.review.ReviewGradeResponse;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +34,7 @@ public class ReviewServiceImpl implements ReviewService {
 
   private final ReviewRepository reviewRepository;
   private final PostRepository postRepository;
-  private final UserClient userClient;
+  private final UserService userService;
 
   @Override
   @Transactional
@@ -67,8 +69,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     GetInternalUserResponse user;
     try {
-      user = userClient.getInternalUserById(review.getReviewerId()).getData();
-    } catch (FeignClientException e) {
+      user = userService.getInternalUserByIdAsync(post.getWriterId()).get().getData();
+    } catch (FeignClientException | InterruptedException | ExecutionException e) {
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
           "User Service: " + e.getMessage());
     }

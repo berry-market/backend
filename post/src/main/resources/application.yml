@@ -34,6 +34,12 @@ spring:
           json:
             trusted:
               packages: "*"
+  data:
+    redis:
+      host: ${COMMON_REDIS_HOST}
+      port: ${COMMON_REDIS_PORT}
+  cache:
+      type: redis
 
 server:
   port: ${POST_PORT}
