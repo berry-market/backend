@@ -3,6 +3,7 @@ package com.berry.delivery.application.service.delivery;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.common.role.RoleCheck;
+import com.berry.delivery.application.service.notification.NotificationService;
 import com.berry.delivery.application.service.producer.DeliveryStatusProducer;
 import com.berry.delivery.domain.model.delivery.Delivery;
 import com.berry.delivery.domain.model.delivery.DeliveryStatus;
@@ -31,6 +32,7 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryStatusProducer deliveryStatusProducer;
+    private final NotificationService notificationService;
 
     @Transactional
     public DeliveryDto createDelivery(DeliveryCreateRequest req) {

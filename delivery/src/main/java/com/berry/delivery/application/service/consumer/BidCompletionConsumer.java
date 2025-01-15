@@ -60,49 +60,16 @@ public class BidCompletionConsumer {
     }
 
     private void winnerCreateNotification(BidCompletionEvent event) {
-        try {
-            String winnerMessage = String.format(
-                    "상품 낙찰자로 선정되었습니다!"
-            );
-
-            NotificationCreateRequest request = new NotificationCreateRequest(
-                    null,
-                    event.getWinnerId(),
-                    null,
-                    winnerMessage
-            );
-
-            notificationService.createNotification(request);
-            log.info("낙찰자 알림 발송 완료. winnerId={}, bidId={}",
-                    event.getWinnerId(), event.getBidId());
-
-        } catch (Exception e) {
-            log.error("낙찰자 알림 발송 실패. winnerId={}, bidId={}",
-                    event.getWinnerId(), event.getBidId(), e);
-            // 알림 실패는 치명적이지 않으므로 예외를 던지지 않음
-        }
+        String winnerMessage = String.format(
+                "상품 낙찰자로 선정되었습니다!"
+        );
+        notificationService.winnerCreateNotification(event.getSellerId(), winnerMessage, "당첨자 알림");
     }
 
     private void sellerCreateNotification(BidCompletionEvent event) {
-        try {
-            String sellerMessage = String.format(
-                    "등록하신 상품이 낙찰되었습니다."
-            );
-
-            NotificationCreateRequest request = new NotificationCreateRequest(
-                    null,
-                    event.getSellerId(),
-                    null,
-                    sellerMessage
-            );
-
-            notificationService.createNotification(request);
-            log.info("판매자 알림 발송 완료. sellerId={}, bidId={}",
-                    event.getSellerId(), event.getBidId());
-
-        } catch (Exception e) {
-            log.error("판매자 알림 발송 실패. sellerId={}, bidId={}",
-                    event.getSellerId(), event.getBidId(), e);
-        }
+        String sellerMessage = String.format(
+                "등록하신 상품이 낙찰되었습니다."
+        );
+        notificationService.sellerCreateNotification(event.getSellerId(), sellerMessage, "판매자 알림");
     }
 }
