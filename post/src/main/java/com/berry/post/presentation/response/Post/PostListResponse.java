@@ -2,11 +2,12 @@ package com.berry.post.presentation.response.Post;
 
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductStatus;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
-public class PostListResponse {
+public class PostListResponse implements Serializable {
   private Long postCategoryId;
   private String productName;
   private Integer immediatePrice;

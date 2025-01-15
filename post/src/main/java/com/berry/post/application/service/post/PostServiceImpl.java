@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -93,11 +94,12 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
+  @Cacheable(cacheNames = "posts", key = "#keyword + '-' + #type + '-' + #postCategoryId + '-' + #sort + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #userId")
   public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, Long writerId,
       String sort, Pageable pageable, Long userId) {
 
     Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, writerId, sort, pageable, userId);
-
+    log.info("실제 DB 조회, userId = "+ userId);
     return posts.map(post -> {
       Boolean isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
       return new PostListResponse(post, isLiked);
