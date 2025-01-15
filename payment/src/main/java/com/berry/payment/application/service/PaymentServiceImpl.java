@@ -5,11 +5,14 @@ import com.berry.common.response.ResErrorCode;
 import com.berry.payment.application.dto.ConfirmPaymentReqDto;
 import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.application.dto.TempPaymentReqDto;
+import com.berry.payment.application.dto.TossCancelReqDto;
+import com.berry.payment.application.dto.TossCancelResDto;
 import com.berry.payment.application.dto.TossPaymentResDto;
 import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
 import com.berry.payment.infrastructure.kafka.PaymentCompletedEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -33,7 +37,6 @@ public class PaymentServiceImpl implements PaymentService {
     String orderId = request.getOrderId();
     int amount = request.getAmount();
 
-    // Redis에 임시 결제 데이터 저장 (TTL: 10분)
     paymentRepository.saveTempPaymentData(orderId, amount, Duration.ofMinutes(10));
   }
 
@@ -44,7 +47,6 @@ public class PaymentServiceImpl implements PaymentService {
     int amount = request.getAmount();
     String paymentKey = request.getPaymentKey();
 
-    // Redis에서 임시 데이터 조회
     Map<Object, Object> tempData = paymentRepository.getTempPaymentData(orderId);
 
     if (tempData == null || !tempData.containsKey("amount")) {
@@ -53,15 +55,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     int storedAmount = (int) tempData.get("amount");
 
-    // 결제 금액 검증
     if (storedAmount != amount) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "결제 금액이 일치하지 않습니다.");
     }
 
-    // 토스 API 호출
     TossPaymentResDto response = tossPaymentClient.confirmPayment(orderId, paymentKey, amount);
 
-    // 결제 승인 성공: Payment 데이터 저장
     Payment payment = Payment.builder()
         .buyerId(request.getBuyerId())
         .paymentKey(response.getPaymentKey())
@@ -76,11 +75,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     paymentRepository.save(payment);
 
-    // Redis 데이터 삭제
     paymentRepository.deleteTempPaymentData(orderId);
 
-    // Kafka 이벤트 발행
-    PaymentCompletedEvent event = new PaymentCompletedEvent(request.getBuyerId(), response.getTotalAmount());
+    PaymentCompletedEvent event = new PaymentCompletedEvent(request.getBuyerId(),
+        response.getTotalAmount());
     paymentProducer.sendPaymentEvent(event);
 
     return response;
@@ -88,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<PaymentGetResDto> getPayments (
+  public Page<PaymentGetResDto> getPayments(
       Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
     return paymentRepository.findAllByBuyerIdAndRequestedAtBetween(
         userId,
@@ -96,5 +94,45 @@ public class PaymentServiceImpl implements PaymentService {
         endDate.plusDays(1).atStartOfDay(),
         pageable
     );
+  }
+
+  @Override
+  @Transactional
+  public void cancelPayment(String paymentKey, TossCancelReqDto request,
+      String idempotencyKey) {
+
+    Object cachedResponse = paymentRepository.getResponse(idempotencyKey);
+    if (cachedResponse != null) {
+      throw new CustomApiException(ResErrorCode.BAD_REQUEST, "이미 처리된 취소 요청입니다.");
+    }
+
+    Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+        .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "결제 내역을 찾을 수 없습니다."));
+
+    int newCancelAmount =
+        request.getCancelAmount() != null ? request.getCancelAmount()
+            : payment.getBalanceAmount();
+
+    if (newCancelAmount > payment.getBalanceAmount()) {
+      throw new CustomApiException(ResErrorCode.BAD_REQUEST, "취소 금액이 결제 금액을 초과할 수 없습니다.");
+    }
+
+    TossCancelResDto response = tossPaymentClient.cancelPayment(
+        paymentKey, request.getCancelReason(), request.getCancelAmount(),
+        idempotencyKey);
+
+    paymentRepository.saveResponse(idempotencyKey, response, Duration.ofMinutes(5));
+
+    try {
+      payment.updateCancelInfo(
+          response.status(),
+          response.cancelReason(),
+          response.balanceAmount(),
+          response.transactionKey()
+      );
+    } catch (Exception e) {
+      log.error("결제 취소 정보 업데이트 중 오류 발생: {}", e.getMessage());
+      // TODO: /v1/payments/{paymentKey} 토스에 조회
+    }
   }
 }

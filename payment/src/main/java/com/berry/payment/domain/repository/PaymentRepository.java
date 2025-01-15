@@ -5,6 +5,7 @@ import com.berry.payment.domain.model.Payment;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,13 @@ public interface PaymentRepository {
 
   void deleteTempPaymentData(String paymentId);
 
-  Payment save(Payment payment);
+  void saveResponse(String idempotencyKey, Object response, Duration ttl);
+
+  Object getResponse(String idempotencyKey);
+
+  void save(Payment payment);
+
+  Optional<Payment> findByPaymentKey(String paymentKey);
 
   Page<PaymentGetResDto> findAllByBuyerIdAndRequestedAtBetween(
       Long buyerId,
