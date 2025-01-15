@@ -47,6 +47,11 @@ public class PaymentServiceImpl implements PaymentService {
     int amount = request.getAmount();
     String paymentKey = request.getPaymentKey();
 
+    Payment existingPayment = paymentRepository.findByPaymentKey(paymentKey).orElse(null);
+    if (existingPayment != null) {
+      return TossPaymentResDto.fromEntity(existingPayment);
+    }
+
     Map<Object, Object> tempData = paymentRepository.getTempPaymentData(orderId);
 
     if (tempData == null || !tempData.containsKey("amount")) {

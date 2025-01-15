@@ -1,5 +1,6 @@
 package com.berry.payment.application.dto;
 
+import com.berry.payment.domain.model.Payment;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +21,19 @@ public class TossPaymentResDto {
   private String method;
   private LocalDateTime requestedAt;
   private LocalDateTime approvedAt;
+
+  public static TossPaymentResDto fromEntity(Payment payment) {
+    return TossPaymentResDto.builder()
+        .paymentKey(payment.getPaymentKey())
+        .orderId(payment.getOrderId())
+        .orderName(payment.getOrderName())
+        .totalAmount(payment.getAmount())
+        .status(payment.getPaymentStatus())
+        .method(payment.getPaymentMethod())
+        .requestedAt(payment.getRequestedAt())
+        .approvedAt(payment.getApprovedAt())
+        .build();
+  }
 
   public static TossPaymentResDto fromJson(JSONObject confirmResponse) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
