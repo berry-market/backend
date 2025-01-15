@@ -15,4 +15,6 @@ public interface BidService {
 
     void putAddress(BidEvent.Delivery event);
 
+    void deleteById(Long id);
+
 }

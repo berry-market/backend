@@ -40,7 +40,9 @@ public class BidChatServiceImpl implements BidChatService {
     private void renewPoints(Long postId, BidChat bidChat) {
         updatePoints(UserEvent.Bidding.from(bidChat));
         Optional<BidChat> latestBidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
-        updatePoints(UserEvent.Bidding.fromLatest(latestBidChat.orElse(null)));
+        if (latestBidChat.isPresent()){
+            updatePoints(UserEvent.Bidding.fromLatest(latestBidChat.orElse(null)));
+        }
     }
 
     private Boolean validateBidChat(Long postId, BidChatCreate.Request request) {

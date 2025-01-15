@@ -57,6 +57,12 @@ public class BidServiceImpl implements BidService {
         }
     }
 
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        bidRepository.findById(id).ifPresent(Bid::delete);
+    }
+
     private Long getSellerIdByPost(Long bidId) {
         return getPostDetails(bidId).getWriterId();
     }
