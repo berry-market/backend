@@ -5,7 +5,6 @@ import com.berry.delivery.application.service.delivery.DeliveryService;
 import com.berry.delivery.application.service.notification.NotificationService;
 import com.berry.delivery.presentation.dto.DeliveryDto;
 import com.berry.delivery.presentation.dto.request.delivery.DeliveryCreateRequest;
-import com.berry.delivery.presentation.dto.request.notification.NotificationCreateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,7 +35,6 @@ public class BidCompletionConsumer {
         processBidCompletion(event);
         sendNotifications(event);
     }
-
 
     private void processBidCompletion(BidCompletionEvent event) {
         try {

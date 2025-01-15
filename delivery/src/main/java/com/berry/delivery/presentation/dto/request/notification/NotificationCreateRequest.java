@@ -6,4 +6,11 @@ public record NotificationCreateRequest(
         Long sellerId,
         String message
 ) {
+    public static NotificationCreateRequest SellerCreate(Long seller,String message) {
+        return new NotificationCreateRequest(null, null, seller, message);
+    }
+
+    public static NotificationCreateRequest WinnerCreate(Long winner,String message) {
+        return new NotificationCreateRequest(null, winner, null, message);
+    }
 }

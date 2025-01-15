@@ -123,8 +123,10 @@ public class DeliveryService {
                 // 예외 객체 e는 마지막 파라미터로 전달
                 log.error("Kafka 이벤트 발행 실패. deliveryId={}, bidId={}, status={}", deliveryId, delivery.getBidId(), req.status(), e);
             }
+            notificationService.winnerCreateNotification(delivery.getReceiverId(), "배송이 시작되었습니다.", "배송 준비 -> 시작 상태 변경");
+        } else if (req.status() == DeliveryStatus.DONE) {
+            notificationService.winnerCreateNotification(delivery.getReceiverId(), "배송이 완료되었습니다.", "배송 시작 -> 완료 상태 변경");
         }
-
         deliveryRepository.save(delivery);
     }
 

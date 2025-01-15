@@ -45,4 +45,33 @@ public class NotificationService {
                 .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 알림입니다"));
         notification.markAsDeleted();
     }
+
+    public void sellerCreateNotification(Long sellerId, String message, String logMessageType) {
+        try {
+            NotificationCreateRequest request = NotificationCreateRequest.SellerCreate(
+                    sellerId,
+                    message
+            );
+
+            createNotification(request);
+            log.info("{} 발송 완료. sellerId={}", sellerId, logMessageType);
+
+        } catch (Exception e) {
+            log.error("{} 발송 실패. sellerId={}",logMessageType, sellerId, e);
+        }
+    }
+    public void winnerCreateNotification(Long winnerId, String message, String logMessageType) {
+        try {
+            NotificationCreateRequest request = NotificationCreateRequest.WinnerCreate(
+                    winnerId,
+                    message
+            );
+
+            createNotification(request);
+            log.info("{} 발송 완료. sellerId={}", logMessageType, winnerId);
+
+        } catch (Exception e) {
+            log.error("{} 발송 실패. sellerId={}",logMessageType, winnerId, e);
+        }
+    }
 }
