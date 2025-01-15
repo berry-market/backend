@@ -9,10 +9,7 @@ import com.berry.common.response.ResSuccessCode;
 import com.berry.bid.infrastructure.model.dto.PostInternalView;
 import com.berry.common.role.RoleCheck;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -28,6 +25,12 @@ public class BidController {
         PostInternalView.Response postResponse = bidService.getPostDetails(bidId);
         BidView.Response response = BidView.Response.from(bid,postResponse);
         return ApiResponse.OK(ResSuccessCode.READ, response);
+    }
+
+    @DeleteMapping("/bids/{bidId}")
+    public ApiResponse<Void> deleteBid(@PathVariable Long bidId) {
+        bidService.deleteById(bidId);
+        return ApiResponse.OK(ResSuccessCode.DELETED);
     }
 
 }
