@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 import java.util.Optional;
 
-import static com.berry.delivery.domain.model.QDelivery.delivery;
+import static com.berry.delivery.domain.model.delivery.QDelivery.delivery;
 
 
 public class DeliveryRepositoryImpl extends QuerydslRepositorySupport implements DeliveryRepositoryCustom {
