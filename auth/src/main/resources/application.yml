@@ -1,18 +1,30 @@
-server:
-  port: ${PORT}
-
 spring:
   application:
-    name: auth-service
+    name: ${AUTH_NAME}
+
   data:
     redis:
-      host: ${AUTH_REDIS_HOST}
-      port: ${AUTH_REDIS_PORT}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+server:
+  port: ${AUTH_PORT}
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     service-url:
-      defaultZone: ${EUREKA_DEFAULT_ZONE}
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:

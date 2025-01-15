@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final UserJpaRepository userJpaRepository;
     private final UserQueryRepository userQueryRepository;
+    private final S3UploadService s3UploadService;
 
     @Override
     @Transactional
@@ -117,6 +119,28 @@ public class UserServiceImpl implements UserService {
 
         String encodedNewPassword = passwordEncoder.encode(request.newPassword());
         user.updatePassword(encodedNewPassword, String.valueOf(userId));
+    }
+
+    @Override
+    public Boolean isUserIdDuplicated(String nickname) {
+        return userJpaRepository.existsByNickname(nickname);
+    }
+
+    @Override
+    @Transactional
+    public void updateProfileImage(Long headerUserId, Long userId, MultipartFile profileImage) {
+        validateUserSelf(headerUserId, userId);
+        User user = getUser(headerUserId);
+        String imageUrl = s3UploadService.imageUpload(profileImage);
+        user.updateProfileImage(imageUrl, String.valueOf(headerUserId));
+    }
+
+    @Override
+    @Transactional
+    public void withdrawUser(Long headerUserId, Long userId) {
+        validateUserSelf(headerUserId, userId);
+        User user = getUser(userId);
+        user.markAsDeleted();
     }
 
     private void validateEmail(String newEmail) {

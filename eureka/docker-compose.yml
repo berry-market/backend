@@ -1,27 +1,25 @@
 services:
   eureka-server:
-    image: eureka-server:latest
-    container_name: eureka-server
     build:
       context: .
+    image: eureka-server:latest
+    container_name: eureka-server
     ports:
-      - ${PORT}:${PORT}
+      - ${EUREKA_PORT}:${EUREKA_PORT}
     environment:
-      - PORT=${PORT}
-      - EUREKA_DEFAULT_ZONE=${EUREKA_DEFAULT_ZONE}
-      - EUREKA_INSTANCE_HOSTNAME=${EUREKA_INSTANCE_HOSTNAME}
+      - EUREKA_HOST=${EUREKA_HOST}
+      - EUREKA_PORT=${EUREKA_PORT}
     env_file:
       - ../.env
-      - .env
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:${PORT}/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:${EUREKA_PORT}/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
     restart: always
     networks:
-      - msa-network
+      - ${NETWORK}
 
 networks:
-  msa-network:
+  berry-network:
     external: true

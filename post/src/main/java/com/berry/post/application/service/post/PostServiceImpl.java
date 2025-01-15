@@ -16,6 +16,7 @@ import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
 import com.berry.post.domain.repository.ReviewRepository;
 import com.berry.post.infrastructure.client.UserClient;
+import com.berry.post.infrastructure.client.UserService;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.request.Post.PostUpdateRequest;
 import com.berry.post.presentation.response.Post.PostDetailsResponse;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,7 +49,7 @@ public class PostServiceImpl implements PostService {
   private final LikeRepository likeRepository;
   private final ImageUploadService imageUploadService;
   private final PostProducerServiceImpl postProducerService;
-  private final UserClient userClient;
+  private final UserService userService;
 
   @Override
   @Transactional
@@ -65,10 +67,8 @@ public class PostServiceImpl implements PostService {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "경매 종료 날짜를 시작 날짜 이후로 조정해주세요.");
     }
 
-    // Post 에 먼저 단일 이미지 저장
     String productImageUrl = imageUploadService.upload(productImage);
 
-    // 생성 시에는 일단 상품 상태 PENDING 상태로 생성
     Post post = Post.builder()
         .postCategoryId(postCreateRequest.getPostCategoryId())
         .writerId(userId)
@@ -87,18 +87,16 @@ public class PostServiceImpl implements PostService {
         .build();
     Post savedPost = postRepository.save(post);
 
-    // ProductDetailsImages 에 다중 이미지 저장
     saveProductDetailsImages(productDetailsImages, post);
     sendPostCreateEventToBid(PostEvent.Close.from(savedPost));
   }
 
   @Override
   @Transactional
-  public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId,
+  public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, Long writerId,
       String sort, Pageable pageable, Long userId) {
 
-    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, sort,
-        pageable);
+    Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, writerId, sort, pageable, userId);
 
     return posts.map(post -> {
       Boolean isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
@@ -124,8 +122,8 @@ public class PostServiceImpl implements PostService {
 
     GetInternalUserResponse user;
     try {
-      user = userClient.getInternalUserById(post.getWriterId()).getData();
-    } catch (FeignClientException e) {
+      user = userService.getInternalUserByIdAsync(post.getWriterId()).get().getData();
+    } catch (FeignClientException | InterruptedException | ExecutionException e) {
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
           "User Service: " + e.getMessage());
     }
@@ -174,16 +172,13 @@ public class PostServiceImpl implements PostService {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
     }
 
-    // Post 에 먼저 단일 이미지 저장
     if (productImage != null) {
       String productImageUrl = imageUploadService.upload(productImage);
       post.updateProductImage(productImageUrl);
     }
 
-    // post 업데이트
     post.updateProduct(postUpdateRequest);
 
-    // 기존 다중 이미지 삭제 후 다시 저장
     if (productDetailsImages != null) {
       List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
           post.getId());
@@ -209,17 +204,14 @@ public class PostServiceImpl implements PostService {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "권한이 없습니다.");
     }
 
-    // post 삭제 처리
     post.markAsDeleted();
 
-    // productDetailsImage 삭제 처리
     List<ProductDetailsImages> savedProductDetailsImages = productDetailsImagesRepository.findAllByPostIdAndDeletedYNFalseOrderBySequenceAsc(
         post.getId());
     for (ProductDetailsImages productDetailsImage : savedProductDetailsImages) {
       productDetailsImage.markAsDeleted();
     }
 
-    // 해당 postId에 리뷰가 있다면 그 리뷰도 삭제처리
     Review review = reviewRepository.findByPostIdAndDeletedYNFalse(post.getId());
     if (review != null) {
       review.markAsDeleted();

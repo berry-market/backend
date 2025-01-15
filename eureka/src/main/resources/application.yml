@@ -3,7 +3,7 @@ spring:
     name: eureka
 
 server:
-  port: ${PORT}
+  port: ${EUREKA_PORT}
 
 eureka:
   client:
@@ -11,7 +11,16 @@ eureka:
     fetch-registry: false
     # 유레카 서버와 통신하기 위한 기본 서비스 URL
     service-url:
-      defaultZone: ${EUREKA_DEFAULT_ZONE}
+      defaultZone: http://${EUREKA_HOST}:${EUREKA_PORT}/eureka/
 
   instance:
-    hostname: ${EUREKA_INSTANCE_HOSTNAME}
+    hostname: ${EUREKA_HOST}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  endpoint:
+    health:
+      show-details: always
