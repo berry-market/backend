@@ -50,6 +50,12 @@ public class Payment extends BaseEntity {
   private String paymentStatus;
 
   @Column
+  private String transactionKey;
+
+  @Column(nullable = false)
+  private int balanceAmount;
+
+  @Column
   private String cancelReason;
 
   @Column(nullable = false)
@@ -57,4 +63,16 @@ public class Payment extends BaseEntity {
 
   @Column
   private LocalDateTime approvedAt;
+
+
+  public void updateCancelInfo(String status, String reason, int balanceAmount,
+      String transactionKey) {
+    if (this.transactionKey != null && this.transactionKey.equals(transactionKey)) {
+      return;
+    }
+    this.paymentStatus = status;
+    this.cancelReason = reason;
+    this.balanceAmount = balanceAmount;
+    this.transactionKey = transactionKey;
+  }
 }
