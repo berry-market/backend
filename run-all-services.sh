@@ -18,7 +18,7 @@ else
 fi
 
 # 공통 서비스 실행
-echo "==== Starting common services (Kafka, Zookeeper, Redis, MySQL) ===="
+echo "==== Starting common services (Kafka, Redis, MySQL) ===="
 docker-compose --env-file .env up -d
 if [ $? -eq 0 ]; then
   echo "Common services started successfully!"

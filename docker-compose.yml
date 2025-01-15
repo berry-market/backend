@@ -3,38 +3,29 @@ services:
     image: bitnami/kafka:latest
     container_name: kafka
     environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:${KAFKA_PORT}
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${KAFKA_HOST}:${KAFKA_PORT}
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:${ZOOKEEPER_PORT}
+      # KRaft settings
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_KRAFT_CLUSTER_ID=${KAFKA_CLUSTER_ID}
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@${KAFKA_INTERNAL_HOST}:${KRAFT_CONTROLLER_PORT}
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      # Listeners
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CONTROLLER://${KAFKA_INTERNAL_HOST}:${KRAFT_CONTROLLER_PORT},INTERNAL://${KAFKA_INTERNAL_HOST}:${KAFKA_INTERNAL_PORT},EXTERNAL://0.0.0.0:${KAFKA_PORT}
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://${KAFKA_INTERNAL_HOST}:${KAFKA_INTERNAL_PORT},EXTERNAL://${KAFKA_HOST}:${KAFKA_PORT}
+      - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     ports:
-      - ${KAFKA_PORT}:${KAFKA_PORT}
-    depends_on:
-      - zookeeper
+      - ${KAFKA_PORT}:${KAFKA_INTERNAL_PORT}
+    volumes:
+      - kafka_data:/bitnami/kafka
     healthcheck:
-      test: [ "CMD-SHELL", "echo dump | nc zookeeper ${ZOOKEEPER_PORT} | grep brokers" ]
+      test: ["CMD-SHELL", "nc -z localhost ${KAFKA_PORT}"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
-    networks:
-      - ${NETWORK}
-
-  zookeeper:
-    image: bitnami/zookeeper:latest
-    container_name: zookeeper
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    ports:
-      - ${ZOOKEEPER_PORT}:${ZOOKEEPER_PORT}
-    healthcheck:
-      test: [ "CMD", "echo ruok | nc zookeeper ${ZOOKEEPER_PORT} | grep imok" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 15s
     networks:
       - ${NETWORK}
 
@@ -43,7 +34,7 @@ services:
     container_name: redis
     command: [ "redis-server", "--appendonly", "yes" ]
     ports:
-      - ${REDIS_PORT}:${REDIS_PORT}
+      - ${REDIS_HOST_PORT}:${REDIS_PORT}
     volumes:
       - redis_data:/data
     healthcheck:
@@ -59,7 +50,7 @@ services:
     image: mysql:8.0
     container_name: mysql
     ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}
+      - ${MYSQL_HOST_PORT}:${MYSQL_PORT}
     volumes:
       - ./mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -81,5 +72,6 @@ networks:
     external: true
 
 volumes:
+  kafka_data:
   mysql_data:
   redis_data:
