@@ -21,17 +21,17 @@ public class TossPaymentResDto {
   private LocalDateTime requestedAt;
   private LocalDateTime approvedAt;
 
-  public static TossPaymentResDto fromJson(JSONObject jsonResponse) {
+  public static TossPaymentResDto fromJson(JSONObject confirmResponse) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     return TossPaymentResDto.builder()
-        .paymentKey((String) jsonResponse.get("paymentKey"))
-        .orderId((String) jsonResponse.get("orderId"))
-        .orderName((String) jsonResponse.get("orderName"))
-        .totalAmount(((Long) jsonResponse.get("totalAmount")).intValue())
-        .status((String) jsonResponse.get("status"))
-        .method((String) jsonResponse.get("method"))
-        .requestedAt(parseDateTime((String) jsonResponse.get("requestedAt"), formatter))
-        .approvedAt(parseDateTime((String) jsonResponse.get("approvedAt"), formatter))
+        .paymentKey((String) confirmResponse.get("paymentKey"))
+        .orderId((String) confirmResponse.get("orderId"))
+        .orderName((String) confirmResponse.get("orderName"))
+        .totalAmount(((Long) confirmResponse.get("totalAmount")).intValue())
+        .status((String) confirmResponse.get("status"))
+        .method((String) confirmResponse.get("method"))
+        .requestedAt(parseDateTime((String) confirmResponse.get("requestedAt"), formatter))
+        .approvedAt(parseDateTime((String) confirmResponse.get("approvedAt"), formatter))
         .build();
   }
 

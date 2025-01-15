@@ -61,18 +61,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     TossPaymentResDto response = tossPaymentClient.confirmPayment(orderId, paymentKey, amount);
 
-    Payment payment = Payment.builder()
-        .buyerId(request.getBuyerId())
-        .paymentKey(response.getPaymentKey())
-        .orderId(response.getOrderId())
-        .orderName(response.getOrderName())
-        .amount(response.getTotalAmount())
-        .paymentMethod(response.getMethod())
-        .paymentStatus(response.getStatus())
-        .requestedAt(response.getRequestedAt())
-        .approvedAt(response.getApprovedAt())
-        .build();
-
+    Payment payment = Payment.createFrom(response, request.getBuyerId());
     paymentRepository.save(payment);
 
     paymentRepository.deleteTempPaymentData(orderId);
@@ -126,7 +115,6 @@ public class PaymentServiceImpl implements PaymentService {
     try {
       payment.updateCancelInfo(
           response.status(),
-          response.cancelReason(),
           response.balanceAmount(),
           response.transactionKey()
       );

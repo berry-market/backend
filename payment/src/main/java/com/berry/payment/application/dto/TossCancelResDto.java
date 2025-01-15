@@ -18,7 +18,6 @@ public record TossCancelResDto(String status, String cancelReason, String transa
 
     return TossCancelResDto.builder()
         .status((String) cancelResponse.get("status"))
-        .cancelReason((String) lastCancelInfo.get("cancelReason"))
         .transactionKey((String) lastCancelInfo.get("transactionKey"))
         .balanceAmount(((Long) cancelResponse.get("balanceAmount")).intValue())
         .build();
