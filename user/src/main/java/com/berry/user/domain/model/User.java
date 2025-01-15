@@ -6,8 +6,6 @@ import com.berry.user.presentation.dto.request.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -66,4 +64,8 @@ public class User extends BaseEntity {
         this.setUpdatedBy(userId);
     }
 
+    public void chargePoint(Long userId, int amount) {
+        this.point += amount;
+        this.setUpdatedBy(String.valueOf(userId));
+    }
 }
