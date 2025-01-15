@@ -17,6 +17,8 @@ services:
       - KAFKA_PORT=${KAFKA_PORT}
       - EUREKA_HOST=${EUREKA_HOST}
       - EUREKA_PORT=${EUREKA_PORT}
+      - ZIPKIN_HOST=${ZIPKIN_HOST}
+      - ZIPKIN_PORT=${ZIPKIN_PORT}
     env_file:
       - ../.env
     healthcheck:
