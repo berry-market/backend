@@ -1,6 +1,6 @@
 package com.berry.delivery.application.event;
 
-import com.berry.delivery.domain.model.DeliveryStatus;
+import com.berry.delivery.domain.model.delivery.DeliveryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

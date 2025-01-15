@@ -3,14 +3,15 @@ package com.berry.delivery.application.service.delivery;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.common.role.RoleCheck;
+import com.berry.delivery.application.service.notification.NotificationService;
 import com.berry.delivery.application.service.producer.DeliveryStatusProducer;
-import com.berry.delivery.domain.model.Delivery;
-import com.berry.delivery.domain.model.DeliveryStatus;
-import com.berry.delivery.domain.repository.DeliveryRepository;
+import com.berry.delivery.domain.model.delivery.Delivery;
+import com.berry.delivery.domain.model.delivery.DeliveryStatus;
+import com.berry.delivery.domain.repository.delivery.DeliveryRepository;
 import com.berry.delivery.presentation.dto.DeliveryDto;
-import com.berry.delivery.presentation.dto.request.DeliveryCreateRequest;
-import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
-import com.berry.delivery.presentation.dto.response.DeliverySearchResponse;
+import com.berry.delivery.presentation.dto.request.delivery.DeliveryCreateRequest;
+import com.berry.delivery.presentation.dto.request.delivery.DeliveryUpdateRequest;
+import com.berry.delivery.presentation.dto.response.delivery.DeliverySearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,7 @@ public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
     private final DeliveryStatusProducer deliveryStatusProducer;
+    private final NotificationService notificationService;
 
     @Transactional
     public DeliveryDto createDelivery(DeliveryCreateRequest req) {
@@ -123,8 +125,10 @@ public class DeliveryService {
                 // 예외 객체 e는 마지막 파라미터로 전달
                 log.error("Kafka 이벤트 발행 실패. deliveryId={}, bidId={}, status={}", deliveryId, delivery.getBidId(), req.status(), e);
             }
+            notificationService.winnerCreateNotification(delivery.getReceiverId(), "배송이 시작되었습니다.", "배송 준비 -> 시작 상태 변경");
+        } else if (req.status() == DeliveryStatus.DONE) {
+            notificationService.winnerCreateNotification(delivery.getReceiverId(), "배송이 완료되었습니다.", "배송 시작 -> 완료 상태 변경");
         }
-
         deliveryRepository.save(delivery);
     }
 

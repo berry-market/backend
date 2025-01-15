@@ -1,7 +1,7 @@
-package com.berry.delivery.domain.repository;
+package com.berry.delivery.domain.repository.delivery;
 
-import com.berry.delivery.domain.model.Delivery;
-import com.berry.delivery.domain.model.DeliveryStatus;
+import com.berry.delivery.domain.model.delivery.Delivery;
+import com.berry.delivery.domain.model.delivery.DeliveryStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

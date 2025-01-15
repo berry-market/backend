@@ -1,7 +1,7 @@
-package com.berry.delivery.domain.model;
+package com.berry.delivery.domain.model.delivery;
 
 import com.berry.common.auditor.BaseEntity;
-import com.berry.delivery.presentation.dto.request.DeliveryUpdateRequest;
+import com.berry.delivery.presentation.dto.request.delivery.DeliveryUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 

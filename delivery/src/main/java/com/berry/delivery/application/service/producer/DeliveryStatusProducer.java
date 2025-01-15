@@ -1,7 +1,7 @@
 package com.berry.delivery.application.service.producer;
 
 import com.berry.delivery.application.event.DeliveryStatusEvent;
-import com.berry.delivery.domain.model.DeliveryStatus;
+import com.berry.delivery.domain.model.delivery.DeliveryStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

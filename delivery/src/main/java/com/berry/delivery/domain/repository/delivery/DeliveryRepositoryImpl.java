@@ -1,7 +1,7 @@
-package com.berry.delivery.domain.repository;
+package com.berry.delivery.domain.repository.delivery;
 
-import com.berry.delivery.domain.model.Delivery;
-import com.berry.delivery.domain.model.DeliveryStatus;
+import com.berry.delivery.domain.model.delivery.Delivery;
+import com.berry.delivery.domain.model.delivery.DeliveryStatus;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.JPQLQuery;
 import org.springframework.data.domain.Page;
@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 import java.util.Optional;
 
-import static com.berry.delivery.domain.model.QDelivery.delivery;
+import static com.berry.delivery.domain.model.delivery.QDelivery.delivery;
 
 
 public class DeliveryRepositoryImpl extends QuerydslRepositorySupport implements DeliveryRepositoryCustom {

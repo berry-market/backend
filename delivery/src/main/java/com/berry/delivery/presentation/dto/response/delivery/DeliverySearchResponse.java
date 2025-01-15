@@ -1,7 +1,7 @@
-package com.berry.delivery.presentation.dto.response;
+package com.berry.delivery.presentation.dto.response.delivery;
 
-import com.berry.delivery.domain.model.Delivery;
-import com.berry.delivery.domain.model.DeliveryStatus;
+import com.berry.delivery.domain.model.delivery.Delivery;
+import com.berry.delivery.domain.model.delivery.DeliveryStatus;
 import lombok.Builder;
 
 @Builder
