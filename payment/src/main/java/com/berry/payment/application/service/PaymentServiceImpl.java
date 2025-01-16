@@ -2,6 +2,7 @@ package com.berry.payment.application.service;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.common.role.Role;
 import com.berry.payment.application.dto.ConfirmPaymentReqDto;
 import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.application.dto.TempPaymentReqDto;
@@ -93,16 +94,12 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<PaymentGetResDto> getPayments(Long CurrentUserId, String role,
+  public Page<PaymentGetResDto> getPayments(Long CurrentUserId, Role role,
       Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
 
-    if ("member".equalsIgnoreCase(role)) {
-      if (userId == null || !userId.equals(CurrentUserId)) {
+      if (role == Role.MEMBER && !userId.equals(CurrentUserId)) {
         throw new CustomApiException(ResErrorCode.FORBIDDEN, "본인 포인트 내역만 조회 가능합니다.");
       }
-    } else if (!"admin".equalsIgnoreCase(role)) {
-      throw new CustomApiException(ResErrorCode.FORBIDDEN, "잘못된 권한 정보입니다.");
-    }
 
     return paymentRepository.findAllByBuyerIdAndRequestedAtBetween(
         userId,
@@ -114,16 +111,21 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional
-  public void cancelPayment(Long userId, String paymentKey, TossCancelReqDto request,
+  public void cancelPayment(Long CurrentUserId, Role role, String paymentKey, TossCancelReqDto request,
       String idempotencyKey) {
+
+    Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+        .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "결제 내역을 찾을 수 없습니다."));
+
+
+    if (role == Role.MEMBER && !payment.getBuyerId().equals(CurrentUserId)) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "본인 결제 내역만 취소 가능합니다.");
+    }
 
     Object cachedResponse = paymentRepository.getResponse(idempotencyKey);
     if (cachedResponse != null) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "이미 처리된 취소 요청입니다.");
     }
-
-    Payment payment = paymentRepository.findByPaymentKey(paymentKey)
-        .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "결제 내역을 찾을 수 없습니다."));
 
     int newCancelAmount =
         request.getCancelAmount() != null ? request.getCancelAmount()
@@ -165,7 +167,7 @@ public class PaymentServiceImpl implements PaymentService {
       }
     }
 
-    PaymentEvent event = new PaymentEvent(userId,
+    PaymentEvent event = new PaymentEvent(CurrentUserId,
         request.getCancelAmount());
     paymentProducer.sendCancelEvent(event);
   }

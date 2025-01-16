@@ -2,6 +2,7 @@ package com.berry.payment.presentation.controller;
 
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
+import com.berry.common.role.Role;
 import com.berry.payment.application.dto.ConfirmPaymentReqDto;
 import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.application.dto.TempPaymentReqDto;
@@ -49,7 +50,7 @@ public class PaymentController {
   @GetMapping
   public ApiResponse<Page<PaymentGetResDto>> getPayments(
       @RequestHeader("X-UserId") Long CurrentUserId,
-      @RequestHeader("X-Role") String role,
+      @RequestHeader("X-Role") Role role,
       @RequestParam Long userId,
       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
@@ -61,12 +62,13 @@ public class PaymentController {
 
   @PostMapping("/{paymentKey}/cancel")
   public ApiResponse<Void> cancelPayment(
-      @RequestHeader("X-UserId") Long userId,
+      @RequestHeader("X-UserId") Long CurrentUserId,
+      @RequestHeader("X-Role") Role role,
       @PathVariable String paymentKey,
       @RequestBody TossCancelReqDto cancelRequest,
       @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey
   ) {
-    paymentService.cancelPayment(userId, paymentKey, cancelRequest, idempotencyKey);
+    paymentService.cancelPayment(CurrentUserId, role, paymentKey, cancelRequest, idempotencyKey);
 
     return ApiResponse.OK(ResSuccessCode.SUCCESS, "결제가 취소되었습니다.");
   }

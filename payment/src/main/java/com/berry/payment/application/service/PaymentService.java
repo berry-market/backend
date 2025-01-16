@@ -1,5 +1,6 @@
 package com.berry.payment.application.service;
 
+import com.berry.common.role.Role;
 import com.berry.payment.application.dto.ConfirmPaymentReqDto;
 import com.berry.payment.application.dto.PaymentGetResDto;
 import com.berry.payment.application.dto.TempPaymentReqDto;
@@ -17,9 +18,9 @@ public interface PaymentService {
   TossPaymentResDto confirmPayment(Long userId, ConfirmPaymentReqDto request);
 
   Page<PaymentGetResDto> getPayments(
-      Long CurrentUserId, String role, Long userId, LocalDate startDate, LocalDate endDate,
+      Long CurrentUserId, Role role, Long userId, LocalDate startDate, LocalDate endDate,
       Pageable pageable);
 
-  void cancelPayment(Long userId, String paymentKey, TossCancelReqDto cancelRequest,
+  void cancelPayment(Long CurrentUserId, Role role, String paymentKey, TossCancelReqDto cancelRequest,
       String idempotencyKey);
 }
