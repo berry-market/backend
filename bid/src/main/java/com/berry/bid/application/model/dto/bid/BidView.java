@@ -12,6 +12,18 @@ public class BidView {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class SearchRequest {
+        private Long bidderId;
+        private Long minPrice;
+        private Long maxPrice;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
+        private String sortField;
+        private String sortOrder;
+    }
+
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Response {
         private final Long bidId;
         private final Long bidderId;

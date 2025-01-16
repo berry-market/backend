@@ -75,11 +75,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-def querydslDir = layout.buildDirectory.dir("generated/querydsl")
+// QueryDSL 소스 디렉터리 설정
+def querydslDir = layout.buildDirectory.dir("generated/querydsl") // DirectoryProperty로 설정
 
 sourceSets {
     main {
         java {
+            // QueryDSL 디렉터리를 소스셋에 포함
             srcDir querydslDir
         }
     }
@@ -87,10 +89,16 @@ sourceSets {
 
 tasks.named('clean') {
     doFirst {
+        // QueryDSL 생성 디렉터리 삭제
         querydslDir.get().asFile.deleteDir()
     }
 }
 
 tasks.named('compileJava') {
+    doFirst {
+        // QueryDSL 생성 디렉터리가 없으면 생성
+        querydslDir.get().asFile.mkdirs()
+    }
+    // QueryDSL Annotation Processor의 생성 디렉터리 지정
     options.annotationProcessorGeneratedSourcesDirectory = querydslDir.get().asFile
 }

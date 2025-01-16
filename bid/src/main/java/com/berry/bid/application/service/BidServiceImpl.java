@@ -1,5 +1,6 @@
 package com.berry.bid.application.service;
 
+import com.berry.bid.application.model.dto.bid.BidView;
 import com.berry.bid.application.model.event.BidEvent;
 import com.berry.bid.application.model.event.DeliveryEvent;
 import com.berry.bid.application.model.event.PostEvent;
@@ -9,12 +10,21 @@ import com.berry.bid.domain.repository.BidChatRepository;
 import com.berry.bid.domain.repository.BidRepository;
 import com.berry.bid.domain.service.BidService;
 import com.berry.bid.infrastructure.client.PostClient;
+import com.berry.bid.infrastructure.model.dto.DeliveryInternalView;
 import com.berry.bid.infrastructure.model.dto.PostInternalView;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.berry.bid.domain.model.entity.QBid.bid;
 
 @Service
 @RequiredArgsConstructor
@@ -43,9 +53,16 @@ public class BidServiceImpl implements BidService {
         bidProducerService.sendDeliveryEvent(deliveryEvent);
     }
 
-    @Override
-    public PostInternalView.Response getPostDetails(Long bidId) {
+    private PostInternalView.Response getPostDetails(Long bidId) {
         return postClient.getPost(bidId);
+    }
+
+    @Override
+    @Transactional
+    public BidView.Response getBidDetails(Long bidId) {
+        Bid bid = getBidById(bidId);
+        PostInternalView.Response response = getPostDetails(bidId);
+        return BidView.Response.from(bid,response);
     }
 
     @Override
@@ -61,6 +78,38 @@ public class BidServiceImpl implements BidService {
     @Transactional
     public void deleteById(Long id) {
         bidRepository.findById(id).ifPresent(Bid::delete);
+    }
+
+    //TODO Post에서 feignclient로 받아오기
+    //TODO delivery에서 feignclient로 받아오기
+    @Override
+    public Page<BidView.Response> getBidsWithDetails(BidView.SearchRequest request, Pageable pageable) {
+
+        Page<Bid> bidPage = bidRepository.getBids(request, pageable);
+
+        // Step 2: 각 Bid에 대해 Post와 Delivery 데이터 가져오기
+        List<BidView.Response> responses = bidPage.getContent().stream()
+                .map(bid -> {
+                    // Post 데이터 가져오기
+                    PostInternalView.Response post = postClient.getPost(bid.getPostId());
+
+                    // Delivery 데이터 가져오기
+//                    DeliveryInternalView.Response delivery = deliveryClient.getDeliveryById(bid.getDeliveryId());
+//
+//                    // BidView.Response 생성
+//                    return BidView.Response.builder()
+//                            .bidId(bid.getId())
+//                            .postTitle(post.getTitle())
+//                            .postContent(post.getContent())
+//                            .deliveryStatus(delivery.getStatus())
+//                            .bidAmount(bid.getAmount())
+//                            .createdAt(bid.getCreatedAt())
+//                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // Step 3: Page로 변환
+        return new PageImpl<>(responses, pageable, bidPage.getTotalElements());
     }
 
     private Long getSellerIdByPost(Long bidId) {
@@ -88,5 +137,6 @@ public class BidServiceImpl implements BidService {
     private PostEvent.Price bidToPrice(Bid bid) {
         return PostEvent.Price.of(bid.getId(), bid.getSuccessfulBidPrice());
     }
+
 
 }
