@@ -16,7 +16,7 @@ public class UserConsumerService {
 
     private final UserJpaRepository userJpaRepository;
 
-    @KafkaListener(topics = "payment-completed")
+    @KafkaListener(topics = "payment-completed", groupId = "user-service-group")
     public void completePayment(PaymentCompletedEvent event) {
         log.info("결제 완료 이벤트 수신. userId={}, amount={}", event.getUserId(), event.getAmount());
 
