@@ -12,6 +12,7 @@ import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
 import com.berry.payment.application.event.PaymentEvent;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,13 +69,24 @@ public class PaymentServiceImpl implements PaymentService {
     TossPaymentResDto response = tossPaymentClient.confirmPayment(orderId, paymentKey, amount);
 
     Payment payment = Payment.createFrom(response, userId);
-    paymentRepository.save(payment);
+    try {
+      paymentRepository.save(payment);
+    } catch (Exception e) {
+      cancelPayment(paymentKey, "시스템 오류: 결제 저장 실패", amount);
+    }
 
     paymentRepository.deleteTempPaymentData(orderId);
 
-    PaymentEvent event = new PaymentEvent(userId,
-        response.getTotalAmount());
-    paymentProducer.sendPaymentEvent(event);
+    try {
+      PaymentEvent event = new PaymentEvent(userId,
+          response.getTotalAmount());
+      paymentProducer.sendPaymentEvent(event);
+    } catch (Exception e) {
+      cancelPayment(paymentKey, "시스템 오류: 결제 완료 카프카 메시지 전송 실패", amount);
+      payment.markAsDeleted();
+      paymentRepository.save(payment);
+      throw new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR, "결제 완료 이벤트 전송 실패");
+    }
 
     return response;
   }
@@ -147,5 +159,16 @@ public class PaymentServiceImpl implements PaymentService {
     PaymentEvent event = new PaymentEvent(userId,
         request.getCancelAmount());
     paymentProducer.sendCancelEvent(event);
+  }
+
+  private void cancelPayment(String paymentKey, String cancelReason, int cancelAmount) {
+    String idempotencyKey = UUID.randomUUID().toString();
+    try {
+      tossPaymentClient.cancelPayment(paymentKey, cancelReason, cancelAmount, idempotencyKey);
+
+    } catch (Exception e) {
+      log.error("결제 취소 요청 실패: paymentKey={}, reason={}, amount={}", paymentKey, cancelReason,
+          cancelAmount, e);
+    }
   }
 }
