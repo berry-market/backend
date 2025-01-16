@@ -26,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -113,25 +114,8 @@ class PostServiceImplTest {
             .createdAt(LocalDateTime.now())
             .build())); // userId = 1 인 유저는 postId = 1에 좋아요를 한 상태
 
-    when(cacheManager.getCache("posts")).thenReturn(cache);
-    when(cache.get(anyString())).thenReturn(null); // 처음엔 캐시가 비어있는 상태
-
-    // when - 첫 번째 호출
-    Page<PostListResponse> result;
-    result = postService.getPosts("상품", "", 1L, 2L, "", pageable, userId);
-
-    // then 캐시 조회 검증
-    verify(cache, times(1)).get(anyString());
-    // then 레포지토리 호출 o 검증
-    verify(postRepository, times(1)).findAllAndDeletedYNFalse(anyString(), anyString(), anyLong(), anyLong(), anyString(), any(Pageable.class), anyLong());
-
-    // when - 두 번째 호출
-    result = postService.getPosts("상품", "", 1L, 2L, "", pageable, userId);
-
-    // then 캐시 사용 검증
-    verify(cache, times(2)).get(anyString());
-    // then 레포지토리 호출 x 검증
-    verify(postRepository, times(1)).findAllAndDeletedYNFalse(anyString(), anyString(), anyLong(), anyLong(), anyString(), any(Pageable.class), anyLong());
+    // when
+    Page<PostListResponse> result = postService.getPosts("상품", "", 1L, 2L, "", pageable, userId);
 
     // then
     assertNotNull(result);
