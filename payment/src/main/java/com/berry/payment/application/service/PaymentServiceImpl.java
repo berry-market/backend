@@ -11,8 +11,9 @@ import com.berry.payment.application.dto.TossPaymentResDto;
 import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
-import com.berry.payment.infrastructure.kafka.PaymentCompletedEvent;
+import com.berry.payment.application.event.PaymentCompletedEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -125,7 +126,22 @@ public class PaymentServiceImpl implements PaymentService {
       );
     } catch (Exception e) {
       log.error("결제 취소 정보 업데이트 중 오류 발생: {}", e.getMessage());
-      // TODO: /v1/payments/{paymentKey} 토스에 조회
+      try {
+        JSONObject paymentInfo = tossPaymentClient.getPaymentInfo(paymentKey);
+        TossCancelResDto latestResponse = TossCancelResDto.fromJson(paymentInfo);
+
+        // TODO: 다른 방법 생각해보기
+        payment.updateCancelInfo(
+            latestResponse.status(),
+            latestResponse.balanceAmount(),
+            latestResponse.transactionKey()
+        );
+
+        log.info("결제 취소 정보 업데이트 재시도 성공 - paymentKey: {}", paymentKey);
+      } catch (Exception ex) {
+        log.error("결제 취소 정보 업데이트 재시도 실패: {}", ex.getMessage());
+        throw new CustomApiException(ResErrorCode.API_CALL_FAILED, "결제 취소 정보 업데이트 중 오류가 발생했습니다.");
+      }
     }
   }
 }
