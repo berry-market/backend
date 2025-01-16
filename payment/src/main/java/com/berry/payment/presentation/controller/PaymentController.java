@@ -58,11 +58,12 @@ public class PaymentController {
 
   @PostMapping("/{paymentKey}/cancel")
   public ApiResponse<Void> cancelPayment(
+      @RequestHeader("X-UserId") Long userId,
       @PathVariable String paymentKey,
       @RequestBody TossCancelReqDto cancelRequest,
       @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey
   ) {
-    paymentService.cancelPayment(paymentKey, cancelRequest, idempotencyKey);
+    paymentService.cancelPayment(userId, paymentKey, cancelRequest, idempotencyKey);
 
     return ApiResponse.OK(ResSuccessCode.SUCCESS, "결제가 취소되었습니다.");
   }

@@ -18,5 +18,5 @@ public interface PaymentService {
   Page<PaymentGetResDto> getPayments (
       Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
-  void cancelPayment(String paymentKey, TossCancelReqDto cancelRequest, String idempotencyKey);
+  void cancelPayment(Long userId, String paymentKey, TossCancelReqDto cancelRequest, String idempotencyKey);
 }

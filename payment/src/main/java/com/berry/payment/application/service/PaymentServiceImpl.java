@@ -11,7 +11,7 @@ import com.berry.payment.application.dto.TossPaymentResDto;
 import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
-import com.berry.payment.application.event.PaymentCompletedEvent;
+import com.berry.payment.application.event.PaymentEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +72,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     paymentRepository.deleteTempPaymentData(orderId);
 
-    PaymentCompletedEvent event = new PaymentCompletedEvent(request.getBuyerId(),
+    PaymentEvent event = new PaymentEvent(request.getBuyerId(),
         response.getTotalAmount());
     paymentProducer.sendPaymentEvent(event);
 
@@ -93,7 +93,7 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional
-  public void cancelPayment(String paymentKey, TossCancelReqDto request,
+  public void cancelPayment(Long userId, String paymentKey, TossCancelReqDto request,
       String idempotencyKey) {
 
     Object cachedResponse = paymentRepository.getResponse(idempotencyKey);
@@ -143,5 +143,9 @@ public class PaymentServiceImpl implements PaymentService {
         throw new CustomApiException(ResErrorCode.API_CALL_FAILED, "결제 취소 정보 업데이트 중 오류가 발생했습니다.");
       }
     }
+
+    PaymentEvent event = new PaymentEvent(userId,
+        request.getCancelAmount());
+    paymentProducer.sendCancelEvent(event);
   }
 }
