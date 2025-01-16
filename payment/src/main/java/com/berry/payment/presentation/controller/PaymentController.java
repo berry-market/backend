@@ -40,8 +40,9 @@ public class PaymentController {
 
   @PostMapping("/confirm")
   public synchronized ApiResponse<TossPaymentResDto> confirmPayment(
+      @RequestHeader("X-UserId") Long userId,
       @RequestBody ConfirmPaymentReqDto request) {
-    TossPaymentResDto response = paymentService.confirmPayment(request);
+    TossPaymentResDto response = paymentService.confirmPayment(userId, request);
     return ApiResponse.OK(ResSuccessCode.SUCCESS, response);
   }
 

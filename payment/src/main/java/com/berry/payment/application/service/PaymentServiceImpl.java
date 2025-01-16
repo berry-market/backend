@@ -43,7 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional
-  public TossPaymentResDto confirmPayment(ConfirmPaymentReqDto request) {
+  public TossPaymentResDto confirmPayment(Long userId, ConfirmPaymentReqDto request) {
     String orderId = request.getOrderId();
     int amount = request.getAmount();
     String paymentKey = request.getPaymentKey();
@@ -67,12 +67,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     TossPaymentResDto response = tossPaymentClient.confirmPayment(orderId, paymentKey, amount);
 
-    Payment payment = Payment.createFrom(response, request.getBuyerId());
+    Payment payment = Payment.createFrom(response, userId);
     paymentRepository.save(payment);
 
     paymentRepository.deleteTempPaymentData(orderId);
 
-    PaymentEvent event = new PaymentEvent(request.getBuyerId(),
+    PaymentEvent event = new PaymentEvent(userId,
         response.getTotalAmount());
     paymentProducer.sendPaymentEvent(event);
 
