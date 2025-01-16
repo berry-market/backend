@@ -63,7 +63,7 @@ public class BidCompletionConsumer {
         String winnerMessage = String.format(
                 "상품 낙찰자로 선정되었습니다!"
         );
-        notificationService.winnerCreateNotification(event.getSellerId(), winnerMessage, "당첨자 알림");
+        notificationService.winnerCreateNotification(event.getWinnerId(), winnerMessage, "당첨자 알림");
     }
 
     private void sellerCreateNotification(BidCompletionEvent event) {
