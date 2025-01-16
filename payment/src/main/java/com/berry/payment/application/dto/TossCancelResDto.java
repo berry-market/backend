@@ -10,10 +10,6 @@ public record TossCancelResDto(String status, String cancelReason, String transa
   public static TossCancelResDto fromJson(JSONObject cancelResponse) {
     JSONArray cancelsArray = (JSONArray) cancelResponse.get("cancels");
 
-    if (cancelsArray == null || cancelsArray.isEmpty()) {
-      // TODO: /v1/payments/{paymentKey} 토스에 조회
-    }
-
     JSONObject lastCancelInfo = (JSONObject) cancelsArray.get(cancelsArray.size() - 1);
 
     return TossCancelResDto.builder()

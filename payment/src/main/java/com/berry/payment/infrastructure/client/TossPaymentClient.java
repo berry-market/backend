@@ -60,12 +60,40 @@ public class TossPaymentClient {
 
       JSONObject cancelResponse = sendPostRequest(url, requestPayload, idempotencyKey);
 
-      return TossCancelResDto.fromJson(cancelResponse);
+      try {
+        return TossCancelResDto.fromJson(cancelResponse);
+      } catch (Exception parseException) {
+        logger.warn("TossCancelResDto 변환 실패. 결제 상태 조회를 통해 재시도합니다.", parseException);
+
+        JSONObject paymentInfo = getPaymentInfo(paymentKey);
+
+        try {
+          return TossCancelResDto.fromJson(paymentInfo);
+        } catch (Exception retryParseException) {
+          logger.error("TossCancelResDto 변환 재시도 실패: ", retryParseException);
+          throw new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR,
+              "결제 취소 응답 데이터 처리 중 오류가 발생했습니다.: " + retryParseException.getMessage());
+        }
+      }
 
     } catch (Exception e) {
-      logger.error("토스 결제 취소 API 호출 중 오류 발생", e);
+      logger.error("토스 결제 취소 중 오류 발생", e);
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
           "결제 취소 요청 중 오류가 발생했습니다.: " + e.getMessage());
+    }
+  }
+
+  public JSONObject getPaymentInfo(String paymentKey) {
+    try {
+      String url = TOSS_API_URL + "/" + paymentKey;
+
+      HttpURLConnection connection = createConnection(url, null);
+      return handleResponse(connection);
+
+    } catch (Exception e) {
+      logger.error("토스 결제 상태 조회 API 호출 중 오류 발생", e);
+      throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
+          "토스 결제 조회 중 오류가 발생했습니다.: " + e.getMessage());
     }
   }
 
