@@ -1,4 +1,4 @@
-package com.berry.payment.infrastructure.kafka;
+package com.berry.payment.application.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

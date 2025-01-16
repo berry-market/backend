@@ -1,6 +1,7 @@
-package com.berry.payment.infrastructure.kafka;
+package com.berry.payment.infrastructure.service;
 
 import com.berry.payment.application.service.PaymentProducerService;
+import com.berry.payment.application.event.PaymentCompletedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
