@@ -48,12 +48,14 @@ public class PaymentController {
 
   @GetMapping
   public ApiResponse<Page<PaymentGetResDto>> getPayments(
+      @RequestHeader("X-UserId") Long CurrentUserId,
+      @RequestHeader("X-Role") String role,
       @RequestParam Long userId,
       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
       @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
       @PageableDefault(size = 10) Pageable pageable) {
-    Page<PaymentGetResDto> payments = paymentService.getPayments (
-        userId, startDate, endDate, pageable);
+    Page<PaymentGetResDto> payments = paymentService.getPayments(CurrentUserId, role, userId,
+        startDate, endDate, pageable);
     return ApiResponse.OK(ResSuccessCode.SUCCESS, payments);
   }
 

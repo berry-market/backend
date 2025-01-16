@@ -93,8 +93,17 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<PaymentGetResDto> getPayments(
+  public Page<PaymentGetResDto> getPayments(Long CurrentUserId, String role,
       Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+
+    if ("member".equalsIgnoreCase(role)) {
+      if (userId == null || !userId.equals(CurrentUserId)) {
+        throw new CustomApiException(ResErrorCode.FORBIDDEN, "본인 포인트 내역만 조회 가능합니다.");
+      }
+    } else if (!"admin".equalsIgnoreCase(role)) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "잘못된 권한 정보입니다.");
+    }
+
     return paymentRepository.findAllByBuyerIdAndRequestedAtBetween(
         userId,
         startDate.atStartOfDay(),

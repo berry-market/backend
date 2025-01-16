@@ -17,7 +17,8 @@ public interface PaymentService {
   TossPaymentResDto confirmPayment(Long userId, ConfirmPaymentReqDto request);
 
   Page<PaymentGetResDto> getPayments(
-      Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable);
+      Long CurrentUserId, String role, Long userId, LocalDate startDate, LocalDate endDate,
+      Pageable pageable);
 
   void cancelPayment(Long userId, String paymentKey, TossCancelReqDto cancelRequest,
       String idempotencyKey);
