@@ -18,7 +18,7 @@ public class UserConsumerService {
 
     private final UserJpaRepository userJpaRepository;
 
-    @KafkaListener(topics = "payment-completed", groupId = "user-service-group")
+    @KafkaListener(topics = "payment-completed", groupId = "user-service-group", containerFactory = "paymentCompletedEventKafkaListenerContainerFactory")
     @Transactional
     public void completePayment(PaymentCompletedEvent event) {
         log.info("결제 완료 이벤트 수신. userId={}, amount={}", event.getUserId(), event.getAmount());
@@ -29,7 +29,8 @@ public class UserConsumerService {
         user.chargePoint(event.getUserId(), event.getAmount());
     }
 
-    @KafkaListener(topics = "user-events", groupId = "user-service-group")
+    @KafkaListener(topics = "user-events", groupId = "user-service-group", containerFactory = "userEventBiddingKafkaListenerContainerFactory")
+    @Transactional
     public void updatePoints(UserEvent.Bidding event) {
         log.info("입찰 완료 이벤트 수신. userId={}, amount={}", event.getUserId(), event.getAmount());
 

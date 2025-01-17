@@ -1,5 +1,6 @@
 package com.berry.user.infrastructure.config;
 
+import com.berry.user.application.model.event.UserEvent;
 import com.berry.user.infrastructure.model.PaymentCompletedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -25,24 +26,40 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.consumer.group-id}")
     String groupId;
 
-    @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
+    private Map<String, Object> commonConsumerConfig() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaPort);
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-
-        // 올바르게 JsonDeserializer 클래스를 문자열로 설정
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, PaymentCompletedEvent.class);
+        return configProps;
+    }
 
+    @Bean
+    public ConsumerFactory<String, PaymentCompletedEvent> paymentCompletedEventConsumerFactory() {
+        Map<String, Object> configProps = new HashMap<>(commonConsumerConfig());
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, PaymentCompletedEvent.class);
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+    public ConsumerFactory<String, UserEvent.Bidding> userEventBiddingConsumerFactory() {
+        Map<String, Object> configProps = new HashMap<>(commonConsumerConfig());
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, UserEvent.Bidding.class);
+        return new DefaultKafkaConsumerFactory<>(configProps);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> paymentCompletedEventKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PaymentCompletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(paymentCompletedEventConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, UserEvent.Bidding> userEventBiddingKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, UserEvent.Bidding> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(userEventBiddingConsumerFactory());
         return factory;
     }
 
