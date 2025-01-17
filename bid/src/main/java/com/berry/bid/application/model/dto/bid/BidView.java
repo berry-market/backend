@@ -1,6 +1,7 @@
 package com.berry.bid.application.model.dto.bid;
 
 import com.berry.bid.domain.model.entity.Bid;
+import com.berry.bid.infrastructure.model.dto.DeliveryInternalView;
 import com.berry.bid.infrastructure.model.dto.PostInternalView;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,22 +27,26 @@ public class BidView {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Response {
         private final Long bidId;
+        private final String productName;
+        private final String productURL;
+        private final String deliveryStatus;
         private final Long bidderId;
         private final Integer successfulBidPrice;
         private final LocalDateTime createdAt;
         private final Boolean hasAddress;
-        private final String productName;
-        private final String productImage;
+        private final Boolean hasReview;
 
-        public static Response from(Bid bid, PostInternalView.Response response) {
+        public static Response from(Bid bid, PostInternalView.Response post, DeliveryInternalView.Response delivery) {
             return new Response(
                     bid.getId(),
+                    post.getProductName(),
+                    post.getProductImage(),
+                    delivery.getDeliveryStatus(),
                     bid.getBidderId(),
                     bid.getSuccessfulBidPrice(),
                     bid.getCreatedAt(),
                     bid.getHasAddress(),
-                    response.getProductName(),
-                    response.getProductImage()
+                    bid.getHasReview()
             );
         }
 

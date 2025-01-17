@@ -29,6 +29,9 @@ public class Bid {
     @Column(name = "has_address", nullable = false)
     private Boolean hasAddress = false;
 
+    @Column(name = "has_review", nullable = false)
+    private Boolean hasReview = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -52,5 +55,9 @@ public class Bid {
 
     public void putAddress() {
         this.hasAddress = true;
+    }
+
+    public void review() {
+        this.hasReview = true;
     }
 }
