@@ -34,7 +34,6 @@ public class KafkaConsumerConfig {
 
         // 올바르게 JsonDeserializer 클래스를 문자열로 설정
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, PaymentCompletedEvent.class);
 
         return new DefaultKafkaConsumerFactory<>(configProps);
