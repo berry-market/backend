@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,6 @@ public class PostCategoryServiceImpl implements PostCategoryService {
 
   @Override
   @Transactional
-  @CacheEvict(cacheNames = "postCategories", allEntries = true)
   public void createPostCategory(PostCategoryCreateRequest postCategoryCreateRequest) {
     if (postCategoryRepository.findByCategoryNameAndDeletedYNFalse(postCategoryCreateRequest.getCategoryName()).isPresent()) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "이미 존재하는 카테고리입니다.");
@@ -65,7 +65,6 @@ public class PostCategoryServiceImpl implements PostCategoryService {
 
   @Override
   @Transactional
-  @CacheEvict(cacheNames = "postCategories", allEntries = true)
   public void updatePostCategory(Long categoryId, PostCategoryUpdateRequest postCategoryUpdateRequest) {
     if (postCategoryRepository.findByCategoryNameAndDeletedYNFalse(postCategoryUpdateRequest.getCategoryName()).isPresent()) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "이미 존재하는 카테고리입니다.");
@@ -81,7 +80,6 @@ public class PostCategoryServiceImpl implements PostCategoryService {
 
   @Override
   @Transactional
-  @CacheEvict(cacheNames = "postCategories", allEntries = true)
   public void deletePostCategory(Long categoryId) {
     PostCategory savedPostCategory = postCategoryRepository.findByIdAndDeletedYNFalse(categoryId)
         .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "존재하지 않는 카테고리 아이디입니다."));
@@ -91,7 +89,7 @@ public class PostCategoryServiceImpl implements PostCategoryService {
 
   @Override
   @Transactional(readOnly = true)
-  @Cacheable(cacheNames = "postCategories", key = "'postCategory:navigation'")
+  @Cacheable(cacheNames = "postCategories", key = "'allPostCategories'")
   public List<PostCategoryNavigationResponse> getNavigations() {
     List<PostCategory> postCategories = postCategoryRepository.findAllByDeletedYNFalse();
     log.info("실제 DB 조회");

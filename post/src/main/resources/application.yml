@@ -36,8 +36,8 @@ spring:
               packages: "*"
   data:
     redis:
-      host: ${COMMON_REDIS_HOST}
-      port: ${COMMON_REDIS_PORT}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   cache:
       type: redis
 

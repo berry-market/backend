@@ -13,12 +13,14 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 public class RedisConfig {
 
   @Bean
-  public RedisTemplate<String, List<PostCategoryNavigationResponse>> redisTemplate(
+  public RedisTemplate<String, Object> redisTemplate(
       RedisConnectionFactory connectionFactory) {
-    RedisTemplate<String, List<PostCategoryNavigationResponse>> template = new RedisTemplate<>();
+    RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setConnectionFactory(connectionFactory);
     template.setKeySerializer(RedisSerializer.string());
     template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // JSON 직렬화 개선
     return template;
   }
+
+
 }
