@@ -24,7 +24,7 @@ public class UserConsumerService {
         log.info("결제 완료 이벤트 수신. userId={}, amount={}", event.getUserId(), event.getAmount());
         User user = getUser(event.getUserId());
 
-        user.chargePoint(event.getUserId(), event.getAmount());
+        user.updatePoint(event.getUserId(), event.getAmount());
     }
 
     @KafkaListener(topics = "payment-canceled", groupId = "user-service-group", containerFactory = "paymentCanceledEventKafkaListenerContainerFactory")
@@ -33,7 +33,7 @@ public class UserConsumerService {
         log.info("결제 취소 이벤트 수신. userId={}, amount={}", event.getUserId(), event.getAmount());
         User user = getUser(event.getUserId());
 
-        user.chargePoint(event.getUserId(), event.getAmount());
+        user.updatePoint(event.getUserId(), event.getAmount());
     }
 
     @KafkaListener(topics = "user-events", groupId = "user-service-group", containerFactory = "userEventBiddingKafkaListenerContainerFactory")
@@ -42,7 +42,7 @@ public class UserConsumerService {
         log.info("입찰 완료 이벤트 수신. userId={}, amount={}", event.getUserId(), event.getAmount());
         User user = getUser(event.getUserId());
 
-        user.chargePoint(event.getUserId(), event.getAmount());
+        user.updatePoint(event.getUserId(), event.getAmount());
     }
 
     private User getUser(Long userId) {

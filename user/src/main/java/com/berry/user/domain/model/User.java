@@ -64,7 +64,7 @@ public class User extends BaseEntity {
         this.setUpdatedBy(userId);
     }
 
-    public void chargePoint(Long userId, int amount) {
+    public void updatePoint(Long userId, int amount) {
         this.point += amount;
         this.setUpdatedBy(String.valueOf(userId));
     }
