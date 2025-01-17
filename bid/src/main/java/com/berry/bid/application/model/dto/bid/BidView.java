@@ -6,6 +6,7 @@ import com.berry.bid.infrastructure.model.dto.PostInternalView;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -17,8 +18,13 @@ public class BidView {
         private Long bidderId;
         private Long minPrice;
         private Long maxPrice;
+
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private LocalDateTime startDate;
+
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private LocalDateTime endDate;
+
         private String sortField;
         private String sortOrder;
     }
@@ -41,7 +47,7 @@ public class BidView {
                     bid.getId(),
                     post.getProductName(),
                     post.getProductImage(),
-                    delivery.getDeliveryStatus(),
+                    delivery.getStatus(),
                     bid.getBidderId(),
                     bid.getSuccessfulBidPrice(),
                     bid.getCreatedAt(),
