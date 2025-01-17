@@ -11,6 +11,7 @@ import com.berry.delivery.domain.repository.delivery.DeliveryRepository;
 import com.berry.delivery.presentation.dto.DeliveryDto;
 import com.berry.delivery.presentation.dto.request.delivery.DeliveryCreateRequest;
 import com.berry.delivery.presentation.dto.request.delivery.DeliveryUpdateRequest;
+import com.berry.delivery.presentation.dto.response.delivery.BidStatusResponse;
 import com.berry.delivery.presentation.dto.response.delivery.DeliverySearchResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -153,5 +154,11 @@ public class DeliveryService {
         if (newStatus == DeliveryStatus.DONE && currentStatus != DeliveryStatus.STARTED) {
             throw new CustomApiException(ResErrorCode.BAD_REQUEST, "배송이 시작되지 않은 상태에서는 완료할 수 없습니다.");
         }
+    }
+
+    public BidStatusResponse getBid(Long bidId) {
+        Delivery delivery = deliveryRepository.findBybidId(bidId)
+                .orElseThrow(() -> new CustomApiException(ResErrorCode.BAD_REQUEST, "존재하지 않는 배송입니다."));
+        return BidStatusResponse.from(delivery);
     }
 }
