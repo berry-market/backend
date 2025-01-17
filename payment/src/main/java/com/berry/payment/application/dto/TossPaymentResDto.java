@@ -1,5 +1,6 @@
 package com.berry.payment.application.dto;
 
+import com.berry.payment.domain.model.Payment;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,17 +22,30 @@ public class TossPaymentResDto {
   private LocalDateTime requestedAt;
   private LocalDateTime approvedAt;
 
-  public static TossPaymentResDto fromJson(JSONObject jsonResponse) {
+  public static TossPaymentResDto fromEntity(Payment payment) {
+    return TossPaymentResDto.builder()
+        .paymentKey(payment.getPaymentKey())
+        .orderId(payment.getOrderId())
+        .orderName(payment.getOrderName())
+        .totalAmount(payment.getAmount())
+        .status(payment.getPaymentStatus())
+        .method(payment.getPaymentMethod())
+        .requestedAt(payment.getRequestedAt())
+        .approvedAt(payment.getApprovedAt())
+        .build();
+  }
+
+  public static TossPaymentResDto fromJson(JSONObject confirmResponse) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
     return TossPaymentResDto.builder()
-        .paymentKey((String) jsonResponse.get("paymentKey"))
-        .orderId((String) jsonResponse.get("orderId"))
-        .orderName((String) jsonResponse.get("orderName"))
-        .totalAmount(((Long) jsonResponse.get("totalAmount")).intValue())
-        .status((String) jsonResponse.get("status"))
-        .method((String) jsonResponse.get("method"))
-        .requestedAt(parseDateTime((String) jsonResponse.get("requestedAt"), formatter))
-        .approvedAt(parseDateTime((String) jsonResponse.get("approvedAt"), formatter))
+        .paymentKey((String) confirmResponse.get("paymentKey"))
+        .orderId((String) confirmResponse.get("orderId"))
+        .orderName((String) confirmResponse.get("orderName"))
+        .totalAmount(((Long) confirmResponse.get("totalAmount")).intValue())
+        .status((String) confirmResponse.get("status"))
+        .method((String) confirmResponse.get("method"))
+        .requestedAt(parseDateTime((String) confirmResponse.get("requestedAt"), formatter))
+        .approvedAt(parseDateTime((String) confirmResponse.get("approvedAt"), formatter))
         .build();
   }
 

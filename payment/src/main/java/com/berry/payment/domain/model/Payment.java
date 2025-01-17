@@ -1,6 +1,7 @@
 package com.berry.payment.domain.model;
 
 import com.berry.common.auditor.BaseEntity;
+import com.berry.payment.application.dto.TossPaymentResDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,11 +51,41 @@ public class Payment extends BaseEntity {
   private String paymentStatus;
 
   @Column
-  private String cancelReason;
+  private String transactionKey;
+
+  @Column(nullable = false)
+  private int balanceAmount;
 
   @Column(nullable = false)
   private LocalDateTime requestedAt;
 
   @Column
   private LocalDateTime approvedAt;
+
+
+  public static Payment createFrom(TossPaymentResDto response, Long buyerId) {
+    return Payment.builder()
+        .buyerId(buyerId)
+        .paymentKey(response.getPaymentKey())
+        .orderId(response.getOrderId())
+        .orderName(response.getOrderName())
+        .amount(response.getTotalAmount())
+        .balanceAmount(response.getTotalAmount())
+        .paymentMethod(response.getMethod())
+        .paymentStatus(response.getStatus())
+        .requestedAt(response.getRequestedAt())
+        .approvedAt(response.getApprovedAt())
+        .build();
+  }
+
+
+  public void updateCancelInfo(String status, int balanceAmount,
+      String transactionKey) {
+    if (this.transactionKey != null && this.transactionKey.equals(transactionKey)) {
+      return;
+    }
+    this.paymentStatus = status;
+    this.balanceAmount = balanceAmount;
+    this.transactionKey = transactionKey;
+  }
 }

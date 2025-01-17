@@ -1,9 +1,10 @@
 package com.berry.payment.application.service;
 
-import com.berry.payment.infrastructure.kafka.PaymentCompletedEvent;
+import com.berry.payment.application.event.PaymentEvent;
 
 public interface PaymentProducerService {
 
-  void sendPaymentEvent(PaymentCompletedEvent event);
+  void sendPaymentEvent(PaymentEvent event);
 
+  void sendCancelEvent(PaymentEvent event);
 }

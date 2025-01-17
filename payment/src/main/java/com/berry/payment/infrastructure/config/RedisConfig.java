@@ -28,11 +28,9 @@ public class RedisConfig {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setConnectionFactory(redisConnectionFactory());
 
-    // 키와 해시 키는 String으로 직렬화
     template.setKeySerializer(new StringRedisSerializer());
     template.setHashKeySerializer(new StringRedisSerializer());
 
-    // 값과 해시 값은 JSON 직렬화
     template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
     template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 
