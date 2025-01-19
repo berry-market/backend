@@ -14,7 +14,7 @@ public class BidConsumerServiceImpl implements BidConsumerService {
     private final BidService bidService;
 
     @Override
-    @KafkaListener(topics = "delivery.status.change")
+    @KafkaListener(topics = "delivery.status.change", containerFactory = "deliveryListenerContainerFactory")
     public void putAddress(BidEvent.Delivery event) {
         bidService.putAddress(event);
     }

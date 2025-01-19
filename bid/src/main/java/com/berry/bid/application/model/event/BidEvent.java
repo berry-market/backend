@@ -3,14 +3,15 @@ package com.berry.bid.application.model.event;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class BidEvent {
 
     @Getter
-    @AllArgsConstructor(access = AccessLevel.PUBLIC)
+    @NoArgsConstructor(access = AccessLevel.PUBLIC)
     public static class Delivery{
-        private final Long bidId;
-        private final String deliveryStatus;
+        private Long bidId;
+        private String deliveryStatus;
     }
 
 }
