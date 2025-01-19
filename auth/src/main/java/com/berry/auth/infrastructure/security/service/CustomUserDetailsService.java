@@ -28,7 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     UserLoginResDto user;
 
     try {
-      // 유저서비스에서 유저 정보 가져오기
       user = userClient.getUserByNickname(nickname).getData();
     } catch (FeignException e) {
       throw new CustomApiException(ResErrorCode.API_CALL_FAILED,
@@ -38,7 +37,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     if (user == null) {
       throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
     }
-      // UserDetails 객체 반환
       return new CustomUserDetails(
           user.getUserId(),
           user.getNickname(),

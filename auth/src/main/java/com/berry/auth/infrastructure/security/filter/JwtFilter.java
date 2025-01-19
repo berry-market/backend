@@ -29,7 +29,6 @@ public class JwtFilter extends OncePerRequestFilter {
   private final JwtTokenValidator jwtTokenValidator;
   private final RedisTokenRepository redisTokenRepository;
 
-  // 필터 제외 경로
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
@@ -41,7 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
       FilterChain filterChain)
       throws IOException, ServletException {
 
-      // Authorization 헤더에서 토큰 추출
       String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -52,19 +50,16 @@ public class JwtFilter extends OncePerRequestFilter {
     try {
       String accessToken = authHeader.substring(7);
 
-      // 블랙리스트 확인
       if (redisTokenRepository.isBlacklisted(accessToken)) {
         throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "Access token is blacklisted");
       }
 
-      // 액세스 토큰 유효성 검증
       jwtTokenValidator.validateAccessToken(accessToken);
 
-      // SecurityContext 설정
       Claims claims = jwtTokenValidator.extractClaims(accessToken);
       setAuthentication(request, claims);
 
-      filterChain.doFilter(request, response); // 다음 필터로 진행
+      filterChain.doFilter(request, response);
 
     } catch (ExpiredJwtException e) {
       handleException(response,
@@ -77,7 +72,6 @@ public class JwtFilter extends OncePerRequestFilter {
     }
   }
 
-  // SecurityContext 설정
   private void setAuthentication(HttpServletRequest request, Claims claims) {
     JwtAuthenticationToken authentication = new JwtAuthenticationToken(
         Long.parseLong(claims.getSubject()),
@@ -90,7 +84,6 @@ public class JwtFilter extends OncePerRequestFilter {
     SecurityContextHolder.getContext().setAuthentication(authentication);
   }
 
-  // 예외 처리 로직
   private void handleException(HttpServletResponse response, CustomApiException e)
       throws IOException {
     response.setStatus(e.getErrorCode().getHttpStatusCode());

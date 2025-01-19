@@ -21,7 +21,6 @@ public class JwtTokenValidator {
     this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
   }
 
-  // 액세스 토큰 유효성 검증
   public void validateAccessToken(String AccessToken) {
     Claims claims = extractClaims(AccessToken);
     if (!"access".equals(claims.get("type", String.class))) {
@@ -29,7 +28,6 @@ public class JwtTokenValidator {
     }
   }
 
-  // 리프레시 토큰 유효성 검증
   public void validateRefreshToken(String RefreshToken) {
     Claims claims = extractClaims(RefreshToken);
     if (!"refresh".equals(claims.get("type", String.class))) {
