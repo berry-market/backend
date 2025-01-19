@@ -9,6 +9,9 @@ import com.berry.common.response.ResSuccessCode;
 import com.berry.bid.infrastructure.model.dto.PostInternalView;
 import com.berry.common.role.RoleCheck;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,9 +24,7 @@ public class BidController {
     @GetMapping("/bids/{bidId}")
     @RoleCheck({"MEMBER","ADMIN"})
     public ApiResponse<BidView.Response> bidView(@PathVariable Long bidId) {
-        Bid bid = bidService.getBidById(bidId);
-        PostInternalView.Response postResponse = bidService.getPostDetails(bidId);
-        BidView.Response response = BidView.Response.from(bid,postResponse);
+        BidView.Response response = bidService.getBidDetails(bidId);
         return ApiResponse.OK(ResSuccessCode.READ, response);
     }
 
@@ -31,6 +32,14 @@ public class BidController {
     public ApiResponse<Void> deleteBid(@PathVariable Long bidId) {
         bidService.deleteById(bidId);
         return ApiResponse.OK(ResSuccessCode.DELETED);
+    }
+
+    @GetMapping("/bids")
+    public ApiResponse<Page<BidView.Response>> getBids(
+            @ModelAttribute BidView.SearchRequest request,
+            Pageable pageable) {
+        Page<BidView.Response> bidPage = bidService.getBidsWithDetails(request,pageable);
+        return ApiResponse.OK(ResSuccessCode.READ, bidPage);
     }
 
 }
