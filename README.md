@@ -2,7 +2,7 @@
 
 ## 👨‍👩‍👧‍👦 Our Team
 
-| 김성호<br>[@ksngh](https://github.com/ksngh) | 강희승<br>[@Hxxseung](https://github.com/Hxxseung) | 최소진<br>[@sonoopy](https://github.com/sonoopy) | 이현진<br>[@wkdehf217](https://github.com/wkdehf217) | 유현<br>[@yuhyun1](https://github.com/yuhyun1) |
+| 김성호<br>[@ksngh](https://github.com/ksngh) | 강희승<br>[@Hxxseung](https://github.com/Hxxseung) | 최소진<br>[@sonoopy](https://github.com/sonoopy) | 이현진<br>[@drinkgalaxy](https://github.com/wkdehf217) | 유현<br>[@yuhyun1](https://github.com/yuhyun1) |
 |:-----------------------------------------:|:-----------------------------------------------:|:-----------------------------------------------:|:-------------------------------------------------:|:-------------------------------------------------:|
 |            Example<br>Example            |            Delivery<br>Notification             |                     Example<br>Example                     |                   Example<br>Example                   |                   Example<br>Example                   |
 
