@@ -16,12 +16,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         config.setApplicationDestinationPrefixes("/app");
     }
 
-    //TODO : 클라이언트 요청에 맞게 sockjs 사용 / 비사용
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("*");
-//                .withSockJS();
+                .setAllowedOrigins("*")
+                .withSockJS();
     }
 
 }
