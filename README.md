@@ -5,7 +5,9 @@
 | 김성호<br>[@ksngh](https://github.com/ksngh) | 강희승<br>[@Hxxseung](https://github.com/Hxxseung) | 최소진<br>[@sonoopy](https://github.com/sonoopy) | 이현진<br>[@wkdehf217](https://github.com/wkdehf217) | 유현<br>[@yuhyun1](https://github.com/yuhyun1) |
 |:-----------------------------------------:|:-----------------------------------------------:|:-----------------------------------------------:|:-------------------------------------------------:|:-------------------------------------------------:|
 |            Example<br>Example            |            Delivery<br>Notification             |                     Example<br>Example                     |                   Example<br>Example                   |                   Example<br>Example                   |
-<br>
+
+[📆 Team Notion 바로가기](https)<br>
+
 
 ### 1. 소개
 - **실시간 경매** 기반 상품 거래 플랫폼 “베리 마켓”
@@ -122,3 +124,36 @@
 - example
     - **example**: `example` → `example` → `example`
 - example
+
+## 성과 및 회고
+
+### 잘된 점
+- **Example**
+   - example
+   - example
+
+- **example**
+   - example
+   - example
+
+---
+
+### 아쉬운 점
+- **example**
+   - example
+
+- **example**
+   - example
+
+---
+
+### 향후 계획
+- **example**
+   - example
+
+- **example**
+   - example
+   - example
+
+- **example**
+   - example
