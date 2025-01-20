@@ -4,6 +4,7 @@ import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.domain.model.Like;
 import com.berry.post.domain.repository.LikeRepository;
+import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.presentation.request.like.CreatePostLikeRequest;
 import com.berry.post.presentation.response.like.LikeResponse;
 import java.time.LocalDateTime;
@@ -20,10 +21,13 @@ import java.util.Objects;
 public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
 
     @Override
     @Transactional
     public void createPostLike(CreatePostLikeRequest request, Long userId) {
+        postRepository.findById(request.postId())
+            .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다."));
         Like like = Like.builder()
             .userId(userId)
             .postId(request.postId())
