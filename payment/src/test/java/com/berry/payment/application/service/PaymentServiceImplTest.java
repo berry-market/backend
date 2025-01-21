@@ -6,6 +6,7 @@ import com.berry.payment.domain.model.Payment;
 import com.berry.payment.domain.repository.PaymentRepository;
 import com.berry.payment.infrastructure.client.TossPaymentClient;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -46,6 +47,7 @@ class PaymentServiceImplTest {
   }
 
   @Test
+  @DisplayName("임시 결제 데이터 저장 테스트")
   void saveTempPaymentData_ShouldSaveData() {
     // Given
     TempPaymentReqDto request = new TempPaymentReqDto("order123", 1000);
@@ -59,6 +61,7 @@ class PaymentServiceImplTest {
   }
 
   @Test
+  @DisplayName("결제 확인 테스트")
   void confirmPayment_ShouldReturnTossPaymentResDto_WhenValid() {
     // Given
     Long userId = 1L;
@@ -86,6 +89,7 @@ class PaymentServiceImplTest {
   }
 
   @Test
+  @DisplayName("결제 목록 조회 테스트")
   void getPayments_ShouldReturnPaymentPage_WhenValid() {
     // Given
     Long userId = 1L;
@@ -117,6 +121,7 @@ class PaymentServiceImplTest {
   }
 
   @Test
+  @DisplayName("결제 취소 테스트")
   void cancelPayment_ShouldUpdateCancelInfo_WhenValid() {
     // Given
     Long userId = 1L;

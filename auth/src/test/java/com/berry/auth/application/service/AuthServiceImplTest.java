@@ -16,6 +16,7 @@ import feign.FeignException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -58,6 +59,7 @@ class AuthServiceImplTest {
   }
 
   @Test
+  @DisplayName("로그아웃 - 토큰 무효화")
   void logout_ShouldInvalidateTokens_WhenValid() {
     // Given
     String authorizationHeader = "Bearer accessToken123";
@@ -77,6 +79,7 @@ class AuthServiceImplTest {
   }
 
   @Test
+  @DisplayName("로그아웃 - 유효하지 않은 Authorization 헤더 예외 처리")
   void logout_ShouldThrowException_WhenAuthorizationHeaderIsInvalid() {
     // Given
     String invalidAuthorizationHeader = "InvalidToken";
@@ -91,6 +94,7 @@ class AuthServiceImplTest {
   }
 
   @Test
+  @DisplayName("액세스 토큰 재발급 - 새 토큰 반환")
   void refreshAccessToken_ShouldReturnNewAccessToken_WhenValid() {
     // Given
     String refreshToken = "validRefreshToken";
@@ -114,6 +118,7 @@ class AuthServiceImplTest {
   }
 
   @Test
+  @DisplayName("액세스 토큰 재발급 - Feign 예외 발생 시 처리")
   void refreshAccessToken_ShouldThrowException_WhenFeignExceptionOccurs() {
     // Given
     String refreshToken = "validRefreshToken";
@@ -131,6 +136,7 @@ class AuthServiceImplTest {
   }
 
   @Test
+  @DisplayName("토큰 유효성 검사 - 유효한 토큰의 경우 유저정보 반환")
   void validateToken_ShouldReturnTokenValidResDto_WhenValid() {
     // Given
     String accessToken = "validAccessToken";
@@ -153,6 +159,7 @@ class AuthServiceImplTest {
   }
 
   @Test
+  @DisplayName("토큰 유효성 검사 - 유효하지 않은 토큰 예외 처리")
   void validateToken_ShouldThrowException_WhenTokenIsInvalid() {
     // Given
     String invalidAccessToken = "invalidToken";
