@@ -1,8 +1,12 @@
 package com.berry.bid.infrastructure.config;
 
 
+import com.berry.bid.application.model.event.BidEvent;
+import com.berry.bid.application.model.event.DeliveryEvent;
 import com.berry.bid.application.model.event.PostEvent;
+import com.berry.common.exceptionhandler.CustomApiException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +20,8 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.berry.common.response.ResErrorCode.BAD_REQUEST;
+
 @EnableKafka
 @Configuration
 public class KafkaConsumerConfig {
@@ -26,25 +32,39 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.consumer.group-id}")
     String groupId;
 
-    @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
+    public static <T> Map<String, Object> kafkaListenerConfig(String kafkaPort,String groupId,Class<T> listenedClass){
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaPort);
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-
-        // 올바르게 JsonDeserializer 클래스를 문자열로 설정
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, PostEvent.Close.class);
-
-        return new DefaultKafkaConsumerFactory<>(configProps);
+        configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, listenedClass);
+        return configProps;
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+    public ConsumerFactory<String, Object> postConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(kafkaListenerConfig(kafkaPort, groupId, PostEvent.Close.class));
+    }
+
+    @Bean
+    public ConsumerFactory<String, Object> deliveryConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(kafkaListenerConfig(kafkaPort, groupId, BidEvent.Delivery.class));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> postListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(postConsumerFactory());
         return factory;
     }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> deliveryListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(deliveryConsumerFactory());
+        return factory;
+    }
+
 }

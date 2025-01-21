@@ -16,9 +16,8 @@ public class BidChatConsumerServiceImpl implements BidChatConsumerService {
     private final BidService bidService;
 
     @Override
-    @KafkaListener(topics = "bid-events")
+    @KafkaListener(topics = "bid-events", containerFactory = "postListenerContainerFactory")
     public void closePostEvent(PostEvent.Close postEvent) {
-        log.info("PostEvent 받아옴 = "+ postEvent.getPostId());
         bidService.createBid(postEvent);
     }
 
