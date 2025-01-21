@@ -107,7 +107,7 @@ spring:
           predicates:
             - Path=/admin/v1/bids/**
         - id: bid-service-websocket
-          uri: ws://${BID_NAME}:${BID_PORT}
+          uri: lb://${BID_NAME}
           predicates:
             - Path=/ws/**
           filters:

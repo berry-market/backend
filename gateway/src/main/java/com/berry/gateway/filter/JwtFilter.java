@@ -8,6 +8,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -48,13 +49,19 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
   public GatewayFilter apply(Config config) {
     return (exchange, chain) -> {
       try {
-        String path = exchange.getRequest().getPath().toString();
+        String path = exchange.getRequest().getURI().getPath();
         String method = exchange.getRequest().getMethod().name();
+        String accessToken = null;
 
-        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        String accessToken = authHeader != null && authHeader.startsWith("Bearer ")
-            ? authHeader.substring(7)
-            : null;
+        if (path.startsWith("/ws/")) {
+          accessToken = extractWebSocketToken(exchange);
+        } else {
+          String authHeader = exchange.getRequest().getHeaders()
+              .getFirst(HttpHeaders.AUTHORIZATION);
+          accessToken = authHeader != null && authHeader.startsWith("Bearer ")
+              ? authHeader.substring(7)
+              : null;
+        }
 
         if (EXCLUDED_PATHS.stream().anyMatch(route -> route.matches(method, path))
             && accessToken == null) {
@@ -83,6 +90,18 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
       }
     };
   }
+
+  private String extractWebSocketToken(ServerWebExchange exchange) {
+    List<String> protocols = exchange.getRequest().getHeaders().get("Sec-WebSocket-Protocol");
+    if (protocols != null && !protocols.isEmpty()) {
+      String token = protocols.get(0);
+      if (token.startsWith("Bearer ")) {
+        return token.substring(7);
+      }
+    }
+    return null;
+  }
+
 
   private Mono<Void> handleRefreshToken(ServerWebExchange exchange, GatewayFilterChain chain,
       String refreshToken) {
@@ -129,8 +148,6 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
         throw new GatewayException(HttpStatus.UNAUTHORIZED, "Not an access token");
       }
       return true;
-    } catch (io.jsonwebtoken.ExpiredJwtException ex) {
-      return false;
     } catch (Exception ex) {
       return false;
     }
@@ -151,7 +168,8 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
   private String getCookieValue(ServerWebExchange exchange) {
     return exchange.getRequest().getCookies().getFirst("refreshToken") != null
-        ? exchange.getRequest().getCookies().getFirst("refreshToken").getValue()
+        ? Objects.requireNonNull(exchange.getRequest().getCookies().getFirst("refreshToken"))
+        .getValue()
         : null;
   }
 
