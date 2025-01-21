@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,10 +38,15 @@ public class BidChatServiceImpl implements BidChatService {
         return bidChat;
     }
 
+    @Override
+    public List<BidChat> getBidChats(Long postId) {
+        return bidChatRepository.findAll();
+    }
+
     private void renewPoints(Long postId, BidChat bidChat) {
         updatePoints(UserEvent.Bidding.from(bidChat));
         Optional<BidChat> latestBidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
-        if (latestBidChat.isPresent()){
+        if (latestBidChat.isPresent()) {
             updatePoints(UserEvent.Bidding.fromLatest(latestBidChat.orElse(null)));
         }
     }
