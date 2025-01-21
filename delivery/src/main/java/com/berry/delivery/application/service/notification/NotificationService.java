@@ -54,7 +54,7 @@ public class NotificationService {
             );
 
             createNotification(request);
-            log.info("{} 발송 완료. sellerId={}", sellerId, logMessageType);
+            log.info("{} 발송 완료. sellerId={}",logMessageType, sellerId);
 
         } catch (Exception e) {
             log.error("{} 발송 실패. sellerId={}",logMessageType, sellerId, e);
