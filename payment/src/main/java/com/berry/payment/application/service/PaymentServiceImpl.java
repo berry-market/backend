@@ -37,8 +37,8 @@ public class PaymentServiceImpl implements PaymentService {
   @Override
   @Transactional
   public void saveTempPaymentData(TempPaymentReqDto request) {
-    String orderId = request.getOrderId();
-    int amount = request.getAmount();
+    String orderId = request.orderId();
+    int amount = request.amount();
 
     paymentRepository.saveTempPaymentData(orderId, amount, Duration.ofMinutes(10));
   }
@@ -46,9 +46,9 @@ public class PaymentServiceImpl implements PaymentService {
   @Override
   @Transactional
   public TossPaymentResDto confirmPayment(Long userId, ConfirmPaymentReqDto request) {
-    String orderId = request.getOrderId();
-    int amount = request.getAmount();
-    String paymentKey = request.getPaymentKey();
+    String orderId = request.orderId();
+    int amount = request.amount();
+    String paymentKey = request.paymentKey();
 
     Payment existingPayment = paymentRepository.findByPaymentKey(paymentKey).orElse(null);
     if (existingPayment != null) {
@@ -79,8 +79,7 @@ public class PaymentServiceImpl implements PaymentService {
     paymentRepository.deleteTempPaymentData(orderId);
 
     try {
-      PaymentEvent event = new PaymentEvent(userId,
-          response.getTotalAmount());
+      PaymentEvent event = new PaymentEvent(userId, response.totalAmount());
       paymentProducer.sendPaymentEvent(event);
     } catch (Exception e) {
       cancelPayment(paymentKey, "시스템 오류: 결제 완료 카프카 메시지 전송 실패", amount);
@@ -94,12 +93,12 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<PaymentGetResDto> getPayments(Long CurrentUserId, Role role,
+  public Page<PaymentGetResDto> getPayments(Long currentUserId, Role role,
       Long userId, LocalDate startDate, LocalDate endDate, Pageable pageable) {
 
-      if (role == Role.MEMBER && !userId.equals(CurrentUserId)) {
-        throw new CustomApiException(ResErrorCode.FORBIDDEN, "본인 포인트 내역만 조회 가능합니다.");
-      }
+    if (role == Role.MEMBER && !userId.equals(currentUserId)) {
+      throw new CustomApiException(ResErrorCode.FORBIDDEN, "본인 포인트 내역만 조회 가능합니다.");
+    }
 
     return paymentRepository.findAllByBuyerIdAndRequestedAtBetween(
         userId,
@@ -111,14 +110,14 @@ public class PaymentServiceImpl implements PaymentService {
 
   @Override
   @Transactional
-  public void cancelPayment(Long CurrentUserId, Role role, String paymentKey, TossCancelReqDto request,
+  public void cancelPayment(Long currentUserId, Role role, String paymentKey, TossCancelReqDto request,
       String idempotencyKey) {
 
     Payment payment = paymentRepository.findByPaymentKey(paymentKey)
         .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "결제 내역을 찾을 수 없습니다."));
 
 
-    if (role == Role.MEMBER && !payment.getBuyerId().equals(CurrentUserId)) {
+    if (role == Role.MEMBER && !payment.getBuyerId().equals(currentUserId)) {
       throw new CustomApiException(ResErrorCode.FORBIDDEN, "본인 결제 내역만 취소 가능합니다.");
     }
 
@@ -128,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     int newCancelAmount =
-        request.getCancelAmount() != null ? request.getCancelAmount()
+        request.cancelAmount() != null ? request.cancelAmount()
             : payment.getBalanceAmount();
 
     if (newCancelAmount > payment.getBalanceAmount()) {
@@ -136,7 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     TossCancelResDto response = tossPaymentClient.cancelPayment(
-        paymentKey, request.getCancelReason(), request.getCancelAmount(),
+        paymentKey, request.cancelReason(), request.cancelAmount(),
         idempotencyKey);
 
     paymentRepository.saveResponse(idempotencyKey, response, Duration.ofMinutes(5));
@@ -153,7 +152,6 @@ public class PaymentServiceImpl implements PaymentService {
         JSONObject paymentInfo = tossPaymentClient.getPaymentInfo(paymentKey);
         TossCancelResDto latestResponse = TossCancelResDto.fromJson(paymentInfo);
 
-        // TODO: 다른 방법 생각해보기
         payment.updateCancelInfo(
             latestResponse.status(),
             latestResponse.balanceAmount(),
@@ -167,8 +165,8 @@ public class PaymentServiceImpl implements PaymentService {
       }
     }
 
-    PaymentEvent event = new PaymentEvent(CurrentUserId,
-        request.getCancelAmount());
+    PaymentEvent event = new PaymentEvent(currentUserId,
+        request.cancelAmount());
     paymentProducer.sendCancelEvent(event);
   }
 

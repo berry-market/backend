@@ -2,12 +2,7 @@ package com.berry.payment.domain.model;
 
 import com.berry.common.auditor.BaseEntity;
 import com.berry.payment.application.dto.TossPaymentResDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -62,26 +57,23 @@ public class Payment extends BaseEntity {
   @Column
   private LocalDateTime approvedAt;
 
-
   public static Payment createFrom(TossPaymentResDto response, Long buyerId) {
     return Payment.builder()
         .buyerId(buyerId)
-        .paymentKey(response.getPaymentKey())
-        .orderId(response.getOrderId())
-        .orderName(response.getOrderName())
-        .amount(response.getTotalAmount())
-        .balanceAmount(response.getTotalAmount())
-        .paymentMethod(response.getMethod())
-        .paymentStatus(response.getStatus())
-        .requestedAt(response.getRequestedAt())
-        .approvedAt(response.getApprovedAt())
+        .paymentKey(response.paymentKey())
+        .orderId(response.orderId())
+        .orderName(response.orderName())
+        .amount(response.totalAmount())
+        .balanceAmount(response.totalAmount())
+        .paymentMethod(response.method())
+        .paymentStatus(response.status())
+        .requestedAt(response.requestedAt())
+        .approvedAt(response.approvedAt())
         .build();
   }
 
-
-  public void updateCancelInfo(String status, int balanceAmount,
-      String transactionKey) {
-    if (this.transactionKey != null && this.transactionKey.equals(transactionKey)) {
+  public void updateCancelInfo(String status, int balanceAmount, String transactionKey) {
+    if (transactionKey != null && transactionKey.equals(this.transactionKey)) {
       return;
     }
     this.paymentStatus = status;

@@ -21,6 +21,7 @@ services:
       - DELIVERY_NAME=${DELIVERY_NAME}
       - PAYMENT_NAME=${PAYMENT_NAME}
       - AUTH_NAME=${AUTH_NAME}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
     env_file:
       - ../.env
     healthcheck:
