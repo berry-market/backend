@@ -3,11 +3,15 @@ package com.berry.bid.application.service;
 import com.berry.bid.application.model.cache.BidChat;
 import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
 import com.berry.bid.application.model.dto.bidchat.BidChatView;
+import com.berry.bid.application.model.event.BidEvent;
+import com.berry.bid.application.model.event.PostEvent;
 import com.berry.bid.application.model.event.UserEvent;
 import com.berry.bid.application.service.message.BidChatProducerService;
 import com.berry.bid.domain.repository.BidChatRepository;
 import com.berry.bid.domain.service.BidChatService;
+import com.berry.bid.infrastructure.client.PostClient;
 import com.berry.bid.infrastructure.client.UserClient;
+import com.berry.bid.infrastructure.model.dto.PostInternalView;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +30,24 @@ public class BidChatServiceImpl implements BidChatService {
     private final BidChatRepository bidChatRepository;
     private final BidChatProducerService bidChatProducerService;
     private final UserClient userClient;
+    private final PostClient postClient;
+
+    @Override
+    @Transactional
+    public void startBidChat(PostEvent.Update event){
+        PostInternalView.Response response = postClient.getPost(event.getPostId());
+        BidChat bidChat = BidChat.of(response.getWriterId(),response.getStartedPrice());
+        bidChatRepository.saveToSortedSet(bidChatKey + event.getPostId(), bidChat);
+    }
 
     @Override
     @Transactional
     public BidChat createBidChat(Long postId, BidChatCreate.Request request, Long bidderId) {
         BidChat bidChat = BidChat.of(bidderId, request.getAmount());
 
-        if (validateBidChat(postId, request)) {
+        if (existsBidChat(postId)) {
+            throw new CustomApiException(ResErrorCode.SERVICE_UNAVAILABLE, "시작하지 않은 입찰입니다.");
+        } else if (validateBidChat(postId, request)) {
             bidChatRepository.saveToSortedSet(bidChatKey + postId, bidChat);
             renewPoints(postId, bidChat);
         } else {
@@ -54,7 +69,7 @@ public class BidChatServiceImpl implements BidChatService {
                     String nickname = userClient.getUserById(bidChat.getBidderId())
                             .getData()
                             .getNickname();
-                    return BidChatView.Response.of(nickname, bidChat.getAmount(),bidChat.getCreatedAt());
+                    return BidChatView.Response.of(nickname, bidChat.getAmount(), bidChat.getCreatedAt());
                 })
                 .collect(Collectors.toList());
     }
@@ -69,7 +84,12 @@ public class BidChatServiceImpl implements BidChatService {
 
     private Boolean validateBidChat(Long postId, BidChatCreate.Request request) {
         Optional<BidChat> bidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
-        return bidChat.isEmpty() || request.getAmount() > bidChat.get().getAmount();
+        return request.getAmount() > bidChat.orElseThrow().getAmount();
+    }
+
+    private Boolean existsBidChat(Long postId) {
+        Optional<BidChat> bidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
+        return bidChat.isPresent();
     }
 
     private void updatePoints(UserEvent.Bidding event) {

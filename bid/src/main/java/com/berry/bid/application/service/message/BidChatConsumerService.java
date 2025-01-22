@@ -6,4 +6,6 @@ public interface BidChatConsumerService {
 
     void closePostEvent(PostEvent.Close postEvent);
 
+    void updatePostEvent(PostEvent.Update update);
+
 }

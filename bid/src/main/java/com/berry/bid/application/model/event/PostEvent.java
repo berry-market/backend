@@ -16,6 +16,14 @@ public class PostEvent {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PUBLIC)
+    @NoArgsConstructor(access = AccessLevel.PUBLIC)
+    public static class Update{
+        private Long postId;
+        private String status;
+    }
+
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PUBLIC)
     public static class Price{
         private final Long bidId;
         private final Integer successfulBidPrice;
