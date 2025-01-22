@@ -47,11 +47,11 @@ public class BidChatServiceImpl implements BidChatService {
 
         if (existsBidChat(postId)) {
             throw new CustomApiException(ResErrorCode.SERVICE_UNAVAILABLE, "시작하지 않은 입찰입니다.");
-        } else if (validateBidChat(postId, request)) {
+        } else if (validateBidChat(postId, request) && !validateBidder(postId,bidChat)) {
             bidChatRepository.saveToSortedSet(bidChatKey + postId, bidChat);
             renewPoints(postId, bidChat);
         } else {
-            throw new CustomApiException(ResErrorCode.BAD_REQUEST, "입찰가가 정상적으로 설정되지 않았습니다.");
+            throw new CustomApiException(ResErrorCode.BAD_REQUEST, "입찰이 정상적으로 설정되지 않았습니다.");
         }
 
         return bidChat;
@@ -77,9 +77,14 @@ public class BidChatServiceImpl implements BidChatService {
     private void renewPoints(Long postId, BidChat bidChat) {
         updatePoints(UserEvent.Bidding.from(bidChat));
         Optional<BidChat> latestBidChat = bidChatRepository.getHighestPrice(bidChatKey + postId);
-        if (latestBidChat.isPresent()) {
+        if (latestBidChat.isPresent()||!validateBidder(postId, bidChat)) {
             updatePoints(UserEvent.Bidding.fromLatest(latestBidChat.orElse(null)));
         }
+    }
+
+    private Boolean validateBidder(Long postId, BidChat bidChat) {
+        PostInternalView.Response response = postClient.getPost(postId);
+        return response.getWriterId().equals(bidChat.getBidderId());
     }
 
     private Boolean validateBidChat(Long postId, BidChatCreate.Request request) {
