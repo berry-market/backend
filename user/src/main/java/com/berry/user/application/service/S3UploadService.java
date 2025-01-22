@@ -47,6 +47,7 @@ public class S3UploadService {
 
             ImmutableImage.loader()
                 .fromFile(originalFile)
+                .max(1280, 1280)
                 .output(WebpWriter.DEFAULT, webpFile);
 
             return webpFile;
