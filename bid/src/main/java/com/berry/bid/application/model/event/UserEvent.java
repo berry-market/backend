@@ -13,6 +13,10 @@ public class UserEvent {
         Long userId;
         Integer amount;
 
+        public static Bidding of(Long userId, Integer amount) {
+            return new Bidding(userId, amount);
+        }
+
         public static Bidding from(BidChat bidChat) {
             return new Bidding(bidChat.getBidderId(), bidChat.getAmount());
         }

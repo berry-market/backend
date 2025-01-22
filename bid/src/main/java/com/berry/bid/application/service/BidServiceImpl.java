@@ -4,10 +4,13 @@ import com.berry.bid.application.model.dto.bid.BidView;
 import com.berry.bid.application.model.event.BidEvent;
 import com.berry.bid.application.model.event.DeliveryEvent;
 import com.berry.bid.application.model.event.PostEvent;
+import com.berry.bid.application.model.event.UserEvent;
+import com.berry.bid.application.service.message.BidChatProducerService;
 import com.berry.bid.application.service.message.BidProducerService;
 import com.berry.bid.domain.model.entity.Bid;
 import com.berry.bid.domain.repository.BidChatRepository;
 import com.berry.bid.domain.repository.BidRepository;
+import com.berry.bid.domain.service.BidChatService;
 import com.berry.bid.domain.service.BidService;
 import com.berry.bid.infrastructure.client.DeliveryClient;
 import com.berry.bid.infrastructure.client.PostClient;
@@ -32,6 +35,7 @@ public class BidServiceImpl implements BidService {
     private static final String bidChatKey = "post:";
     private final BidProducerService bidProducerService;
     private final BidChatRepository bidChatRepository;
+    private final BidChatProducerService bidChatProducerService;
     private final BidRepository bidRepository;
     private final PostClient postClient;
     private final DeliveryClient deliveryClient;
@@ -43,7 +47,7 @@ public class BidServiceImpl implements BidService {
         Bid bid = eventToBid(event);
         bidRepository.save(bid);
         bidProducerService.sendPostEvent(bidToPrice(bid));
-
+        bidChatProducerService.sendUserEvent(UserEvent.Bidding.of(bid.getBidderId(),bid.getSuccessfulBidPrice()));
         DeliveryEvent.Create deliveryEvent = DeliveryEvent.Create
                 .of(
                         bid.getId(),
@@ -51,6 +55,7 @@ public class BidServiceImpl implements BidService {
                         bid.getBidderId()
                 );
         bidProducerService.sendDeliveryEvent(deliveryEvent);
+
     }
 
     private PostInternalView.Response getPostDetails(Long bidId) {
