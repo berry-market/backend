@@ -2,6 +2,7 @@ package com.berry.bid.presentation.controller.external;
 
 import com.berry.bid.application.model.dto.bidchat.BidChatCreate;
 import com.berry.bid.application.model.cache.BidChat;
+import com.berry.bid.application.model.dto.bidchat.BidChatView;
 import com.berry.bid.domain.service.BidChatService;
 import com.berry.common.response.ApiResponse;
 import com.berry.common.response.ResSuccessCode;
@@ -40,8 +41,8 @@ public class BidChatController {
     }
 
     @GetMapping("/api/v1/posts/{postId}/bids-chat")
-    public ApiResponse<List<BidChat>> getChat(@PathVariable Long postId) {
-        List<BidChat> bidChats =bidChatService.getBidChats(postId);
+    public ApiResponse<List<BidChatView.Response>> getChat(@PathVariable Long postId) {
+        List<BidChatView.Response> bidChats =bidChatService.getBidChats(postId);
         return ApiResponse.OK(ResSuccessCode.READ,bidChats);
     }
 

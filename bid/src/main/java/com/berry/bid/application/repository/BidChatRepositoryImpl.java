@@ -7,9 +7,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,13 +25,12 @@ public class BidChatRepositoryImpl implements BidChatRepository {
     }
 
     @Override
-    public Optional<BidChat> findById(Long id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<BidChat> findAll() {
-        return List.of();
+    public List<BidChat> findAll(String key) {
+        ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
+        Set<Object> elements = zSetOps.range(key, 0, -1);
+        return elements.stream()
+                .map(e -> (BidChat) e)
+                .collect(Collectors.toList());
     }
 
     @Override
