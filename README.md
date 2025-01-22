@@ -54,10 +54,7 @@
 ---
 ## 5. 적용 기술
 
----
 ### 📚 STACKS
-
----
 
 ### Communication
 <img src="https://img.shields.io/badge/notion-000000?style=flat&logo=notion&logoColor=white"/><img src="https://img.shields.io/badge/slack-4A154B?style=flat&logo=slack&logoColor=white"/><br>
@@ -231,7 +228,7 @@
         - 다른 언어로의 사용은 제한적.
 
 ```
-📍 입찰 채팅, 물품 게시판 , 토큰 관리 등에서 레디스를 사용
+📍입찰 채팅, 물품 게시판 , 토큰 관리 등에서 레디스를 사용
 
 1️⃣ 입찰 채팅 레디스 선택 이유 :
 1. 요구사항의 내용과 다중 서버로의 확장성 및 속도를 고려하여 레디스를 통해 데이터를 처리
@@ -364,6 +361,7 @@
 </details>
 
 ---
+## Trouble Shooting
 
 <details><summary>🕔Post 전체 조회 성능 개선</summary>
 
@@ -406,7 +404,7 @@ JMeter로 API 호출 테스트를 했을 때 캐싱을 적용하지 않은 키�
 
 </details>
 
----
+
 
 <details><summary>✨이미지 업로드 및 조회 성능 개선 - Webp 변환</summary>
 
@@ -504,7 +502,6 @@ JMeter로 API 호출 테스트를 했을 때 캐싱을 적용하지 않은 키�
 
 </details>
 
----
 <details><summary>✨이미지 업로드 및 조회 성능 개선 - CloudFront & Lambda@Edge</summary>
 
 1. **문제 원인**
@@ -531,7 +528,6 @@ JMeter로 API 호출 테스트를 했을 때 캐싱을 적용하지 않은 키�
 
 </details>
 
----
 
 <details><summary>💡 채팅 조회 성능 개선</summary>
 
