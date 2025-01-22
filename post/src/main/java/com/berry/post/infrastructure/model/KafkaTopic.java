@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum KafkaTopic {
-  BID_EVENTS("bid-events");
+
+  BID_CLOSE_EVENTS("bid-close-events"),
+  BID_UPDATE_EVENTS("bid-update-events");
 
   private final String topicName;
 }

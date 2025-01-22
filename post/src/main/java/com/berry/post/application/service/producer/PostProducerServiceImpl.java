@@ -14,11 +14,11 @@ public class PostProducerServiceImpl implements PostProducerService {
 
   @Override
   public void sendPostCreateEvent(PostEvent.Close event) {
-    kafkaTemplate.send(KafkaTopic.BID_EVENTS.getTopicName(), "create", event);
+    kafkaTemplate.send(KafkaTopic.BID_CLOSE_EVENTS.getTopicName(), event);
   }
 
   @Override
   public void sendPostUpdateEvent(PostEvent.Update event) {
-    kafkaTemplate.send(KafkaTopic.BID_EVENTS.getTopicName(), "update", event);
+    kafkaTemplate.send(KafkaTopic.BID_UPDATE_EVENTS.getTopicName(), event);
   }
 }
