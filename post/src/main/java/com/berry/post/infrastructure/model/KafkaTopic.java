@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum KafkaTopic {
 
   BID_CLOSE_EVENTS("bid-close-events"),
-  BID_UPDATE_EVENTS("bid-update-events");
+  BID_ACTIVE_EVENTS("bid-active-events");
 
   private final String topicName;
 }

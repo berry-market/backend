@@ -11,24 +11,12 @@ public class PostEvent {
     @Getter
     @AllArgsConstructor(access = AccessLevel.PUBLIC)
     @NoArgsConstructor(access = AccessLevel.PUBLIC)
-    public static class Close{
-        private Long postId;
-        private Long writerId;
-
-        public static PostEvent.Close from(Post post) {
-            return new PostEvent.Close(post.getId(), post.getWriterId());
-        }
-    }
-
-    @Getter
-    @AllArgsConstructor(access = AccessLevel.PUBLIC)
-    @NoArgsConstructor(access = AccessLevel.PUBLIC)
-    public static class Update{
+    public static class Status {
         private Long postId;
         private ProductStatus status;
 
-        public static PostEvent.Update from(Post post) {
-            return new PostEvent.Update(post.getId(), post.getProductStatus());
+        public static Status from(Post post) {
+            return new Status(post.getId(), post.getProductStatus());
         }
     }
 
