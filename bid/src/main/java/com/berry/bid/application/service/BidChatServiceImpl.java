@@ -95,7 +95,7 @@ public class BidChatServiceImpl implements BidChatService {
 
     private void validateBidder(Long postId, BidChat bidChat) {
         PostInternalView.Response response = postClient.getPost(postId);
-        if (!response.getWriterId().equals(bidChat.getBidderId())) {
+        if (response.getWriterId().equals(bidChat.getBidderId())) {
             throw new CustomApiException(ResErrorCode.BAD_REQUEST, "게시자는 입찰에 참여할 수 없습니다.");
         }
     }
@@ -115,7 +115,6 @@ public class BidChatServiceImpl implements BidChatService {
         if (request.getAmount() > bidChat.orElseThrow().getAmount()) {
             throw new CustomApiException(ResErrorCode.BAD_REQUEST, "입찰이 정상적으로 요청되지 않았습니다.");
         }
-        ;
     }
 
     private void existsBidChat(Long postId) {
