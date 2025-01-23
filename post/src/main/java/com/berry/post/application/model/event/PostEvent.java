@@ -16,9 +16,10 @@ public class PostEvent {
         private ProductStatus status;
         private Long writerId;
         private Integer startedPrice;
+        private Integer ImmediatePrice;
 
         public static Status from(Post post) {
-            return new Status(post.getId(), post.getProductStatus(), post.getWriterId(), post.getStartedPrice());
+            return new Status(post.getId(), post.getProductStatus(), post.getWriterId(), post.getStartedPrice(), post.getImmediatePrice());
         }
     }
 
