@@ -7,7 +7,6 @@ import com.berry.post.domain.repository.LikeRepository;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.presentation.request.like.CreatePostLikeRequest;
 import com.berry.post.presentation.response.like.LikeResponse;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +25,7 @@ public class LikeServiceImpl implements LikeService {
     @Override
     @Transactional
     public void createPostLike(CreatePostLikeRequest request, Long userId) {
-        postRepository.findById(request.postId())
-            .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다."));
+        getPostById(request.postId());
         Like like = Like.builder()
             .userId(userId)
             .postId(request.postId())
@@ -38,8 +36,9 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @Transactional
-    public void deletePostLike(Long headerUserId, Long likeId) {
-        Like like = likeRepository.findById(likeId)
+    public void deletePostLike(Long headerUserId, Long postId) {
+        getPostById(postId);
+        Like like = likeRepository.findByUserIdAndPostId(headerUserId, postId)
             .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "찜을 찾을 수 없습니다."));
         if (!Objects.equals(like.getUserId(), headerUserId)) {
             throw new CustomApiException(ResErrorCode.FORBIDDEN, "접근 권한이 없습니다.");
@@ -60,5 +59,10 @@ public class LikeServiceImpl implements LikeService {
                 like.getCreatedAt()
             ))
             .toList();
+    }
+
+    private void getPostById(Long postId) {
+        postRepository.findById(postId)
+            .orElseThrow(() -> new CustomApiException(ResErrorCode.NOT_FOUND, "게시글을 찾을 수 없습니다."));
     }
 }

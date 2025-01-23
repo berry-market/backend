@@ -35,12 +35,12 @@ public class LikeController {
         return ApiResponse.OK(ResSuccessCode.READ, likeService.getLikes(headerUserId, role));
     }
 
-    @DeleteMapping("/{likeId}")
+    @DeleteMapping("/{postId}")
     public ApiResponse<Void> deletePostLike(
         @RequestHeader("X-UserId") Long headerUserId,
-        @PathVariable("likeId") Long likeId
+        @PathVariable("postId") Long postId
     ) {
-        likeService.deletePostLike(headerUserId, likeId);
+        likeService.deletePostLike(headerUserId, postId);
         return ApiResponse.OK(ResSuccessCode.DELETED, "찜이 삭제되었습니다.");
     }
 
