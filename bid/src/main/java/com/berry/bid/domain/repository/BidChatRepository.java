@@ -13,4 +13,8 @@ public interface BidChatRepository {
 
     Optional<BidChat> getHighestPrice(String key);
 
+    void saveImmediatePrice(String key, Integer price);
+
+    Integer findImmediatePrice(String key);
+
 }

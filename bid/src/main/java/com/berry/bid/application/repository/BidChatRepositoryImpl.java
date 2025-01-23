@@ -49,4 +49,14 @@ public class BidChatRepositoryImpl implements BidChatRepository {
         return Optional.empty();
     }
 
+    @Override
+    public void saveImmediatePrice(String key, Integer price) {
+        redisTemplate.opsForValue().set(key, String.valueOf(price));
+    }
+
+    @Override
+    public Integer findImmediatePrice(String key) {
+        return Integer.parseInt((String) redisTemplate.opsForValue().get(key));
+    }
+
 }

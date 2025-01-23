@@ -47,7 +47,9 @@ public class BidServiceImpl implements BidService {
         Bid bid = eventToBid(event);
         bidRepository.save(bid);
         bidProducerService.sendPostEvent(bidToPrice(bid));
-        bidChatProducerService.sendUserEvent(UserEvent.Bidding.of(bid.getBidderId(),bid.getSuccessfulBidPrice()));
+        if(!validateBidder(bid)){
+            bidChatProducerService.sendUserEvent(UserEvent.Bidding.of(bid.getBidderId(),bid.getSuccessfulBidPrice()));
+        }
         DeliveryEvent.Create deliveryEvent = DeliveryEvent.Create
                 .of(
                         bid.getId(),
@@ -58,16 +60,20 @@ public class BidServiceImpl implements BidService {
 
     }
 
-    private PostInternalView.Response getPostDetails(Long bidId) {
-        return postClient.getPost(bidId);
+    private Boolean validateBidder(Bid bid) {
+        return bid.getBidderId().equals(getSellerIdByPost(bid.getId()));
+    }
+
+    private PostInternalView.Response getPostDetails(Long postId) {
+        return postClient.getPost(postId);
     }
 
     @Override
     @Transactional
-    public BidView.Response getBidDetails(Long bidId) {
-        Bid bid = getBidById(bidId);
-        PostInternalView.Response response = getPostDetails(bidId);
-        DeliveryInternalView.Response delivery = getDeliveryDetails(bidId);
+    public BidView.Response getBidDetails(Long postId) {
+        Bid bid = getBidById(postId);
+        PostInternalView.Response response = getPostDetails(postId);
+        DeliveryInternalView.Response delivery = getDeliveryDetails(postId);
         return BidView.Response.from(bid, response, delivery);
     }
 

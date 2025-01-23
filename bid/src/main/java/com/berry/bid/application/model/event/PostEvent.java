@@ -19,7 +19,10 @@ public class PostEvent {
     @NoArgsConstructor(access = AccessLevel.PUBLIC)
     public static class Update{
         private Long postId;
+        private Long writerId;
         private String status;
+        private Integer ImmediatePrice;
+        private Integer startedPrice;
     }
 
     @Getter
