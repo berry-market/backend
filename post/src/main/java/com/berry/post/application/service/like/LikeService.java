@@ -8,7 +8,7 @@ import java.util.List;
 public interface LikeService {
     void createPostLike(CreatePostLikeRequest request, Long userId);
 
-    void deletePostLike(Long headerUserId, Long likeId);
+    void deletePostLike(Long headerUserId, Long postId);
 
     List<LikeResponse> getLikes(Long headerUserId, String role);
 }
