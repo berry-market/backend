@@ -21,6 +21,7 @@ public class BidChatConsumerServiceImpl implements BidChatConsumerService {
     @KafkaListener(topics = "bid-close-events", containerFactory = "postCloseListenerContainerFactory")
     public void closePostEvent(PostEvent.Close postEvent) {
         bidService.createBid(postEvent);
+        log.info("Bid closed id : {}", postEvent.getPostId());
     }
 
     @Override
@@ -28,6 +29,7 @@ public class BidChatConsumerServiceImpl implements BidChatConsumerService {
     public void updatePostEvent(PostEvent.Update postEvent) {
         if(postEvent.getStatus().equals("ACTIVE")){
             bidChatService.startBidChat(postEvent);
+            log.info("bid chat started id : {}", postEvent.getPostId());
         }
     }
 
