@@ -22,6 +22,7 @@ services:
       - EUREKA_PORT=${EUREKA_PORT}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - TZ=${TZ}
     env_file:
       - ../.env
     healthcheck:
