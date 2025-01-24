@@ -19,6 +19,7 @@ services:
       - EUREKA_PORT=${EUREKA_PORT}
       - ZIPKIN_HOST=${ZIPKIN_HOST}
       - ZIPKIN_PORT=${ZIPKIN_PORT}
+      - TZ=${TZ}
     env_file:
       - ../.env
     healthcheck:

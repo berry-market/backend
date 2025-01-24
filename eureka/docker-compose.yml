@@ -9,6 +9,7 @@ services:
     environment:
       - EUREKA_HOST=${EUREKA_HOST}
       - EUREKA_PORT=${EUREKA_PORT}
+      - TZ=${TZ}
     env_file:
       - ../.env
     healthcheck:
