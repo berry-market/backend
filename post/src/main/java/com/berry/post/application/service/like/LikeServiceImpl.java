@@ -8,6 +8,7 @@ import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.presentation.request.like.CreatePostLikeRequest;
 import com.berry.post.presentation.response.like.LikeResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "posts", allEntries = true)
     public void createPostLike(CreatePostLikeRequest request, Long userId) {
         getPostById(request.postId());
         Like like = Like.builder()
@@ -36,6 +38,7 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "posts", allEntries = true)
     public void deletePostLike(Long headerUserId, Long postId) {
         getPostById(postId);
         Like like = likeRepository.findByUserIdAndPostId(headerUserId, postId)

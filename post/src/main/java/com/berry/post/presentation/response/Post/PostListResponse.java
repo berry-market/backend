@@ -8,6 +8,8 @@ import lombok.Getter;
 
 @Getter
 public class PostListResponse implements Serializable {
+
+  private Long postId;
   private Long postCategoryId;
   private String productName;
   private Integer immediatePrice;
@@ -19,6 +21,7 @@ public class PostListResponse implements Serializable {
   private Boolean isLiked;
 
   public PostListResponse(Post post, Boolean isLiked) {
+    this.postId = post.getId();
     this.postCategoryId = post.getPostCategoryId();
     this.productName = post.getProductName();
     this.immediatePrice = post.getImmediatePrice();
