@@ -9,9 +9,7 @@ public interface BidChatRepository {
 
     void saveToSortedSet(String key, BidChat bidChat);
 
-    Optional<BidChat> findById(Long id);
-
-    List<BidChat> findAll();
+    List<BidChat> findAll(String key);
 
     Optional<BidChat> getHighestPrice(String key);
 
