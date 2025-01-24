@@ -3,10 +3,9 @@ package com.berry.post.application.service.post;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.application.dto.GetInternalUserResponse;
-import com.berry.post.application.model.event.PostEvent;
+import com.berry.post.application.model.event.PostEvent.Status;
 import com.berry.post.application.service.image.ImageUploadService;
 import com.berry.post.application.service.producer.PostProducerServiceImpl;
-import com.berry.post.domain.model.Like;
 import com.berry.post.domain.model.Post;
 import com.berry.post.domain.model.ProductDetailsImages;
 import com.berry.post.domain.model.ProductStatus;
@@ -15,7 +14,6 @@ import com.berry.post.domain.repository.LikeRepository;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.domain.repository.ProductDetailsImagesRepository;
 import com.berry.post.domain.repository.ReviewRepository;
-import com.berry.post.infrastructure.client.UserClient;
 import com.berry.post.infrastructure.client.UserService;
 import com.berry.post.presentation.request.Post.PostCreateRequest;
 import com.berry.post.presentation.request.Post.PostUpdateRequest;
@@ -88,8 +86,7 @@ public class PostServiceImpl implements PostService {
         .build();
     Post savedPost = postRepository.save(post);
 
-    saveProductDetailsImages(productDetailsImages, post);
-    sendPostCreateEventToBid(PostEvent.Close.from(savedPost));
+    saveProductDetailsImages(productDetailsImages, savedPost);
   }
 
   @Override
@@ -245,7 +242,7 @@ public class PostServiceImpl implements PostService {
     for (Post productStatusToStart : productStatusToStarts) {
       productStatusToStart.updateProductStatus(ProductStatus.ACTIVE);
       Post savedPost = postRepository.save(productStatusToStart);
-      sendPostUpdateEventToBid(PostEvent.Update.from(savedPost));
+      sendPostActiveEventToBid(Status.from(savedPost));
     }
 
     List<Post> productStatusToCloses =
@@ -254,15 +251,15 @@ public class PostServiceImpl implements PostService {
     for (Post productStatusToClose : productStatusToCloses) {
       productStatusToClose.updateProductStatus(ProductStatus.CLOSED);
       Post savedPost = postRepository.save(productStatusToClose);
-      sendPostUpdateEventToBid(PostEvent.Update.from(savedPost));
+      sendPostCloseEventToBid(Status.from(savedPost));
     }
   }
 
-  private void sendPostCreateEventToBid(PostEvent.Close event) {
-    postProducerService.sendPostCreateEvent(event);
+  private void sendPostActiveEventToBid(Status event) {
+    postProducerService.sendPostCloseEvent(event);
   }
 
-  private void sendPostUpdateEventToBid(PostEvent.Update event) {
-    postProducerService.sendPostUpdateEvent(event);
+  private void sendPostCloseEventToBid(Status event) {
+    postProducerService.sendPostActiveEvent(event);
   }
 }

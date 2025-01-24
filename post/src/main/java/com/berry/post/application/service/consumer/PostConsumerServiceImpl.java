@@ -4,6 +4,7 @@ import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.application.model.event.PostEvent;
 import com.berry.post.domain.model.Post;
+import com.berry.post.domain.model.ProductStatus;
 import com.berry.post.domain.repository.PostRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class PostConsumerServiceImpl implements PostConsumerService{
     Integer successfulBidPrice = event.getSuccessfulBidPrice();
     if (successfulBidPrice != null) {
       post.updateBidPrice(successfulBidPrice);
+      post.updateProductStatus(ProductStatus.CLOSED);
       postRepository.save(post);
     }
   }
