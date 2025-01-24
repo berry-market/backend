@@ -1,4 +1,4 @@
 package com.berry.bid.application.repository;
 
-public interface BidRespositoryCustom {
+public interface BidRepositoryCustom {
 }

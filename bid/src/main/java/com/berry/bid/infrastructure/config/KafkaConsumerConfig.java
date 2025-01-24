@@ -44,8 +44,13 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, Object> postConsumerFactory() {
+    public ConsumerFactory<String, Object> postCloseConsumerFactory() {
         return new DefaultKafkaConsumerFactory<>(kafkaListenerConfig(kafkaPort, groupId, PostEvent.Close.class));
+    }
+
+    @Bean
+    public ConsumerFactory<String, Object> postUpdateConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(kafkaListenerConfig(kafkaPort, groupId, PostEvent.Update.class));
     }
 
     @Bean
@@ -54,9 +59,16 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> postListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Object> postCloseListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(postConsumerFactory());
+        factory.setConsumerFactory(postCloseConsumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> postUpdateListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(postUpdateConsumerFactory());
         return factory;
     }
 

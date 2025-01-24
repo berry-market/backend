@@ -8,8 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum KafkaTopic {
     POST_EVENTS("post-events"),
     USER_EVENTS("user-events"),
-    DELIVERY_EVENTS("bid.completion"),
-    BID_DELIVERY_EVENTS("delivery.status.change");
+    DELIVERY_EVENTS("bid.completion");
 
     private final String topicName;
 
