@@ -66,18 +66,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     CustomUserDetails user = (CustomUserDetails) authResult.getPrincipal();
 
-    // JWT 생성
     String accessToken = jwtTokenFactory.createAccessToken(user.getId(), user.getUsername(),
         Role.valueOf(user.getAuthorities().iterator().next().getAuthority()));
     String refreshToken = jwtTokenFactory.createRefreshToken(user.getId());
 
-    // Refresh Token 저장
     boolean isSaved = authRepository.saveRefreshToken(user.getId(), refreshToken);
     if (!isSaved) {
       throw new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR, "Save refresh token failed");
     }
 
-    // Refresh Token을 HttpOnly 쿠키에 저장
     Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
     refreshTokenCookie.setHttpOnly(true);
     refreshTokenCookie.setSecure(true);
@@ -85,7 +82,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     refreshTokenCookie.setMaxAge(refreshTokenValidity);
     response.addCookie(refreshTokenCookie);
 
-    // 응답
     LoginResDto loginResDto = LoginResDto.builder()
         .accessToken(accessToken)
         .userId(user.getId())
@@ -109,8 +105,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    if (failed.getCause() instanceof CustomApiException) {
-      CustomApiException customException = (CustomApiException) failed.getCause();
+    if (failed.getCause() instanceof CustomApiException customException) {
       ApiResponse<?> errorResponse = ApiResponse.ERROR(
           customException.getErrorCode(),
           customException.getMessage()

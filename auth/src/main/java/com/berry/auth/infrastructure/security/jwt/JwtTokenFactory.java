@@ -24,12 +24,10 @@ public class JwtTokenFactory {
     this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
   }
 
-  // 액세스 토큰 생성
   public String createAccessToken(Long userId, String nickname, Role role) {
     return createToken(userId, nickname, role, accessTokenValidity * 1000L, "access"); // 초 → 밀리초
   }
 
-  // 리프레시 토큰 생성
   public String createRefreshToken(Long userId) {
     return createToken(userId, null, null, refreshTokenValidity * 1000L, "refresh");
   }

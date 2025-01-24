@@ -27,7 +27,6 @@ public class RedisConfig {
     RedisTemplate<String, String> template = new RedisTemplate<>();
     template.setConnectionFactory(redisConnectionFactory());
 
-    // 문자열 직렬화 설정
     template.setKeySerializer(new StringRedisSerializer());
     template.setValueSerializer(new StringRedisSerializer());
 

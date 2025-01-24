@@ -42,38 +42,34 @@ public class AuthServiceImpl implements AuthService {
 
     String accessToken = authorizationHeader.substring(7);
 
-    // 리프레시 토큰 삭제
     boolean tokenDeleted = authRepository.deleteRefreshToken(refreshToken);
     if (!tokenDeleted) {
       throw new CustomApiException(ResErrorCode.BAD_REQUEST, "리프레시 토큰 삭제에 실패하였습니다.");
     }
 
-    // 액세스 토큰 남은시간 계산
     long remainingExpiration =
         jwtTokenParser.getExpiration(accessToken) - System.currentTimeMillis();
     if (remainingExpiration <= 0) {
       throw new CustomApiException(ResErrorCode.UNAUTHORIZED, "액세스토큰이 이미 만료되었습니다.");
     }
 
-    // 액세스 토큰 블랙리스트 추가
     boolean isBlacklisted = authRepository.addToBlacklist(accessToken, remainingExpiration);
     if (!isBlacklisted) {
       throw new CustomApiException(ResErrorCode.INTERNAL_SERVER_ERROR, "액세스토큰 블랙리스트 등록에 실패하였습니다.");
     }
 
-  // RefreshToken 쿠키 만료 설정
   Cookie expiredCookie = new Cookie("refreshToken", null);
     expiredCookie.setHttpOnly(true);
     expiredCookie.setSecure(true);
     expiredCookie.setPath("/");
-    expiredCookie.setMaxAge(0); // 즉시 만료
+    expiredCookie.setMaxAge(0);
     response.addCookie(expiredCookie);
   }
 
   @Override
   @Transactional
   public String refreshAccessToken(String refreshToken) {
-    // 리프레시 토큰 유효성 검증
+
     jwtTokenValidator.validateRefreshToken(refreshToken);
 
     Long userId = jwtTokenParser.getUserId(refreshToken);
@@ -81,7 +77,6 @@ public class AuthServiceImpl implements AuthService {
     UserInfoResDto user;
 
     try {
-    // 유저서비스에서 유저 정보 가져오기
     user = userClient.getUserById(userId).getData();
     } catch (
   FeignException e) {
@@ -96,10 +91,9 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public TokenValidResDto validateToken(String accessToken) {
-    // 액세스 토큰 유효성 검증
+
     jwtTokenValidator.validateAccessToken(accessToken);
 
-    // 검증된 유저정보 반환
     Long userId = jwtTokenParser.getUserId(accessToken);
     String username = jwtTokenParser.getNickname(accessToken);
     String role = jwtTokenParser.getRole(accessToken);

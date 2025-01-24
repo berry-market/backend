@@ -38,18 +38,16 @@ public class RedisTokenRepository implements AuthRepository {
     return Boolean.TRUE.equals(redisTemplate.delete(refreshKey));
   }
 
-  // 액세스 토큰 블랙리스트 추가
   public boolean addToBlacklist(String accessToken, long remainingExpiration) {
     String blacklistKey = "blacklist:" + accessToken;
 
     redisTemplate.opsForValue().set(
         blacklistKey,
         "blacklisted",
-        remainingExpiration, // TTL 설정 (밀리초 단위)
+        remainingExpiration,
         TimeUnit.MILLISECONDS
     );
 
-    // 저장된 키 확인
     return redisTemplate.hasKey(blacklistKey);
   }
 
@@ -58,7 +56,6 @@ public class RedisTokenRepository implements AuthRepository {
     return redisTemplate.hasKey("blacklist:" + accessToken);
   }
 
-  // 키 구조
   private String getKey(String type, String token) {
     return type + ":" + token;
   }
