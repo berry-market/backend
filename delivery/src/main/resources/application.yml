@@ -21,7 +21,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      spring.json.add.type.headers: false
+      properties:
+        spring.json.add.type.headers: false
 
     consumer:
       bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
@@ -55,4 +56,13 @@ management:
   endpoint:
     health:
       show-details: always
+  zipkin:
+    tracing:
+      endpoint: "http://${ZIPKIN_HOST}:${ZIPKIN_PORT}"
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3
+      produce: b3_multi
 
