@@ -97,7 +97,6 @@ public class PostServiceImpl implements PostService {
 
     Page<Post> posts = postRepository.findAllAndDeletedYNFalse(keyword, type, postCategoryId, writerId, sort, pageable, userId);
     return posts.map(post -> {
-      log.info("DB 에서 조회");
       Boolean isLiked = likeRepository.findByUserIdAndPostId(userId, post.getId()).isPresent();
       return new PostListResponse(post, isLiked);
     });
