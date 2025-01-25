@@ -21,7 +21,7 @@ public class PostEvent {
         private Long postId;
         private Long writerId;
         private String status;
-        private Integer ImmediatePrice;
+        private Integer immediatePrice;
         private Integer startedPrice;
     }
 

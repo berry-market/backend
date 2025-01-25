@@ -40,6 +40,7 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, listenedClass);
+        configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
         return configProps;
     }
 
