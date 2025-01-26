@@ -2,6 +2,7 @@ package com.berry.post.application.service.like;
 
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
+import com.berry.post.application.repository.LikeRepositoryCustom;
 import com.berry.post.domain.model.Like;
 import com.berry.post.domain.repository.LikeRepository;
 import com.berry.post.domain.repository.PostRepository;
@@ -22,6 +23,7 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
+    private final LikeRepositoryCustom likeRepositoryCustom;
 
     @Override
     @Transactional
@@ -54,14 +56,7 @@ public class LikeServiceImpl implements LikeService {
         if ("ADMIN".equals(role)) {
             throw new CustomApiException(ResErrorCode.FORBIDDEN, "접근 권한이 없습니다.");
         }
-        List<Like> likeList = likeRepository.findByUserId(headerUserId);
-        return likeList.stream()
-            .map(like -> new LikeResponse(
-                like.getId(),
-                like.getPostId(),
-                like.getCreatedAt()
-            ))
-            .toList();
+        return likeRepositoryCustom.findLikesByUserId(headerUserId);
     }
 
     private void getPostById(Long postId) {
