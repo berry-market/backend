@@ -91,7 +91,7 @@ public class PostServiceImpl implements PostService {
 
   @Override
   @Transactional
-  @Cacheable(cacheNames = "posts", key = "#keyword + '-' + #type + '-' + #postCategoryId + '-' + #writerId + '-' + #sort + '-' + #userId")
+  @Cacheable(cacheNames = "posts", key = "#keyword + '-' + #type + '-' + #postCategoryId + '-' + #writerId + '-' + #sort + '-' + #pageable + '-' + #userId")
   public Page<PostListResponse> getPosts(String keyword, String type, Long postCategoryId, Long writerId,
       String sort, Pageable pageable, Long userId) {
 

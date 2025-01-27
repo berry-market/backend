@@ -3,6 +3,7 @@ package com.berry.post.application.service.like;
 import com.berry.common.exceptionhandler.CustomApiException;
 import com.berry.common.response.ResErrorCode;
 import com.berry.post.domain.model.Like;
+import com.berry.post.domain.model.Post;
 import com.berry.post.domain.repository.LikeRepository;
 import com.berry.post.domain.repository.PostRepository;
 import com.berry.post.presentation.request.like.CreatePostLikeRequest;
@@ -28,11 +29,18 @@ public class LikeServiceImpl implements LikeService {
     @CacheEvict(cacheNames = "posts", allEntries = true)
     public void createPostLike(CreatePostLikeRequest request, Long userId) {
         getPostById(request.postId());
+
         Like like = Like.builder()
             .userId(userId)
             .postId(request.postId())
             .createdAt(LocalDateTime.now())
             .build();
+
+        Post post = postRepository.findByIdAndDeletedYNFalse(request.postId()).orElseThrow(
+            () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+        );
+        post.plusLikeCount();
+
         likeRepository.save(like);
     }
 
@@ -46,6 +54,12 @@ public class LikeServiceImpl implements LikeService {
         if (!Objects.equals(like.getUserId(), headerUserId)) {
             throw new CustomApiException(ResErrorCode.FORBIDDEN, "접근 권한이 없습니다.");
         }
+
+        Post post = postRepository.findByIdAndDeletedYNFalse(postId).orElseThrow(
+            () -> new CustomApiException(ResErrorCode.NOT_FOUND, "해당 게시글을 찾을 수 없습니다.")
+        );
+        post.minusLikeCount();
+
         likeRepository.delete(like);
     }
 
